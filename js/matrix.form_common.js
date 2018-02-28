@@ -1,17 +1,17 @@
 
 $(document).ready(function(){
-	
+
 	$('input[type=checkbox],input[type=radio],input[type=file]').uniform();
-	
-	$('select').select2();
-    $('.colorpicker').colorpicker();
-    $('.datepicker').datepicker();
+
+	// $('select').select2();
+  // $('.colorpicker').colorpicker();
+  // $('.datepicker').datepicker();
 });
 
-$(document).ready(function() { 	
+$(document).ready(function() {
 
 	//------------- Tags plugin  -------------//
-	
+
 	$("#tags").select2({
 		tags:["red", "green", "blue", "orange"]
 	});
@@ -28,19 +28,35 @@ $(document).ready(function() {
 		});
 	}
 
+	try {
+	  $(".txt_moeda_jqformat").maskMoney({
+      /*prefix:'US$ ', // The symbol to be displayed before the value entered by the user*/
+      allowZero: true, // Prevent users from inputing zero
+      allowNegative: true, // Prevent users from inputing negative values
+      defaultZero: false, // when the user enters the field, it sets a default mask using zero
+      thousands: '', // The thousands separator
+      decimal: ',', // The decimal separator
+      precision: 2, // How many decimal places are allowed
+      affixesStay: false, // set if the symbol will stay in the field after the user exits the field.
+      symbolPosition: 'left' // use this setting to position the symbol at the left or right side of the value. default 'left'
+    }).prop('maxLength', 30).prop('size', 20);
+  } catch (e) {
+    console.log('Erro ao executar : ' + e);
+  }
+
 	//------------- Masked input fields -------------//
-	$("#mask-phone").mask("(999) 999-9999", {completed:function(){alert("Callback action after complete");}});
+	/*$("#mask-phone").mask("(999) 999-9999", {completed:function(){alert("Callback action after complete");}});
 	$("#mask-phoneExt").mask("(999) 999-9999? x99999");
 	$("#mask-phoneInt").mask("+40 999 999 999");
 	$("#mask-date").mask("99/99/9999");
 	$("#mask-ssn").mask("999-99-9999");
 	$("#mask-productKey").mask("a*-999-a999", { placeholder: "*" });
 	$("#mask-eyeScript").mask("~9.99 ~9.99 999");
-	$("#mask-percent").mask("99%");
+	$("#mask-percent").mask("99%");*/
 
 	//------------- Toggle button  -------------//
 
-	$('.normal-toggle-button').toggleButtons();
+	/*$('.normal-toggle-button').toggleButtons();
 	$('.text-toggle-button').toggleButtons({
 	    width: 140,
 	    label: {
@@ -54,31 +70,31 @@ $(document).ready(function() {
 	        enabled: "<span class='icon16 icomoon-icon-checkmark-2 white'></span>",
 	        disabled: "<span class='icon16 icomoon-icon-cancel-3 white marginL5'></span>"
 	    }
-	});
+	});*/
 
 	//------------- Spinners with steps  -------------//
-	$( "#spinner1" ).spinner();
+	// $( "#spinner1" ).spinner();
 
 	/*Demacial*/
-	$( "#spinner2" ).spinner({
+	/*$( "#spinner2" ).spinner({
       step: 0.01,
       numberFormat: "n"
-    });
+    });*/
 
 	/*Custom step size*/
-    $( "#spinner3" ).spinner({
+    /*$( "#spinner3" ).spinner({
       step: 5
-    });
+    });*/
 
     /*Currency spinner*/
-    $( "#spinner4" ).spinner({ 
-    	numberFormat: "C" 
-    });
+    /*$( "#spinner4" ).spinner({
+    	numberFormat: "C"
+    });*/
 
 	//------------- Colorpicker -------------//
 	if($('div').hasClass('picker')){
 		$('.picker').farbtastic('#color');
-	}	
+	}
 	//------------- Datepicker -------------//
 	if($('#datepicker').length) {
 		$("#datepicker").datepicker({
@@ -96,23 +112,23 @@ $(document).ready(function() {
 	if($('#combined-picker').length) {
 		$('#combined-picker').datetimepicker();
 	}
-	
-    //------------- Time entry (picker) -------------//
-	$('#timepicker').timeEntry({
+
+  //------------- Time entry (picker) -------------//
+	/*$('#timepicker').timeEntry({
 		show24Hours: true,
 		spinnerImage: ''
 	});
-	$('#timepicker').timeEntry('setTime', '22:15')
+	$('#timepicker').timeEntry('setTime', '22:15')*/
 
 	//------------- Select plugin -------------//
-	$("#select1").select2();
-	$("#select2").select2();
+	// $("#select1").select2();
+	// $("#select2").select2();
 
 	//--------------- Dual multi select ------------------//
-	$.configureBoxes();
+	// $.configureBoxes();
 
 	//--------------- Tinymce ------------------//
-	$('textarea.tinymce').tinymce({
+	/*$('textarea.tinymce').tinymce({
 		// Location of TinyMCE script
 		script_url : 'plugins/forms/tiny_mce/tiny_mce.js',
 
@@ -144,11 +160,11 @@ $(document).ready(function() {
 			username : "SuprUser",
 			staffid : "991234"
 		}
-	});
+	});*/
 
 	//Boostrap modal
 	$('#myModal').modal({ show: false});
-	
+
 	//add event to modal after closed
 	$('#myModal').on('hidden', function () {
 	  	console.log('modal is closed');
@@ -157,6 +173,7 @@ $(document).ready(function() {
 });//End document ready functions
 
 //sparkline in sidebar area
+/*
 var positive = [1,5,3,7,8,6,10];
 var negative = [10,6,8,7,3,5,1]
 var negative1 = [7,6,8,7,6,5,4]
@@ -193,7 +210,7 @@ $('#stat5').sparkline(positive,{
 	type: 'bar'
 });
 
-$('#stat6').sparkline(positive, { 
+$('#stat6').sparkline(positive, {
 	width: 70,//Width of the chart - Defaults to 'auto' - May be any valid css width - 1.5em, 20px, etc (using a number without a unit specifier won't do what you want) - This option does nothing for bar and tristate chars (see barWidth)
 	height: 20,//Height of the chart - Defaults to 'auto' (line height of the containing tag)
 	lineColor: '#88bbc8',//Used by line and discrete charts to specify the colour of the line drawn as a CSS values string
@@ -204,4 +221,4 @@ $('#stat6').sparkline(positive, {
 	spotRadius: 3,//Radius of all spot markers, In pixels (default: 1.5) - Integer
 	lineWidth: 2//In pixels (default: 1) - Integer
 });
-
+*/
