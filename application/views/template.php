@@ -1,3 +1,4 @@
+<!-- https://wrappixel.com/demos/free-admin-templates/matrix-admin/index.html -->
 <!DOCTYPE html>
 <html lang="en">
    <head>
@@ -577,6 +578,7 @@
       <script src="<?php echo base_url(); ?>js/matrix.popover.js"></script>
       <script src="<?php echo base_url(); ?>js/jquery.dataTables.min.js"></script>
       <script src="<?php echo base_url(); ?>js/matrix.tables.js"></script>
+      <script src="<?php echo base_url(); ?>js/bootbox.min.js"></script>
       <script type="text/javascript">
          // This function is called from the pop-up menus to transfer to
          // a different page. Ignore if the value returned is a null string:

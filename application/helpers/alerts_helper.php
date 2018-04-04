@@ -7,7 +7,7 @@ function showAlertBlock($content, $type){
       break;
     case "success":
       $title = "Sucesso!";
-      $class = "alert-succes";
+      $class = "alert-success";
       break;
     case "info":
       $title = "Informação!";

@@ -2,8 +2,14 @@
 
 <a class="btn btn-info btn-large" href="<?php echo base_url() . "Produto/novoProduto"; ?>">NOVO PRODUTO</a>
 
+<?php
+if(isset($errorMsg) && $errorMsg != ""){
+  echo $errorMsg;
+}
+?>
+
 <div class="widget-box">
-  <div class="widget-title"> <span class="icon"><i class="icon-th"></i></span>
+  <div class="widget-title"> <span class="icon"><i class="icon icon-tasks"></i></span>
     <h5>Lista de produtos</h5>
   </div>
   <div class="widget-content nopadding">
