@@ -133,6 +133,9 @@ class Produto extends MY_Controller {
   }
 
   public function ver($proId){
+    // esquema pro dynatables
+    $queries = http_build_query($_GET);
+
     $this->load->model('Tb_Produto');
     $retProduto      = $this->Tb_Produto->getProduto($proId);
     $arrProdutoDados = [];
@@ -145,11 +148,15 @@ class Produto extends MY_Controller {
     $data["arrProdutoDados"] = $arrProdutoDados;
     $data["errorMsg"]        = "";
     $data["okMsg"]           = "";
+    $data["queries"]         = $queries;
 
     $this->template->load('template', 'Produto/novo', $data);
   }
 
   public function editar($proId){
+    // esquema pro dynatables
+    $queries = http_build_query($_GET);
+
     $this->load->model('Tb_Produto');
     $retProduto      = $this->Tb_Produto->getProduto($proId);
     $arrProdutoDados = [];
@@ -162,6 +169,7 @@ class Produto extends MY_Controller {
     $data["arrProdutoDados"] = $arrProdutoDados;
     $data["errorMsg"]        = "";
     $data["okMsg"]           = "";
+    $data["queries"]         = $queries;
 
     $this->template->load('template', 'Produto/novo', $data);
   }

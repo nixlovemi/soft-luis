@@ -1,3 +1,17 @@
+// botoes da lista
+$(document).on('click', '.dynatableLink', function(){
+	var url = $(this).data('url');
+
+	var currentUrl = document.location.href;
+	var arrUrl     = currentUrl.split('?');
+	if (typeof arrUrl[1] !== 'undefined') {
+		url = url + '?' + arrUrl[1];
+	}
+
+	document.location.href = url;
+});
+// ===============
+
 $(document).ready(function(){
 	var HOME_URL = 'http://127.0.0.1/webapp/';
 
@@ -12,7 +26,15 @@ $(document).ready(function(){
 	});
 	// ==========
 
-
+	$('.dynatable').dynatable({
+		inputs: {
+			paginationPrev: 'Anterior',
+			paginationNext: 'Próximo',
+			perPageText: 'Exibir: ',
+			recordCountText: 'Exibindo ',
+			processingText: 'Processando ...',
+		}
+	});
 
 	// === Sidebar navigation === //
 	$('.submenu > a').click(function(e)

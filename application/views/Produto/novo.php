@@ -8,6 +8,7 @@ $errorMsg        = isset($errorMsg) ? $errorMsg: "";
 $okMsg           = isset($okMsg) ? $okMsg: "";
 $detalhes        = isset($detalhes) ? $detalhes: false;
 $editar          = isset($editar) ? $editar: false;
+$queries         = isset($queries) && $queries != "" ? "?" . $queries: ""; // esquema do dynatables
 
 $vProId         = isset($arrProdutoDados["pro_id"]) ? $arrProdutoDados["pro_id"]: "";
 $vProDescricao  = isset($arrProdutoDados["pro_descricao"]) ? $arrProdutoDados["pro_descricao"]: "";
@@ -37,17 +38,17 @@ $h1Title    = "Novo Produto";
 
 if($detalhes){
   $h1Title      = "Detalhes do Produto";
-  $arrButtons[] = "<a href='".base_url() . "Produto/index" ."' class='btn'>Voltar</a>";
+  $arrButtons[] = "<a href='".base_url() . "Produto/index$queries" ."' class='btn'>Voltar</a>";
   $frmAction    = "";
 } elseif($editar){
   $h1Title      = "Editar Produto";
   $arrButtons[] = "<input type='submit' value='Gravar Edição' class='btn btn-success' />";
-  $arrButtons[] = "<a href='".base_url() . "Produto/index" ."' class='btn'>Voltar</a>";
+  $arrButtons[] = "<a href='".base_url() . "Produto/index$queries" ."' class='btn'>Voltar</a>";
   $frmAction    = "Produto/salvaEditar";
 } else {
   $h1Title      = "Novo Produto";
   $arrButtons[] = "<input type='submit' value='Gravar Produto' class='btn btn-success' />";
-  $arrButtons[] = "<a href='".base_url() . "Produto/index" ."' class='btn'>Cancelar</a>";
+  $arrButtons[] = "<a href='".base_url() . "Produto/index$queries" ."' class='btn'>Cancelar</a>";
   $frmAction    = "Produto/salvaNovo";
 }
 // ===============

@@ -12,6 +12,7 @@
       <link rel="stylesheet" href="<?php echo base_url(); ?>css/matrix-style.css" />
       <link rel="stylesheet" href="<?php echo base_url(); ?>css/matrix-media.css" />
       <link href="<?php echo base_url(); ?>font-awesome/css/font-awesome.css" rel="stylesheet" />
+      <link href="<?php echo base_url(); ?>js/Dynatable/jquery.dynatable.css" rel="stylesheet" />
       <link rel="stylesheet" href="<?php echo base_url(); ?>css/jquery.gritter.css" />
       <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,800' rel='stylesheet' type='text/css'>
    </head>
@@ -559,6 +560,7 @@
       <script src="<?php echo base_url(); ?>js/jquery.min.js"></script>
       <script src="<?php echo base_url(); ?>js/jquery.ui.custom.js"></script>
       <script src="<?php echo base_url(); ?>js/bootstrap.min.js"></script>
+      <script src="<?php echo base_url(); ?>js/Dynatable/jquery.dynatable.js"></script>
       <script src="<?php echo base_url(); ?>js/jquery-maskmoney.v3.1.1.js"></script>
       <script src="<?php echo base_url(); ?>js/jquery.flot.min.js"></script>
       <script src="<?php echo base_url(); ?>js/jquery.flot.resize.min.js"></script>

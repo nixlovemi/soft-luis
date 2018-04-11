@@ -43,7 +43,7 @@ class Tb_Produto extends CI_Model {
   public function getHtmlList(){
     $this->load->database();
     $htmlTable  = "";
-    $htmlTable .= "<table class='table table-bordered' id='tbProdutoGetHtmlList'>";
+    $htmlTable .= "<table class='table table-bordered dynatable' id='tbProdutoGetHtmlList'>";
     $htmlTable .= "  <thead>";
     $htmlTable .= "    <tr>";
     $htmlTable .= "      <th width='8%'>ID</th>";
@@ -86,8 +86,8 @@ class Tb_Produto extends CI_Model {
         $htmlTable .= "  <td>$vProDescricao</td>";
         $htmlTable .= "  <td>$vProEstoque</td>";
         $htmlTable .= "  <td>$vProPrecVenda</td>";
-        $htmlTable .= "  <td><a href='".base_url() . "Produto/ver/$vProId" . "'><i class='icon-eye-open icon-lista'></i></a></td>";
-        $htmlTable .= "  <td><a href='".base_url() . "Produto/editar/$vProId" . "'><i class='icon-edit icon-lista'></i></a></td>";
+        $htmlTable .= "  <td><a href='javascript:;' class='dynatableLink' data-url='".base_url() . "Produto/ver/$vProId" . "'><i class='icon-eye-open icon-lista'></i></a></td>";
+        $htmlTable .= "  <td><a href='javascript:;' class='dynatableLink' data-url='".base_url() . "Produto/editar/$vProId" . "'><i class='icon-edit icon-lista'></i></a></td>";
         $htmlTable .= "  <td><a href='javascript:;' class='TbProduto_deletar' data-id='$vProId'><i class='icon-trash icon-lista'></i></a></td>";
         $htmlTable .= "</tr>";
       }

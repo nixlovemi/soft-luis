@@ -1604,3 +1604,24 @@ form {
 	}
 	#sidebar .content{ display:none;}
 }
+th a {
+	color: #666 !important;
+}
+.dynatable-per-page{
+	position: relative;
+	top: 9px;
+	left: 5px;
+}
+.dynatable-search{
+	position: relative;
+	top: 9px;
+	right: 5px;
+}
+.dynatable{
+	padding: 5px;
+	margin-bottom: 18px !important;
+}
+.dynatable-record-count{
+	position: relative;
+	left: 5px;
+}
