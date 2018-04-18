@@ -58,6 +58,7 @@ $(document).ready(function(){
 		}
 	});
 	$(".mask_cpf").mask("999.999.999-99");
+	$(".mask_cep").mask("99.999-999");
 
 	// === Sidebar navigation === //
 	$('.submenu > a').click(function(e)

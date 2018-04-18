@@ -145,7 +145,7 @@ if($errorMsg != ""){
             <label class="control-label">CEP</label>
             <div class="controls">
               <!-- validate-required -->
-              <input <?php echo $strReadyonly; ?> class="span10" type="text" name="cliEndCep" id="cliEndCep" value="<?php echo $vCliEndCep; ?>" />
+              <input <?php echo $strReadyonly; ?> class="span10 mask_cep" type="text" name="cliEndCep" id="cliEndCep" value="<?php echo $vCliEndCep; ?>" />
             </div>
           </div>
 
