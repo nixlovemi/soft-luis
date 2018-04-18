@@ -36,6 +36,17 @@ $(document).on('click', '.TbCliente_deletar', function(){
 });
 // ==========
 
+// Tb_Vendedor
+$(document).on('click', '.TbVendedor_deletar', function(){
+	var venId = $(this).data("id");
+	var html  = 'Gostaria de deletar o vendedor ID ' + venId + '?';
+
+	confirmBootbox(html, function(){
+		document.location.href = HOME_URL + 'Vendedor/deletar/' + venId;
+	});
+});
+// ==========
+
 $(document).ready(function(){
 	$('.dynatable').dynatable({
 		inputs: {

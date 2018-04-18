@@ -67,11 +67,11 @@ class Tb_Produto extends CI_Model {
     $arrRs = $query->result_array();
 
     if(count($arrRs) <= 0){
-      $htmlTable .= "  <tr class=''>";
+      /*$htmlTable .= "  <tr class=''>";
       $htmlTable .= "    <td colspan='8'>";
       $htmlTable .= "      <center>Nenhum resultado encontrado!</center>";
       $htmlTable .= "    </td>";
-      $htmlTable .= "  </tr>";
+      $htmlTable .= "  </tr>";*/
     } else {
       foreach($arrRs as $rs1){
         $vProId        = $rs1["pro_id"];
