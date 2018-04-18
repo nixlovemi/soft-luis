@@ -1,3 +1,5 @@
+var HOME_URL = 'http://127.0.0.1/webapp/';
+
 // botoes da lista
 $(document).on('click', '.dynatableLink', function(){
 	var url = $(this).data('url');
@@ -12,20 +14,29 @@ $(document).on('click', '.dynatableLink', function(){
 });
 // ===============
 
-$(document).ready(function(){
-	var HOME_URL = 'http://127.0.0.1/webapp/';
+// Tb_Produto
+$(document).on('click', '.TbProduto_deletar', function(){
+	var proId = $(this).data("id");
+	var html  = 'Gostaria de deletar o produto ID ' + proId + '?';
 
-	// Tb_Produto
-	$('.TbProduto_deletar').click(function(){
-		var proId = $(this).data("id");
-		var html  = 'Gostaria de deletar o produto ID ' + proId + '?';
-
-		confirmBootbox(html, function(){
-			document.location.href = HOME_URL + 'Produto/deletar/' + proId;
-		});
+	confirmBootbox(html, function(){
+		document.location.href = HOME_URL + 'Produto/deletar/' + proId;
 	});
-	// ==========
+});
+// ==========
 
+// Tb_Cliente
+$(document).on('click', '.TbCliente_deletar', function(){
+	var cliId = $(this).data("id");
+	var html  = 'Gostaria de deletar o cliente ID ' + cliId + '?';
+
+	confirmBootbox(html, function(){
+		document.location.href = HOME_URL + 'Cliente/deletar/' + cliId;
+	});
+});
+// ==========
+
+$(document).ready(function(){
 	$('.dynatable').dynatable({
 		inputs: {
 			paginationPrev: 'Anterior',
@@ -35,6 +46,7 @@ $(document).ready(function(){
 			processingText: 'Processando ...',
 		}
 	});
+	$(".mask_cpf").mask("999.999.999-99");
 
 	// === Sidebar navigation === //
 	$('.submenu > a').click(function(e)
