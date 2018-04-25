@@ -390,4 +390,33 @@ class Tb_Cliente extends CI_Model {
 
     return $arrRet;
   }
+
+  public function getClientes(){
+    $arrRet                = [];
+    $arrRet["erro"]        = true;
+    $arrRet["msg"]         = "";
+    $arrRet["arrClientes"] = array();
+
+    $this->load->database();
+    $this->db->select("cli_id, cli_nome, cli_cpf_cnpj");
+    $this->db->from("tb_cliente");
+    $this->db->where("cli_ativo", 1);
+    $this->db->order_by("cli_nome", "asc");
+    $query = $this->db->get();
+
+    if($query->num_rows() > 0){
+      $arrRs = $query->result_array();
+      foreach($arrRs as $rs1){
+        $arrClienteDados = [];
+        $arrClienteDados["cli_id"]       = $rs1["cli_id"];
+        $arrClienteDados["cli_nome"]     = $rs1["cli_nome"];
+        $arrClienteDados["cli_cpf_cnpj"] = $rs1["cli_cpf_cnpj"];
+
+        $arrRet["arrClientes"][] = $arrClienteDados;
+      }
+    }
+
+    $arrRet["erro"] = false;
+    return $arrRet;
+  }
 }

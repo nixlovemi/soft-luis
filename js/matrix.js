@@ -1,5 +1,15 @@
 var HOME_URL = 'http://127.0.0.1/webapp/';
 
+function moedaParaNumero(valor)
+{
+    return isNaN(valor) == false ? parseFloat(valor) :   parseFloat(valor.replace("R$","").replace(".","").replace(",","."));
+}
+function numeroParaMoeda(n, c, d, t)
+{
+    c = isNaN(c = Math.abs(c)) ? 2 : c, d = d == undefined ? "," : d, t = t == undefined ? "." : t, s = n < 0 ? "-" : "", i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "", j = (j = i.length) > 3 ? j % 3 : 0;
+    return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+}
+
 // botoes da lista
 $(document).on('click', '.dynatableLink', function(){
 	var url = $(this).data('url');
@@ -11,6 +21,64 @@ $(document).on('click', '.dynatableLink', function(){
 	}
 
 	document.location.href = url;
+});
+// ===============
+
+// Tb_Venda ======
+$(document).on('click', '#frmAddProdVenda #addProdVenda', function(){
+	var vdaId  = $("#frmEditVendaInfo #vdaId").val();
+	var frmVdi = $("#frmAddProdVenda").serialize();
+
+	$.ajax({
+    type: "POST",
+    url: HOME_URL + 'VendaItens/jsonAddProduto',
+    data: frmVdi + '&vdaId=' + vdaId,
+		dataType: 'json',
+		success: function (ret) {
+			var erro        = ret.erro;
+			var msg         = ret.msg;
+			var htmlTbItens = ret.htmlTbProd;
+
+			if(erro){
+				$.gritter.add({
+					title: 'Alerta',
+					text: msg,
+				});
+			} else {
+				$("#frmAddProdVenda #vdiProId").val("");
+				$("#frmAddProdVenda #vdiQtde").val("");
+				$("#frmAddProdVenda #vdiValor").val("");
+				$("#frmAddProdVenda #vdiDesconto").val("");
+				$("#htmlTbVendaItens").html(htmlTbItens);
+			}
+    }
+  });
+});
+
+$(document).on('change', '#frmAddProdVenda #vdiProId', function(){
+	var proId = $(this).val();
+
+	$.ajax({
+    type: "POST",
+    url: HOME_URL + 'Produto/jsonGetProduto/' + proId,
+    data: '',
+		dataType: 'json',
+		success: function (ret) {
+			var erro    = ret.erro;
+			var msg     = ret.msg;
+			var Produto = ret.Produto;
+
+			if(!erro){
+				var valor = Produto.pro_prec_venda;
+				var texto = numeroParaMoeda(valor);
+
+				$("#frmAddProdVenda #vdiValor").val( texto );
+			} else {
+				$("#frmAddProdVenda #vdiValor").val('');
+				$("#frmAddProdVenda #vdiDesconto").val('');
+			}
+    }
+  });
 });
 // ===============
 
@@ -59,6 +127,9 @@ $(document).ready(function(){
 	});
 	$(".mask_cpf").mask("999.999.999-99");
 	$(".mask_cep").mask("99.999-999");
+	$(".mask_inteiro").numeric();
+	$('.mask_moeda').mask("#.##0,00", {reverse: true});
+	//$('.mask_moeda').mask('000.000.000.000.000,00', {reverse: true});
 
 	// === Sidebar navigation === //
 	$('.submenu > a').click(function(e)

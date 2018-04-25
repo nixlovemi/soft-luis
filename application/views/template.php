@@ -574,6 +574,7 @@
       <script src="<?php echo base_url(); ?>js/jquery.dataTables.min.js"></script>
       <script src="<?php echo base_url(); ?>js/bootbox.min.js"></script>
       <script src="<?php echo base_url(); ?>js/masked.js"></script>
+      <script src="<?php echo base_url(); ?>js/numeric.js"></script>
       <script src="<?php echo base_url(); ?>js/matrix.js"></script>
       <script src="<?php echo base_url(); ?>js/matrix.dashboard.js"></script>
       <script src="<?php echo base_url(); ?>js/matrix.interface.js"></script>

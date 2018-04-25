@@ -198,4 +198,22 @@ class Produto extends MY_Controller {
     $redirect = base_url() . "Produto";
     header("location:$redirect");
   }
+
+  public function jsonGetProduto($proId){
+    $arrRet            = [];
+    $arrRet["erro"]    = false;
+    $arrRet["msg"]     = "";
+    $arrRet["Produto"] = [];
+
+    $this->load->model('Tb_Produto');
+    $retGetProduto = $this->Tb_Produto->getProduto($proId);
+    if($retGetProduto["erro"]){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = $retGetProduto["msg"];
+    } else {
+      $arrRet["Produto"] = $retGetProduto["arrProdutoDados"];
+    }
+
+    echo json_encode($arrRet);
+  }
 }

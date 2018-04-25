@@ -107,6 +107,35 @@ class Tb_Vendedor extends CI_Model {
     return $arrRet;
   }
 
+  public function getVendedores(){
+    $arrRet                = [];
+    $arrRet["erro"]        = true;
+    $arrRet["msg"]         = "";
+    $arrRet["arrVendedores"] = array();
+
+    $this->load->database();
+    $this->db->select("ven_id, ven_nome, ven_cpf_cnpj");
+    $this->db->from("tb_vendedor");
+    $this->db->where("ven_ativo", 1);
+    $this->db->order_by("ven_nome", "asc");
+    $query = $this->db->get();
+
+    if($query->num_rows() > 0){
+      $arrRs = $query->result_array();
+      foreach($arrRs as $rs1){
+        $arrVendedorDados = [];
+        $arrVendedorDados["ven_id"]       = $rs1["ven_id"];
+        $arrVendedorDados["ven_nome"]     = $rs1["ven_nome"];
+        $arrVendedorDados["ven_cpf_cnpj"] = $rs1["ven_cpf_cnpj"];
+
+        $arrRet["arrVendedores"][] = $arrVendedorDados;
+      }
+    }
+
+    $arrRet["erro"] = false;
+    return $arrRet;
+  }
+
   private function validaInsert($arrVendedorDados){
     $arrRet         = [];
     $arrRet["erro"] = true;

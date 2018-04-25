@@ -40,6 +40,41 @@ class Tb_Produto extends CI_Model {
     return $arrRet;
   }
 
+  public function getProdutos(){
+    $arrRet                = [];
+    $arrRet["erro"]        = true;
+    $arrRet["msg"]         = "";
+    $arrRet["arrProdutos"] = array();
+
+    $this->load->database();
+    $this->db->select("pro_id, pro_descricao, pro_codigo, pro_ean, pro_estoque, pro_prec_custo, pro_prec_venda, pro_observacao, pro_ativo");
+    $this->db->from("tb_produto");
+    $this->db->where("pro_ativo", 1);
+    $this->db->order_by("pro_descricao", "asc");
+    $query = $this->db->get();
+
+    if($query->num_rows() > 0){
+      $arrRs = $query->result_array();
+      foreach($arrRs as $rs1){
+        $arrProdutosDados = [];
+        $arrProdutosDados["pro_id"]         = $rs1["pro_id"];
+        $arrProdutosDados["pro_descricao"]  = $rs1["pro_descricao"];
+        $arrProdutosDados["pro_codigo"]     = $rs1["pro_codigo"];
+        $arrProdutosDados["pro_ean"]        = $rs1["pro_ean"];
+        $arrProdutosDados["pro_estoque"]    = $rs1["pro_estoque"];
+        $arrProdutosDados["pro_prec_custo"] = $rs1["pro_prec_custo"];
+        $arrProdutosDados["pro_prec_venda"] = $rs1["pro_prec_venda"];
+        $arrProdutosDados["pro_observacao"] = $rs1["pro_observacao"];
+        $arrProdutosDados["pro_ativo"]      = $rs1["pro_ativo"];
+
+        $arrRet["arrProdutos"][] = $arrProdutosDados;
+      }
+    }
+
+    $arrRet["erro"] = false;
+    return $arrRet;
+  }
+
   public function getHtmlList(){
     $this->load->database();
     $htmlTable  = "";
