@@ -35,8 +35,9 @@ class VendaItens extends MY_Controller {
       $arrRet["erro"] = true;
       $arrRet["msg"]  = $retAdd["msg"];
     } else {
-      $arrRet["erro"]       = false;
-      $arrRet["htmlTbProd"] = $this->Tb_Venda_Itens->getHtmlList($vdaId);
+      $arrRet["erro"]         = false;
+      $arrRet["htmlTbProd"]   = $this->Tb_Venda_Itens->getHtmlList($vdaId);
+      $arrRet["htmlTbTotais"] = $this->Tb_Venda_Itens->getHtmlTotVenda($vdaId);
     }
 
     echo json_encode($arrRet);
@@ -69,6 +70,7 @@ class VendaItens extends MY_Controller {
       $vdaId = isset($VendaItem["vdi_vda_id"]) ? $VendaItem["vdi_vda_id"]: 0;
       $htmlTbProd = $this->Tb_Venda_Itens->getHtmlList($vdaId);
       $arrRet["htmlTbProd"] = $htmlTbProd;
+      $arrRet["htmlTbTotais"] = $this->Tb_Venda_Itens->getHtmlTotVenda($vdaId);
     }
 
     echo json_encode($arrRet);

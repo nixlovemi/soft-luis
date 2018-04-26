@@ -2,11 +2,12 @@
 $this->load->helper('utils');
 $this->load->helper('alerts');
 
-$arrVenda       = (isset($arrVenda)) ? $arrVenda: array();
-$arrClientes    = (isset($arrClientes)) ? $arrClientes: array();
-$arrVendedores  = (isset($arrVendedores)) ? $arrVendedores: array();
-$arrProdutos    = (isset($arrProdutos)) ? $arrProdutos: array();
-$htmlVendaItens = (isset($htmlVendaItens)) ? $htmlVendaItens: "";
+$arrVenda        = (isset($arrVenda)) ? $arrVenda: array();
+$arrClientes     = (isset($arrClientes)) ? $arrClientes: array();
+$arrVendedores   = (isset($arrVendedores)) ? $arrVendedores: array();
+$arrProdutos     = (isset($arrProdutos)) ? $arrProdutos: array();
+$htmlVendaItens  = (isset($htmlVendaItens)) ? $htmlVendaItens: "";
+$htmlVendaTotais = (isset($htmlVendaTotais)) ? $htmlVendaTotais: "";
 
 $vVdaId    = isset($arrVenda["vda_id"]) ? $arrVenda["vda_id"]: null;
 $vVdaData  = isset($arrVenda["vda_data"]) && $arrVenda["vda_data"] != "" ? formata_data_hora($arrVenda["vda_data"]): null;
@@ -177,6 +178,16 @@ if($errorMsg != ""){
             <?php
             echo $htmlVendaItens;
             ?>
+          </div>
+        </div>
+
+        <div class="widget-box">
+          <div class="widget-title">
+            <span class="icon"> <i class="icon icon-tasks"></i> </span>
+            <h5>Totais</h5>
+          </div>
+          <div id="htmlTbVendaTotais" class="widget-content">
+            <?php echo $htmlVendaTotais; ?>
           </div>
         </div>
       </div>

@@ -134,13 +134,15 @@ class Venda extends MY_Controller {
     $arrProdutos = (!$retProdutos["erro"]) ? $retProdutos["arrProdutos"]: array();
 
     $this->load->model('Tb_Venda_Itens');
-    $htmlVendaItens = $this->Tb_Venda_Itens->getHtmlList($vdaId);
+    $htmlVendaItens  = $this->Tb_Venda_Itens->getHtmlList($vdaId);
+    $htmlVendaTotais = $this->Tb_Venda_Itens->getHtmlTotVenda($vdaId);;
 
-    $data["arrVenda"]       = $arrVenda;
-    $data["arrClientes"]    = $arrClientes;
-    $data["arrVendedores"]  = $arrVendedores;
-    $data["arrProdutos"]    = $arrProdutos;
-    $data["htmlVendaItens"] = $htmlVendaItens;
+    $data["arrVenda"]        = $arrVenda;
+    $data["arrClientes"]     = $arrClientes;
+    $data["arrVendedores"]   = $arrVendedores;
+    $data["arrProdutos"]     = $arrProdutos;
+    $data["htmlVendaItens"]  = $htmlVendaItens;
+    $data["htmlVendaTotais"] = $htmlVendaTotais;
     $this->template->load('template', 'Venda/editar', $data);
   }
 }

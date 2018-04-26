@@ -1,6 +1,6 @@
 <?php
 class Tb_Venda_Itens extends CI_Model {
-  public function getHtmlList($vdaId, $vdiId=""){
+  public function getHtmlList($vdaId){
     $this->load->database();
     $htmlTable  = "";
     $htmlTable .= "<table class='table table-bordered' id='tbProdutoGetHtmlList'>";
@@ -57,6 +57,66 @@ class Tb_Venda_Itens extends CI_Model {
     $htmlTable .= "  </tbody>";
     $htmlTable .= "</table>";
 
+    return $htmlTable;
+  }
+
+  private function getHtmlBlocoTotais($label, $value, $colorClass="bg_lb"){
+    $vLabel = mb_strtoupper($label);
+
+    return "<ul class='quick-actions'>
+              <li class='$colorClass' style='width: 100%;'>
+                <a href='index.html'>
+                  <i class='icon icon-tasks'></i>
+                  <span style='font-size: 18px;' class=''>$value</span>
+                  <br />$vLabel
+                </a>
+              </li>
+            </ul>";
+  }
+
+  public function getHtmlTotVenda($vdaId){
+    $this->load->database();
+
+    $vTotProdutos = "0";
+    $vVlrProdutos = "R$ 0,00";
+    $vTotDesconto = "R$ 0,00";
+    $vTotVenda    = "R$ 0,00";
+
+    $vSql  = " SELECT vda_id, vda_tot_itens, vda_vlr_itens, SUM(vdi_qtde * vdi_valor) AS vlr_produtos, SUM(vdi_desconto) AS vlr_desconto ";
+    $vSql .= " FROM tb_venda ";
+    $vSql .= " INNER JOIN tb_venda_itens ON vdi_vda_id = vda_id ";
+    $vSql .= " WHERE vda_id = $vdaId ";
+    $vSql .= " GROUP BY vda_id ";
+
+    $query = $this->db->query($vSql);
+    $rs    = $query->row();
+
+    if($rs){
+      $vTotProdutos = isset($rs->vda_tot_itens) ? $rs->vda_tot_itens: "0";
+      $vVlrProdutos = isset($rs->vlr_produtos) ? "R$ " . number_format($rs->vlr_produtos, 2, ",", "."): "R$ 0,00";
+      $vTotDesconto = isset($rs->vlr_desconto) ? "R$ " . number_format($rs->vlr_desconto, 2, ",", "."): "R$ 0,00";
+      $vTotVenda    = isset($rs->vda_vlr_itens) ? "R$ " . number_format($rs->vda_vlr_itens, 2, ",", "."): "R$ 0,00";
+    }
+
+    $htmlProdutos    = $this->getHtmlBlocoTotais("PRODUTOS", $vTotProdutos);
+    $htmlTotProdutos = $this->getHtmlBlocoTotais("TOTAL PRODUTOS", $vVlrProdutos);
+    $htmlTotDesconto = $this->getHtmlBlocoTotais("TOTAL DESCONTO", $vTotDesconto);
+    $htmlTotVenda    = $this->getHtmlBlocoTotais("TOTAL VENDA", $vTotVenda, "bg_lg");
+
+    $htmlTable = "<div class='control-group' style='width: 100%; display: block; overflow: hidden;'>
+                    <div class='span3 m-wrap'>
+                      $htmlProdutos
+                    </div>
+                    <div class='span3 m-wrap'>
+                      $htmlTotProdutos
+                    </div>
+                    <div class='span3 m-wrap'>
+                      $htmlTotDesconto
+                    </div>
+                    <div class='span3 m-wrap'>
+                      $htmlTotVenda
+                    </div>
+                  </div>";
     return $htmlTable;
   }
 
