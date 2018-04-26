@@ -1,6 +1,6 @@
 <?php
 class Tb_Venda_Itens extends CI_Model {
-  public function getHtmlList($vdaId){
+  public function getHtmlList($vdaId, $vdiId=""){
     $this->load->database();
     $htmlTable  = "";
     $htmlTable .= "<table class='table table-bordered' id='tbProdutoGetHtmlList'>";
@@ -17,7 +17,7 @@ class Tb_Venda_Itens extends CI_Model {
     $htmlTable .= "  </thead>";
     $htmlTable .= "  <tbody>";
 
-    $vSql  = " SELECT pro_id, pro_descricao, vdi_qtde, vdi_valor, vdi_desconto, vdi_total ";
+    $vSql  = " SELECT vdi_id, pro_id, pro_descricao, vdi_qtde, vdi_valor, vdi_desconto, vdi_total ";
     $vSql .= " FROM tb_venda_itens ";
     $vSql .= " LEFT JOIN tb_produto ON pro_id = vdi_pro_id ";
     $vSql .= " WHERE vdi_vda_id = $vdaId ";
@@ -34,6 +34,7 @@ class Tb_Venda_Itens extends CI_Model {
       $htmlTable .= "  </tr>";*/
     } else {
       foreach($arrRs as $rs1){
+        $vVdiId        = $rs1["vdi_id"];
         $vProId        = $rs1["pro_id"];
         $vProDescricao = $rs1["pro_descricao"];
         $vVdiQtde      = $rs1["vdi_qtde"];
@@ -48,7 +49,7 @@ class Tb_Venda_Itens extends CI_Model {
         $htmlTable .= "  <td>$vVdiValor</td>";
         $htmlTable .= "  <td>$vVdiDesconto</td>";
         $htmlTable .= "  <td>$vVdiTotal</td>";
-        $htmlTable .= "  <td><a href='javascript:;' class='TbProduto_deletar' data-id='$vProId'><i class='icon-trash icon-lista'></i></a></td>";
+        $htmlTable .= "  <td><a href='javascript:;' class='TbVendaItem_deletar' data-id='$vVdiId'><i class='icon-trash icon-lista'></i></a></td>";
         $htmlTable .= "</tr>";
       }
     }
@@ -57,6 +58,44 @@ class Tb_Venda_Itens extends CI_Model {
     $htmlTable .= "</table>";
 
     return $htmlTable;
+  }
+
+  public function getVendaItem($vdiId){
+    $arrRet                     = [];
+    $arrRet["erro"]             = true;
+    $arrRet["msg"]              = "";
+    $arrRet["arrVendaItemDados"]  = array();
+
+    if(!is_numeric($vdiId)){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "ID inválido para buscar o item da venda!";
+      return $arrRet;
+    }
+
+    $this->load->database();
+    $this->db->select("vdi_id, vdi_vda_id, vdi_pro_id, vdi_qtde, vdi_valor, vdi_desconto, vdi_total, vdi_status");
+    $this->db->from("tb_venda_itens");
+    $this->db->where("vdi_id", $vdiId);
+    $query = $this->db->get();
+
+    if($query->num_rows() > 0){
+      $row = $query->row();
+
+      $arrVendaItemDados = [];
+      $arrVendaItemDados["vdi_id"]       = $row->vdi_id;
+      $arrVendaItemDados["vdi_vda_id"]   = $row->vdi_vda_id;
+      $arrVendaItemDados["vdi_pro_id"]   = $row->vdi_pro_id;
+      $arrVendaItemDados["vdi_qtde"]     = $row->vdi_qtde;
+      $arrVendaItemDados["vdi_valor"]    = $row->vdi_valor;
+      $arrVendaItemDados["vdi_desconto"] = $row->vdi_desconto;
+      $arrVendaItemDados["vdi_total"]    = $row->vdi_total;
+      $arrVendaItemDados["vdi_status"]   = $row->vdi_status;
+
+      $arrRet["arrVendaItemDados"] = $arrVendaItemDados;
+    }
+
+    $arrRet["erro"] = false;
+    return $arrRet;
   }
 
   private function validaInsert($arrVendaItens){
@@ -138,5 +177,32 @@ class Tb_Venda_Itens extends CI_Model {
     }
 
     return $arrRet;
+  }
+
+  public function delete($vdiId){
+    $arrRet           = [];
+    $arrRet["erro"]   = true;
+    $arrRet["msg"]    = "";
+
+    if(!is_numeric($vdiId)){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "ID inválido para deletar!";
+
+      return $arrRet;
+    } else {
+      $this->load->database();
+      $this->db->where('vdi_id', $vdiId);
+      $retDelete = $this->db->delete('tb_venda_itens');
+
+      if(!$retDelete){
+        $arrRet["erro"] = true;
+        $arrRet["msg"]  = $this->db->_error_message();
+      } else {
+        $arrRet["erro"] = false;
+        $arrRet["msg"] = "Produto removido com sucesso!";
+      }
+
+      return $arrRet;
+    }
   }
 }

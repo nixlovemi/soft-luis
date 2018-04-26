@@ -80,6 +80,34 @@ $(document).on('change', '#frmAddProdVenda #vdiProId', function(){
     }
   });
 });
+
+$(document).on('click', '.TbVendaItem_deletar', function(){
+	var vdiId = $(this).data("id");
+	var html  = 'Gostaria de remover esse produto da venda?';
+
+	confirmBootbox(html, function(){
+    $.ajax({
+      type: "POST",
+      url: HOME_URL + 'VendaItens/jsonRemoveProduto',
+      data: 'vdiId=' + vdiId,
+  		dataType: 'json',
+  		success: function (ret) {
+  			var erro        = ret.erro;
+  			var msg         = ret.msg;
+  			var htmlTbItens = ret.htmlTbProd;
+
+  			if(erro){
+  				$.gritter.add({
+  					title: 'Alerta',
+  					text: msg,
+  				});
+  			} else {
+  				$("#htmlTbVendaItens").html(htmlTbItens);
+  			}
+      }
+    });
+	});
+});
 // ===============
 
 // Tb_Produto
