@@ -25,6 +25,43 @@ $(document).on('click', '.dynatableLink', function(){
 // ===============
 
 // Tb_Venda ======
+$(document).on('click', '#htmlTbContasVenda .TbContReceber_ajax_deletar', function(){
+	var ctrId = $(this).data("id");
+	var html  = 'Gostaria de deletar a parcela ' + ctrId + '?';
+
+	confirmBootbox(html, function(){
+		// document.location.href = HOME_URL + 'Vendedor/deletar/' + venId;
+	});
+});
+
+$(document).on('click', '#frmAddProdVenda #addParcelaVenda', function(){
+  var vdaId = $('#frmEditVendaInfo #vdaId').val();
+  var ctrDtVencimento = $('#frmAddProdVenda #ctrDtvencimento').val();
+  var ctrValor = $('#frmAddProdVenda #ctrValor').val();
+  var ctrContaPaga = $('#frmAddProdVenda #ctrContaPaga').val();
+
+  $.ajax({
+    type: "POST",
+    url: HOME_URL + 'ContaReceber/jsonAddContaVenda',
+    data: 'vdaId=' + vdaId + '&ctrDtVencimento=' + ctrDtVencimento + '&ctrValor=' + ctrValor + '&ctrContaPaga=' + ctrContaPaga,
+		dataType: 'json',
+		success: function (ret) {
+			var erro            = ret.erro;
+			var msg             = ret.msg;
+			var htmlContasVenda = ret.htmlContasVenda;
+
+			if(erro){
+				$.gritter.add({
+					title: 'Alerta',
+					text: msg,
+				});
+			} else {
+        $("#htmlTbContasVenda").html(htmlContasVenda);
+			}
+    }
+  });
+});
+
 $(document).on('click', '#frmAddProdVenda #addProdVenda', function(){
 	var vdaId  = $("#frmEditVendaInfo #vdaId").val();
 	var frmVdi = $("#frmAddProdVenda").serialize();
@@ -161,6 +198,10 @@ $(document).ready(function(){
 	$(".mask_cep").mask("99.999-999");
 	$(".mask_inteiro").numeric();
 	$('.mask_moeda').mask("#.##0,00", {reverse: true});
+  $('.mask_datepicker').datepicker({
+      format: 'dd/mm/yyyy',
+      startDate: '+1d',
+  });
 	//$('.mask_moeda').mask('000.000.000.000.000,00', {reverse: true});
 
 	// === Sidebar navigation === //

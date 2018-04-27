@@ -135,7 +135,10 @@ class Venda extends MY_Controller {
 
     $this->load->model('Tb_Venda_Itens');
     $htmlVendaItens  = $this->Tb_Venda_Itens->getHtmlList($vdaId);
-    $htmlVendaTotais = $this->Tb_Venda_Itens->getHtmlTotVenda($vdaId);;
+    $htmlVendaTotais = $this->Tb_Venda_Itens->getHtmlTotVenda($vdaId);
+
+    $this->load->model('Tb_Cont_Receber');
+    $htmlContasVenda = $this->Tb_Cont_Receber->getHtmlContasVenda($vdaId);
 
     $data["arrVenda"]        = $arrVenda;
     $data["arrClientes"]     = $arrClientes;
@@ -143,6 +146,7 @@ class Venda extends MY_Controller {
     $data["arrProdutos"]     = $arrProdutos;
     $data["htmlVendaItens"]  = $htmlVendaItens;
     $data["htmlVendaTotais"] = $htmlVendaTotais;
+    $data["htmlContasVenda"] = $htmlContasVenda;
     $this->template->load('template', 'Venda/editar', $data);
   }
 }

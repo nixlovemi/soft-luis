@@ -8,6 +8,7 @@ $arrVendedores   = (isset($arrVendedores)) ? $arrVendedores: array();
 $arrProdutos     = (isset($arrProdutos)) ? $arrProdutos: array();
 $htmlVendaItens  = (isset($htmlVendaItens)) ? $htmlVendaItens: "";
 $htmlVendaTotais = (isset($htmlVendaTotais)) ? $htmlVendaTotais: "";
+$htmlContasVenda = (isset($htmlContasVenda)) ? $htmlContasVenda: "";
 
 $vVdaId    = isset($arrVenda["vda_id"]) ? $arrVenda["vda_id"]: null;
 $vVdaData  = isset($arrVenda["vda_data"]) && $arrVenda["vda_data"] != "" ? formata_data_hora($arrVenda["vda_data"]): null;
@@ -32,84 +33,184 @@ if($errorMsg != ""){
 }
 ?>
 
-<div class="row-fluid">
-  <div class="span12">
-    <div class="widget-box">
-      <div class="widget-title">
-        <span class="icon"> <i class="icon icon-money"></i> </span>
-        <h5>Venda ID <?php echo $vVdaId; ?></h5>
+<div class="widget-box">
+  <div class="widget-title">
+    <ul class="nav nav-tabs">
+      <li class="active">
+        <a data-toggle="tab" href="#tab1">Informações</a>
+      </li>
+      <li>
+        <a data-toggle="tab" href="#tab2">Parcelas</a>
+      </li>
+    </ul>
+  </div>
+  <div class="widget-content tab-content">
+    <div id="tab1" class="tab-pane active">
+      <div class="row-fluid" style="margin-top: 0;">
+        <div class="span12">
+          <div class="widget-box">
+            <div class="widget-title">
+              <span class="icon"> <i class="icon icon-money"></i> </span>
+              <h5>Venda ID <?php echo $vVdaId; ?></h5>
+            </div>
+            <div class="widget-content nopadding">
+              <form id="frmEditVendaInfo" class="form-horizontal form-validation" method="post" action="">
+                <div class="control-group">
+                  <label class="control-label">ID</label>
+                  <div class="controls">
+                    <input readonly class="span10" type="text" name="vdaId" id="vdaId" value="<?php echo $vVdaId; ?>" />
+                  </div>
+                </div>
+                <div class="control-group">
+                  <label class="control-label">Data</label>
+                  <div class="controls">
+                    <input readonly class="span10" type="text" name="vdaData" id="vdaData" value="<?php echo $vVdaData; ?>" />
+                  </div>
+                </div>
+                <div class="control-group">
+                  <label class="control-label">Cliente</label>
+                  <div class="controls">
+                    <?php
+                    echo "<select disabled class='span3 m-wrap' name='vdaCliente' id='vdaCliente'>";
+                    echo "<option value=''></option>";
+                    foreach($arrClientes as $Cliente){
+                      $cliId    = $Cliente["cli_id"];
+                      $cliNome  = $Cliente["cli_nome"];
+                      $selected = ($vVdaCliId == $cliId) ? " selected ": "";
+
+                      echo "<option $selected value='$cliId'>$cliNome</option>";
+                    }
+                    echo "</select>";
+                    ?>
+                  </div>
+                </div>
+
+                <div class="control-group">
+                  <label class="control-label">Vendedor</label>
+                  <div class="controls">
+                    <?php
+                    echo "<select disabled class='span3 m-wrap' name='vdaVendedor' id='vdaVendedor'>";
+                    echo "<option value=''></option>";
+                    foreach($arrVendedores as $Vendedor){
+                      $venId    = $Vendedor["ven_id"];
+                      $venNome  = $Vendedor["ven_nome"];
+                      $selected = ($vVdaVenId == $venId) ? " selected ": "";
+
+                      echo "<option $selected value='$venId'>$venNome</option>";
+                    }
+                    echo "</select>";
+                    ?>
+                  </div>
+                </div>
+
+                <div class="form-actions">
+                  <?php
+                  foreach($arrButtons as $button){
+                    echo $button;
+                  }
+                  ?>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="widget-content nopadding">
-        <form id="frmEditVendaInfo" class="form-horizontal form-validation" method="post" action="">
-          <div class="control-group">
-            <label class="control-label">ID</label>
-            <div class="controls">
-              <input readonly class="span10" type="text" name="vdaId" id="vdaId" value="<?php echo $vVdaId; ?>" />
+
+      <div class="row-fluid">
+        <div class="span12">
+          <div class="widget-box">
+            <div class="widget-title">
+              <span class="icon"> <i class="icon icon-tasks"></i> </span>
+              <h5>Produtos</h5>
+            </div>
+            <div class="widget-content">
+              <div class="widget-box">
+                <div class="widget-title">
+                  <span class="icon"> <i class="icon icon-plus"></i> </span>
+                  <h5>Incluir</h5>
+                </div>
+                <div class="widget-content nopadding">
+                  <form id="frmAddProdVenda" class="form-horizontal form-validation" method="post" action="">
+                    <div class="control-group">
+                      <table class="table table-bordered table-striped" width="100%">
+                        <thead>
+                          <tr>
+                            <th>Produto</th>
+                            <th>Quantidade</th>
+                            <th>Valor</th>
+                            <th>Desconto</th>
+                            <th>&nbsp;</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>
+                              <?php
+                              echo "<select name='vdiProId' id='vdiProId'>";
+                              echo "<option value=''></option>";
+                              foreach($arrProdutos as $Produto){
+                                $proId    = $Produto["pro_id"];
+                                $proDesc  = $Produto["pro_descricao"];
+
+                                echo "<option value='$proId'>[$proId] $proDesc</option>";
+                              }
+                              echo "</select>";
+                              ?>
+                            </td>
+                            <td>
+                              <input maxlength="3" class="span10 mask_inteiro" type="text" name="vdiQtde" id="vdiQtde" value="" />
+                            </td>
+                            <td>
+                              <div class="input-prepend">
+                                <span class="add-on">R$</span>
+                                <input class="span10 mask_moeda" type="text" name="vdiValor" id="vdiValor" value="" />
+                              </div>
+                            </td>
+                            <td>
+                              <div class="input-prepend">
+                                <span class="add-on">R$</span>
+                                <input class="span10 mask_moeda" type="text" name="vdiDesconto" id="vdiDesconto" value="" />
+                              </div>
+                            </td>
+                            <td>
+                              <input id="addProdVenda" type='button' value='Incluir Produto' class='btn btn-success' />
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <div class="widget-box">
+                <div class="widget-title">
+                  <span class="icon"> <i class="icon icon-tasks"></i> </span>
+                  <h5>Itens na Venda</h5>
+                </div>
+                <div id="htmlTbVendaItens" class="widget-content nopadding">
+                  <?php
+                  echo $htmlVendaItens;
+                  ?>
+                </div>
+              </div>
+
+              <div class="widget-box">
+                <div class="widget-title">
+                  <span class="icon"> <i class="icon icon-tasks"></i> </span>
+                  <h5>Totais</h5>
+                </div>
+                <div id="htmlTbVendaTotais" class="widget-content">
+                  <?php echo $htmlVendaTotais; ?>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="control-group">
-            <label class="control-label">Data</label>
-            <div class="controls">
-              <input readonly class="span10" type="text" name="vdaData" id="vdaData" value="<?php echo $vVdaData; ?>" />
-            </div>
-          </div>
-          <div class="control-group">
-            <label class="control-label">Cliente</label>
-            <div class="controls">
-              <?php
-              echo "<select disabled class='span3 m-wrap' name='vdaCliente' id='vdaCliente'>";
-              echo "<option value=''></option>";
-              foreach($arrClientes as $Cliente){
-                $cliId    = $Cliente["cli_id"];
-                $cliNome  = $Cliente["cli_nome"];
-                $selected = ($vVdaCliId == $cliId) ? " selected ": "";
-
-                echo "<option $selected value='$cliId'>$cliNome</option>";
-              }
-              echo "</select>";
-              ?>
-            </div>
-          </div>
-
-          <div class="control-group">
-            <label class="control-label">Vendedor</label>
-            <div class="controls">
-              <?php
-              echo "<select disabled class='span3 m-wrap' name='vdaVendedor' id='vdaVendedor'>";
-              echo "<option value=''></option>";
-              foreach($arrVendedores as $Vendedor){
-                $venId    = $Vendedor["ven_id"];
-                $venNome  = $Vendedor["ven_nome"];
-                $selected = ($vVdaVenId == $venId) ? " selected ": "";
-
-                echo "<option $selected value='$venId'>$venNome</option>";
-              }
-              echo "</select>";
-              ?>
-            </div>
-          </div>
-
-          <div class="form-actions">
-            <?php
-            foreach($arrButtons as $button){
-              echo $button;
-            }
-            ?>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
-  </div>
-</div>
-
-<div class="row-fluid">
-  <div class="span12">
-    <div class="widget-box">
-      <div class="widget-title">
-        <span class="icon"> <i class="icon icon-tasks"></i> </span>
-        <h5>Produtos</h5>
-      </div>
-      <div class="widget-content">
+    <div id="tab2" class="tab-pane">
+      <div class="row-fluid" style="margin-top: 0;">
         <div class="widget-box">
           <div class="widget-title">
             <span class="icon"> <i class="icon icon-plus"></i> </span>
@@ -121,45 +222,31 @@ if($errorMsg != ""){
                 <table class="table table-bordered table-striped" width="100%">
                   <thead>
                     <tr>
-                      <th>Produto</th>
-                      <th>Quantidade</th>
+                      <th>Vencimento</th>
                       <th>Valor</th>
-                      <th>Desconto</th>
+                      <th>Incluir Paga?</th>
                       <th>&nbsp;</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
                       <td>
-                        <?php
-                        echo "<select name='vdiProId' id='vdiProId'>";
-                        echo "<option value=''></option>";
-                        foreach($arrProdutos as $Produto){
-                          $proId    = $Produto["pro_id"];
-                          $proDesc  = $Produto["pro_descricao"];
-
-                          echo "<option value='$proId'>[$proId] $proDesc</option>";
-                        }
-                        echo "</select>";
-                        ?>
-                      </td>
-                      <td>
-                        <input maxlength="3" class="span10 mask_inteiro" type="text" name="vdiQtde" id="vdiQtde" value="" />
+                        <input value="" class="span10 mask_datepicker" type="text" id="ctrDtvencimento" name="ctrDtvencimento" />
                       </td>
                       <td>
                         <div class="input-prepend">
                           <span class="add-on">R$</span>
-                          <input class="span10 mask_moeda" type="text" name="vdiValor" id="vdiValor" value="" />
+                          <input class="span10 mask_moeda" type="text" name="ctrValor" id="ctrValor" value="" />
                         </div>
                       </td>
                       <td>
-                        <div class="input-prepend">
-                          <span class="add-on">R$</span>
-                          <input class="span10 mask_moeda" type="text" name="vdiDesconto" id="vdiDesconto" value="" />
-                        </div>
+                        <select name="ctrContaPaga" id="ctrContaPaga">
+                          <option value="N">Não</option>
+                          <option value="S">Sim</option>
+                        </select>
                       </td>
                       <td>
-                        <input id="addProdVenda" type='button' value='Incluir Produto' class='btn btn-success' />
+                        <input id="addParcelaVenda" type='button' value='Incluir Parcela' class='btn btn-success' />
                       </td>
                     </tr>
                   </tbody>
@@ -172,22 +259,10 @@ if($errorMsg != ""){
         <div class="widget-box">
           <div class="widget-title">
             <span class="icon"> <i class="icon icon-tasks"></i> </span>
-            <h5>Itens na Venda</h5>
+            <h5>Parcelas da Venda</h5>
           </div>
-          <div id="htmlTbVendaItens" class="widget-content nopadding">
-            <?php
-            echo $htmlVendaItens;
-            ?>
-          </div>
-        </div>
-
-        <div class="widget-box">
-          <div class="widget-title">
-            <span class="icon"> <i class="icon icon-tasks"></i> </span>
-            <h5>Totais</h5>
-          </div>
-          <div id="htmlTbVendaTotais" class="widget-content">
-            <?php echo $htmlVendaTotais; ?>
+          <div class="widget-content nopadding" id="htmlTbContasVenda">
+            <?php echo $htmlContasVenda; ?>
           </div>
         </div>
       </div>

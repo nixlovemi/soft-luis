@@ -1625,3 +1625,14 @@ th a {
 	position: relative;
 	left: 5px;
 }
+.datepicker-days .day:hover{
+	cursor: pointer;
+	background-color: #CCC;
+}
+.datepicker-days .day.old, .datepicker-days .day.new{
+	background-color: #fff4e6;
+}
+.datepicker-days table thead tr:last-child{
+	background-color: #5bb75b;
+	color: #FFF;
+}

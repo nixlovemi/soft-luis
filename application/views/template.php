@@ -571,6 +571,7 @@
       <script src="<?php echo base_url(); ?>js/jquery.wizard.js"></script>
       <script src="<?php echo base_url(); ?>js/jquery.uniform.js"></script>
       <script src="<?php echo base_url(); ?>js/select2.min.js"></script>
+      <script src="<?php echo base_url(); ?>js/bootstrap-datepicker.js"></script>
       <script src="<?php echo base_url(); ?>js/jquery.dataTables.min.js"></script>
       <script src="<?php echo base_url(); ?>js/bootbox.min.js"></script>
       <script src="<?php echo base_url(); ?>js/masked.js"></script>
