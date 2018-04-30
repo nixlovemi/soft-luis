@@ -1,5 +1,45 @@
 <?php
 class Tb_Cont_Receber extends CI_Model {
+  public function getContaReceber($ctrId){
+    $arrRet                     = [];
+    $arrRet["erro"]             = true;
+    $arrRet["msg"]              = "";
+    $arrRet["arrContaRecebDados"]  = array();
+
+    if(!is_numeric($ctrId)){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "ID inválido para buscar a parcela!";
+      return $arrRet;
+    }
+
+    $this->load->database();
+    $this->db->select("ctr_id, ctr_cli_id, ctr_ven_id, ctr_vda_id, ctr_dtvencimento, ctr_valor, ctr_dtpagamento, ctr_valor_pago, ctr_obs, ctr_deletado");
+    $this->db->from("tb_cont_receber");
+    $this->db->where("ctr_id", $ctrId);
+    $query = $this->db->get();
+
+    if($query->num_rows() > 0){
+      $row = $query->row();
+
+      $arrContaRecebDados = [];
+      $arrContaRecebDados["ctr_id"]           = $row->ctr_id;
+      $arrContaRecebDados["ctr_cli_id"]       = $row->ctr_cli_id;
+      $arrContaRecebDados["ctr_ven_id"]       = $row->ctr_ven_id;
+      $arrContaRecebDados["ctr_vda_id"]       = $row->ctr_vda_id;
+      $arrContaRecebDados["ctr_dtvencimento"] = $row->ctr_dtvencimento;
+      $arrContaRecebDados["ctr_valor"]        = $row->ctr_valor;
+      $arrContaRecebDados["ctr_dtpagamento"]  = $row->ctr_dtpagamento;
+      $arrContaRecebDados["ctr_valor_pago"]   = $row->ctr_valor_pago;
+      $arrContaRecebDados["ctr_obs"]          = $row->ctr_obs;
+      $arrContaRecebDados["ctr_deletado"]     = $row->ctr_deletado;
+
+      $arrRet["arrContaRecebDados"] = $arrContaRecebDados;
+    }
+
+    $arrRet["erro"] = false;
+    return $arrRet;
+  }
+
   private function validaInsert($arrContRecebDados){
     $this->load->helper('utils');
 
@@ -141,5 +181,32 @@ class Tb_Cont_Receber extends CI_Model {
     $htmlTable .= "</table>";
 
     return $htmlTable;
+  }
+
+  public function delete($ctrId){
+    $arrRet           = [];
+    $arrRet["erro"]   = true;
+    $arrRet["msg"]    = "";
+
+    if(!is_numeric($ctrId)){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "ID inválido para deletar!";
+
+      return $arrRet;
+    } else {
+      $this->load->database();
+      $this->db->where('ctr_id', $ctrId);
+      $retDelete = $this->db->delete('tb_cont_receber');
+
+      if(!$retDelete){
+        $arrRet["erro"] = true;
+        $arrRet["msg"]  = $this->db->_error_message();
+      } else {
+        $arrRet["erro"] = false;
+        $arrRet["msg"] = "Parcela removida com sucesso!";
+      }
+
+      return $arrRet;
+    }
   }
 }

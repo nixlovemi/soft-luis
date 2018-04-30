@@ -64,4 +64,49 @@ class ContaReceber extends MY_Controller {
 
     echo json_encode($arrRet);
   }
+
+  public function jsonDelContaVenda(){
+    $this->load->helper('utils');
+
+    $arrRet = [];
+    $arrRet["erro"]            = false;
+    $arrRet["msg"]             = "";
+    $arrRet["htmlContasVenda"] = "";
+
+    // variaveis ============
+    $vCtrId = $this->input->post('ctrId');
+    // ======================
+
+    $this->load->model('Tb_Cont_Receber');
+
+    // Conta Receber ========
+    $retContaReceb = $this->Tb_Cont_Receber->getContaReceber($vCtrId);
+    if($retContaReceb["erro"]){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Erro ao buscar Parcela. Msg: " . $retContaReceb["msg"];
+
+      echo json_encode($arrRet);
+      return;
+    } else {
+      $ContaReceber = $retContaReceb["arrContaRecebDados"];
+      $vVdaId       = $ContaReceber["ctr_vda_id"];
+    }
+    // ======================
+
+    $retInsert = $this->Tb_Cont_Receber->delete($vCtrId);
+    if( $retInsert["erro"] ){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Erro ao deletar Parcela. Msg: " . $retInsert["msg"];
+
+      echo json_encode($arrRet);
+      return;
+    } else {
+      $this->load->model('Tb_Cont_Receber');
+      $htmlContasVenda = $this->Tb_Cont_Receber->getHtmlContasVenda($vVdaId);
+
+      $arrRet["htmlContasVenda"] = $htmlContasVenda;
+    }
+
+    echo json_encode($arrRet);
+  }
 }

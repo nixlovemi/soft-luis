@@ -30,7 +30,26 @@ $(document).on('click', '#htmlTbContasVenda .TbContReceber_ajax_deletar', functi
 	var html  = 'Gostaria de deletar a parcela ' + ctrId + '?';
 
 	confirmBootbox(html, function(){
-		// document.location.href = HOME_URL + 'Vendedor/deletar/' + venId;
+    $.ajax({
+      type: "POST",
+      url: HOME_URL + 'ContaReceber/jsonDelContaVenda',
+      data: 'ctrId=' + ctrId,
+  		dataType: 'json',
+  		success: function (ret) {
+  			var erro            = ret.erro;
+  			var msg             = ret.msg;
+  			var htmlContasVenda = ret.htmlContasVenda;
+
+  			if(erro){
+  				$.gritter.add({
+  					title: 'Alerta',
+  					text: msg,
+  				});
+  			} else {
+          $("#htmlTbContasVenda").html(htmlContasVenda);
+  			}
+      }
+    });
 	});
 });
 
