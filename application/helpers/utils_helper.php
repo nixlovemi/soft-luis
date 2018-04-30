@@ -1,4 +1,18 @@
 <?php
+function getHtmlBlocoTotais($label, $value, $colorClass="bg_lb"){
+  $vLabel = mb_strtoupper($label);
+
+  return "<ul class='quick-actions'>
+            <li class='$colorClass' style='width: 100%;'>
+              <a href='index.html'>
+                <i class='icon icon-tasks'></i>
+                <span style='font-size: 18px;' class=''>$value</span>
+                <br />$vLabel
+              </a>
+            </li>
+          </ul>";
+}
+
 function getUserIP(){
   $client  = @$_SERVER['HTTP_CLIENT_IP'];
   $forward = @$_SERVER['HTTP_X_FORWARDED_FOR'];

@@ -60,20 +60,6 @@ class Tb_Venda_Itens extends CI_Model {
     return $htmlTable;
   }
 
-  private function getHtmlBlocoTotais($label, $value, $colorClass="bg_lb"){
-    $vLabel = mb_strtoupper($label);
-
-    return "<ul class='quick-actions'>
-              <li class='$colorClass' style='width: 100%;'>
-                <a href='index.html'>
-                  <i class='icon icon-tasks'></i>
-                  <span style='font-size: 18px;' class=''>$value</span>
-                  <br />$vLabel
-                </a>
-              </li>
-            </ul>";
-  }
-
   public function getHtmlTotVenda($vdaId){
     $this->load->database();
 
@@ -98,10 +84,11 @@ class Tb_Venda_Itens extends CI_Model {
       $vTotVenda    = isset($rs->vda_vlr_itens) ? "R$ " . number_format($rs->vda_vlr_itens, 2, ",", "."): "R$ 0,00";
     }
 
-    $htmlProdutos    = $this->getHtmlBlocoTotais("PRODUTOS", $vTotProdutos);
-    $htmlTotProdutos = $this->getHtmlBlocoTotais("TOTAL PRODUTOS", $vVlrProdutos);
-    $htmlTotDesconto = $this->getHtmlBlocoTotais("TOTAL DESCONTO", $vTotDesconto);
-    $htmlTotVenda    = $this->getHtmlBlocoTotais("TOTAL VENDA", $vTotVenda, "bg_lg");
+    $this->load->helper('utils');
+    $htmlProdutos    = getHtmlBlocoTotais("PRODUTOS", $vTotProdutos);
+    $htmlTotProdutos = getHtmlBlocoTotais("TOTAL PRODUTOS", $vVlrProdutos);
+    $htmlTotDesconto = getHtmlBlocoTotais("TOTAL DESCONTO", $vTotDesconto);
+    $htmlTotVenda    = getHtmlBlocoTotais("TOTAL VENDA", $vTotVenda, "bg_lg");
 
     $htmlTable = "<div class='control-group' style='width: 100%; display: block; overflow: hidden;'>
                     <div class='span3 m-wrap'>

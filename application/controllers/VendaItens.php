@@ -11,9 +11,10 @@ class VendaItens extends MY_Controller {
     $this->load->model('Tb_Venda_Itens');
 
     $arrRet = [];
-    $arrRet["erro"]       = true;
-    $arrRet["msg"]        = "";
-    $arrRet["htmlTbProd"] = "";
+    $arrRet["erro"]            = true;
+    $arrRet["msg"]             = "";
+    $arrRet["htmlTbProd"]      = "";
+    $arrRet["htmlContasVenda"] = "";
 
     // variaveis ============
     $vdaId       = $this->input->post('vdaId');
@@ -38,6 +39,11 @@ class VendaItens extends MY_Controller {
       $arrRet["erro"]         = false;
       $arrRet["htmlTbProd"]   = $this->Tb_Venda_Itens->getHtmlList($vdaId);
       $arrRet["htmlTbTotais"] = $this->Tb_Venda_Itens->getHtmlTotVenda($vdaId);
+
+      $this->load->model('Tb_Cont_Receber');
+      $htmlContasVenda = $this->Tb_Cont_Receber->getHtmlContasVenda($vdaId);
+      $htmlTotalContasVenda = $this->Tb_Cont_Receber->getHtmlTotaisContasVenda($vdaId);
+      $arrRet["htmlContasVenda"] = $htmlContasVenda . "<br />" . $htmlTotalContasVenda;
     }
 
     echo json_encode($arrRet);
@@ -48,9 +54,10 @@ class VendaItens extends MY_Controller {
     $this->load->model('Tb_Venda_Itens');
 
     $arrRet = [];
-    $arrRet["erro"]       = true;
-    $arrRet["msg"]        = "";
-    $arrRet["htmlTbProd"] = "";
+    $arrRet["erro"]            = true;
+    $arrRet["msg"]             = "";
+    $arrRet["htmlTbProd"]      = "";
+    $arrRet["htmlContasVenda"] = "";
 
     // variaveis ============
     $vdiId = $this->input->post('vdiId');
@@ -71,6 +78,11 @@ class VendaItens extends MY_Controller {
       $htmlTbProd = $this->Tb_Venda_Itens->getHtmlList($vdaId);
       $arrRet["htmlTbProd"] = $htmlTbProd;
       $arrRet["htmlTbTotais"] = $this->Tb_Venda_Itens->getHtmlTotVenda($vdaId);
+
+      $this->load->model('Tb_Cont_Receber');
+      $htmlContasVenda = $this->Tb_Cont_Receber->getHtmlContasVenda($vdaId);
+      $htmlTotalContasVenda = $this->Tb_Cont_Receber->getHtmlTotaisContasVenda($vdaId);
+      $arrRet["htmlContasVenda"] = $htmlContasVenda . "<br />" . $htmlTotalContasVenda;
     }
 
     echo json_encode($arrRet);

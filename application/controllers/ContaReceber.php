@@ -58,8 +58,9 @@ class ContaReceber extends MY_Controller {
     } else {
       $this->load->model('Tb_Cont_Receber');
       $htmlContasVenda = $this->Tb_Cont_Receber->getHtmlContasVenda($vVdaId);
+      $htmlTotalContasVenda = $this->Tb_Cont_Receber->getHtmlTotaisContasVenda($vVdaId);
 
-      $arrRet["htmlContasVenda"] = $htmlContasVenda;
+      $arrRet["htmlContasVenda"] = $htmlContasVenda . "<br />" . $htmlTotalContasVenda;
     }
 
     echo json_encode($arrRet);
@@ -103,8 +104,9 @@ class ContaReceber extends MY_Controller {
     } else {
       $this->load->model('Tb_Cont_Receber');
       $htmlContasVenda = $this->Tb_Cont_Receber->getHtmlContasVenda($vVdaId);
+      $htmlTotalContasVenda = $this->Tb_Cont_Receber->getHtmlTotaisContasVenda($vVdaId);
 
-      $arrRet["htmlContasVenda"] = $htmlContasVenda;
+      $arrRet["htmlContasVenda"] = $htmlContasVenda . "<br />" . $htmlTotalContasVenda;
     }
 
     echo json_encode($arrRet);

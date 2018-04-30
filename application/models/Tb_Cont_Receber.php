@@ -183,6 +183,61 @@ class Tb_Cont_Receber extends CI_Model {
     return $htmlTable;
   }
 
+  public function getHtmlTotaisContasVenda($vdaId){
+    $this->load->database();
+
+    $vSql  = " SELECT vda_id, COALESCE(COUNT(ctr_id), 0) AS qt_parcelas, COALESCE(vda_vlr_itens, 0) AS total_venda, COALESCE(SUM(ctr_valor), 0) AS total_parcelas, COALESCE(SUM(COALESCE(ctr_valor, 0)) - vda_vlr_itens, 0) AS diferenca ";
+    $vSql .= " FROM tb_venda ";
+    $vSql .= " LEFT JOIN tb_cont_receber ON ctr_vda_id = vda_id ";
+    $vSql .= " WHERE vda_id = $vdaId ";
+    $vSql .= " GROUP BY vda_id ";
+
+    $query = $this->db->query($vSql);
+    $rs    = $query->row();
+
+    if($rs){
+      $qtParcelas    = $rs->qt_parcelas;
+      $totalParcelas = isset($rs->total_parcelas) ? "R$ " . number_format($rs->total_parcelas, 2, ",", "."): "R$ 0,00";
+      $totalVenda    = isset($rs->total_venda) ? "R$ " . number_format($rs->total_venda, 2, ",", "."): "R$ 0,00";
+
+      $sinalDif = "";
+      if($rs->diferenca > 0){
+        $sinalDif = "+";
+      }
+      $diferenca = isset($rs->diferenca) ? $sinalDif . "R$ " . number_format($rs->diferenca, 2, ",", "."): "R$ 0,00";
+    } else {
+      $qtParcelas    = 0;
+      $totalParcelas = "R$ 0,00";
+      $totalVenda    = "R$ 0,00";
+      $diferenca     = "R$ 0,00";
+    }
+
+    $this->load->helper('utils');
+    $htmlQtdParcelas = getHtmlBlocoTotais("Qtd. Parcelas", $qtParcelas);
+    $htmlVlrParcelas = getHtmlBlocoTotais("Total Parcelas", $totalParcelas);
+    $htmlVlrPedido   = getHtmlBlocoTotais("Total Venda", $totalVenda);
+    $htmlDiferenca   = getHtmlBlocoTotais("Diferença", $diferenca);
+
+    $htmlTable  = "<div id='htmlTotaisContasVenda' class='widget-content'>";
+    $htmlTable .= "  <div class='control-group' style='width: 100%; display: block; overflow: hidden;'>
+                       <div class='span3 m-wrap'>
+                         $htmlQtdParcelas
+                       </div>
+                       <div class='span3 m-wrap'>
+                         $htmlVlrParcelas
+                       </div>
+                       <div class='span3 m-wrap'>
+                         $htmlVlrPedido
+                       </div>
+                       <div class='span3 m-wrap'>
+                         $htmlDiferenca
+                       </div>
+                     </div>";
+    $htmlTable .= "</div>";
+
+    return $htmlTable;
+  }
+
   public function delete($ctrId){
     $arrRet           = [];
     $arrRet["erro"]   = true;

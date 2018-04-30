@@ -91,10 +91,11 @@ $(document).on('click', '#frmAddProdVenda #addProdVenda', function(){
     data: frmVdi + '&vdaId=' + vdaId,
 		dataType: 'json',
 		success: function (ret) {
-			var erro         = ret.erro;
-			var msg          = ret.msg;
-			var htmlTbItens  = ret.htmlTbProd;
-      var htmlTbTotais = ret.htmlTbTotais;
+			var erro            = ret.erro;
+			var msg             = ret.msg;
+			var htmlTbItens     = ret.htmlTbProd;
+      var htmlTbTotais    = ret.htmlTbTotais;
+      var htmlContasVenda = ret.htmlContasVenda;
 
 			if(erro){
 				$.gritter.add({
@@ -108,6 +109,7 @@ $(document).on('click', '#frmAddProdVenda #addProdVenda', function(){
 				$("#frmAddProdVenda #vdiDesconto").val("");
 				$("#htmlTbVendaItens").html(htmlTbItens);
         $("#htmlTbVendaTotais").html(htmlTbTotais);
+        $("#htmlTbContasVenda").html(htmlContasVenda);
 			}
     }
   });
@@ -150,10 +152,11 @@ $(document).on('click', '.TbVendaItem_deletar', function(){
       data: 'vdiId=' + vdiId,
   		dataType: 'json',
   		success: function (ret) {
-  			var erro        = ret.erro;
-  			var msg         = ret.msg;
-  			var htmlTbItens = ret.htmlTbProd;
-        var htmlTbTotais = ret.htmlTbTotais;
+  			var erro            = ret.erro;
+  			var msg             = ret.msg;
+  			var htmlTbItens     = ret.htmlTbProd;
+        var htmlTbTotais    = ret.htmlTbTotais;
+        var htmlContasVenda = ret.htmlContasVenda;
 
   			if(erro){
   				$.gritter.add({
@@ -163,6 +166,7 @@ $(document).on('click', '.TbVendaItem_deletar', function(){
   			} else {
   				$("#htmlTbVendaItens").html(htmlTbItens);
           $("#htmlTbVendaTotais").html(htmlTbTotais);
+          $("#htmlTbContasVenda").html(htmlContasVenda);
   			}
       }
     });

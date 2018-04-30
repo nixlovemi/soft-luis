@@ -2,13 +2,14 @@
 $this->load->helper('utils');
 $this->load->helper('alerts');
 
-$arrVenda        = (isset($arrVenda)) ? $arrVenda: array();
-$arrClientes     = (isset($arrClientes)) ? $arrClientes: array();
-$arrVendedores   = (isset($arrVendedores)) ? $arrVendedores: array();
-$arrProdutos     = (isset($arrProdutos)) ? $arrProdutos: array();
-$htmlVendaItens  = (isset($htmlVendaItens)) ? $htmlVendaItens: "";
-$htmlVendaTotais = (isset($htmlVendaTotais)) ? $htmlVendaTotais: "";
-$htmlContasVenda = (isset($htmlContasVenda)) ? $htmlContasVenda: "";
+$arrVenda            = (isset($arrVenda)) ? $arrVenda: array();
+$arrClientes          = (isset($arrClientes)) ? $arrClientes: array();
+$arrVendedores        = (isset($arrVendedores)) ? $arrVendedores: array();
+$arrProdutos          = (isset($arrProdutos)) ? $arrProdutos: array();
+$htmlVendaItens       = (isset($htmlVendaItens)) ? $htmlVendaItens: "";
+$htmlVendaTotais      = (isset($htmlVendaTotais)) ? $htmlVendaTotais: "";
+$htmlContasVenda      = (isset($htmlContasVenda)) ? $htmlContasVenda: "";
+$htmlTotalContasVenda = (isset($htmlTotalContasVenda)) ? $htmlTotalContasVenda: "";
 
 $vVdaId    = isset($arrVenda["vda_id"]) ? $arrVenda["vda_id"]: null;
 $vVdaData  = isset($arrVenda["vda_data"]) && $arrVenda["vda_data"] != "" ? formata_data_hora($arrVenda["vda_data"]): null;
@@ -263,6 +264,8 @@ if($errorMsg != ""){
           </div>
           <div class="widget-content nopadding" id="htmlTbContasVenda">
             <?php echo $htmlContasVenda; ?>
+            <br />
+            <?php echo $htmlTotalContasVenda ?>
           </div>
         </div>
       </div>

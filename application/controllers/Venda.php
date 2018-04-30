@@ -138,15 +138,17 @@ class Venda extends MY_Controller {
     $htmlVendaTotais = $this->Tb_Venda_Itens->getHtmlTotVenda($vdaId);
 
     $this->load->model('Tb_Cont_Receber');
-    $htmlContasVenda = $this->Tb_Cont_Receber->getHtmlContasVenda($vdaId);
+    $htmlContasVenda      = $this->Tb_Cont_Receber->getHtmlContasVenda($vdaId);
+    $htmlTotalContasVenda = $this->Tb_Cont_Receber->getHtmlTotaisContasVenda($vdaId);
 
-    $data["arrVenda"]        = $arrVenda;
-    $data["arrClientes"]     = $arrClientes;
-    $data["arrVendedores"]   = $arrVendedores;
-    $data["arrProdutos"]     = $arrProdutos;
-    $data["htmlVendaItens"]  = $htmlVendaItens;
-    $data["htmlVendaTotais"] = $htmlVendaTotais;
-    $data["htmlContasVenda"] = $htmlContasVenda;
+    $data["arrVenda"]             = $arrVenda;
+    $data["arrClientes"]          = $arrClientes;
+    $data["arrVendedores"]        = $arrVendedores;
+    $data["arrProdutos"]          = $arrProdutos;
+    $data["htmlVendaItens"]       = $htmlVendaItens;
+    $data["htmlVendaTotais"]      = $htmlVendaTotais;
+    $data["htmlContasVenda"]      = $htmlContasVenda;
+    $data["htmlTotalContasVenda"] = $htmlTotalContasVenda;
     $this->template->load('template', 'Venda/editar', $data);
   }
 }
