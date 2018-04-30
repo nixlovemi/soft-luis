@@ -1,6 +1,6 @@
 <?php
 class Tb_Venda_Itens extends CI_Model {
-  public function getHtmlList($vdaId){
+  public function getHtmlList($vdaId, $delete=true){
     $this->load->database();
     $htmlTable  = "";
     $htmlTable .= "<table class='table table-bordered' id='tbProdutoGetHtmlList'>";
@@ -49,7 +49,11 @@ class Tb_Venda_Itens extends CI_Model {
         $htmlTable .= "  <td>$vVdiValor</td>";
         $htmlTable .= "  <td>$vVdiDesconto</td>";
         $htmlTable .= "  <td>$vVdiTotal</td>";
-        $htmlTable .= "  <td><a href='javascript:;' class='TbVendaItem_deletar' data-id='$vVdiId'><i class='icon-trash icon-lista'></i></a></td>";
+        if($delete){
+          $htmlTable .= "  <td><a href='javascript:;' class='TbVendaItem_deletar' data-id='$vVdiId'><i class='icon-trash icon-lista'></i></a></td>";
+        } else {
+          $htmlTable .= "  <td>&nbsp;</td>";
+        }
         $htmlTable .= "</tr>";
       }
     }

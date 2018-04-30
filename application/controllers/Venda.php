@@ -151,4 +151,43 @@ class Venda extends MY_Controller {
     $data["htmlTotalContasVenda"] = $htmlTotalContasVenda;
     $this->template->load('template', 'Venda/editar', $data);
   }
+
+  public function ver($vdaId){
+    $data = [];
+
+    $this->load->model('Tb_Venda');
+    $retVenda = $this->Tb_Venda->getVenda($vdaId);
+    $arrVenda = (!$retVenda["erro"]) ? $retVenda["arrVendaDados"]: array();
+
+    $this->load->model('Tb_Cliente');
+    $retClientes = $this->Tb_Cliente->getClientes();
+    $arrClientes = (!$retClientes["erro"]) ? $retClientes["arrClientes"]: array();
+
+    $this->load->model('Tb_Vendedor');
+    $retVendedores = $this->Tb_Vendedor->getVendedores();
+    $arrVendedores = (!$retVendedores["erro"]) ? $retVendedores["arrVendedores"]: array();
+
+    $this->load->model('Tb_Produto');
+    $retProdutos = $this->Tb_Produto->getProdutos();
+    $arrProdutos = (!$retProdutos["erro"]) ? $retProdutos["arrProdutos"]: array();
+
+    $this->load->model('Tb_Venda_Itens');
+    $htmlVendaItens  = $this->Tb_Venda_Itens->getHtmlList($vdaId, false);
+    $htmlVendaTotais = $this->Tb_Venda_Itens->getHtmlTotVenda($vdaId);
+
+    $this->load->model('Tb_Cont_Receber');
+    $htmlContasVenda      = $this->Tb_Cont_Receber->getHtmlContasVenda($vdaId);
+    $htmlTotalContasVenda = $this->Tb_Cont_Receber->getHtmlTotaisContasVenda($vdaId);
+
+    $data["arrVenda"]             = $arrVenda;
+    $data["arrClientes"]          = $arrClientes;
+    $data["arrVendedores"]        = $arrVendedores;
+    $data["arrProdutos"]          = $arrProdutos;
+    $data["htmlVendaItens"]       = $htmlVendaItens;
+    $data["htmlVendaTotais"]      = $htmlVendaTotais;
+    $data["htmlContasVenda"]      = $htmlContasVenda;
+    $data["htmlTotalContasVenda"] = $htmlTotalContasVenda;
+    $data["editar"]               = false;
+    $this->template->load('template', 'Venda/editar', $data);
+  }
 }

@@ -2,7 +2,10 @@
 $this->load->helper('utils');
 $this->load->helper('alerts');
 
-$arrVenda            = (isset($arrVenda)) ? $arrVenda: array();
+$statusVendaInc       = 1;
+$editar               = (isset($editar)) ? $editar: false;
+$strH1                = ($editar) ? "EDITAR VENDA": "VISUALIZAR VENDA";
+$arrVenda             = (isset($arrVenda)) ? $arrVenda: array();
 $arrClientes          = (isset($arrClientes)) ? $arrClientes: array();
 $arrVendedores        = (isset($arrVendedores)) ? $arrVendedores: array();
 $arrProdutos          = (isset($arrProdutos)) ? $arrProdutos: array();
@@ -11,10 +14,14 @@ $htmlVendaTotais      = (isset($htmlVendaTotais)) ? $htmlVendaTotais: "";
 $htmlContasVenda      = (isset($htmlContasVenda)) ? $htmlContasVenda: "";
 $htmlTotalContasVenda = (isset($htmlTotalContasVenda)) ? $htmlTotalContasVenda: "";
 
-$vVdaId    = isset($arrVenda["vda_id"]) ? $arrVenda["vda_id"]: null;
-$vVdaData  = isset($arrVenda["vda_data"]) && $arrVenda["vda_data"] != "" ? formata_data_hora($arrVenda["vda_data"]): null;
-$vVdaCliId = isset($arrVenda["vda_cli_id"]) ? $arrVenda["vda_cli_id"]: null;
-$vVdaVenId = (isset($arrVenda["vda_ven_id"])) ? $arrVenda["vda_ven_id"]: null;
+$vVdaId     = isset($arrVenda["vda_id"]) ? $arrVenda["vda_id"]: null;
+$vVdaData   = isset($arrVenda["vda_data"]) && $arrVenda["vda_data"] != "" ? formata_data_hora($arrVenda["vda_data"]): null;
+$vVdaCliId  = isset($arrVenda["vda_cli_id"]) ? $arrVenda["vda_cli_id"]: null;
+$vVdaVenId  = (isset($arrVenda["vda_ven_id"])) ? $arrVenda["vda_ven_id"]: null;
+$vVdaStatus = (isset($arrVenda["vda_status"])) ? $arrVenda["vda_status"]: null;
+if($vVdaStatus != $statusVendaInc){
+  $editar = false;
+}
 
 $errorMsg     = isset($errorMsg) ? $errorMsg: "";
 $okMsg        = isset($okMsg) ? $okMsg: "";
@@ -24,7 +31,7 @@ $arrButtons   = [];
 // $arrButtons[] = "<input type='submit' value='Incluir Produtos' class='btn btn-success' />";
 ?>
 
-<h1>EDITAR VENDA</h1>
+<h1><?php echo $strH1; ?></h1>
 
 <?php
 if($errorMsg != ""){
@@ -125,64 +132,70 @@ if($errorMsg != ""){
               <h5>Produtos</h5>
             </div>
             <div class="widget-content">
-              <div class="widget-box">
-                <div class="widget-title">
-                  <span class="icon"> <i class="icon icon-plus"></i> </span>
-                  <h5>Incluir</h5>
-                </div>
-                <div class="widget-content nopadding">
-                  <form id="frmAddProdVenda" class="form-horizontal form-validation" method="post" action="">
-                    <div class="control-group">
-                      <table class="table table-bordered table-striped" width="100%">
-                        <thead>
-                          <tr>
-                            <th>Produto</th>
-                            <th>Quantidade</th>
-                            <th>Valor</th>
-                            <th>Desconto</th>
-                            <th>&nbsp;</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td>
-                              <?php
-                              echo "<select name='vdiProId' id='vdiProId'>";
-                              echo "<option value=''></option>";
-                              foreach($arrProdutos as $Produto){
-                                $proId    = $Produto["pro_id"];
-                                $proDesc  = $Produto["pro_descricao"];
+              <?php
+              if($editar){
+                ?>
+                <div class="widget-box">
+                  <div class="widget-title">
+                    <span class="icon"> <i class="icon icon-plus"></i> </span>
+                    <h5>Incluir</h5>
+                  </div>
+                  <div class="widget-content nopadding">
+                    <form id="frmAddProdVenda" class="form-horizontal form-validation" method="post" action="">
+                      <div class="control-group">
+                        <table class="table table-bordered table-striped" width="100%">
+                          <thead>
+                            <tr>
+                              <th>Produto</th>
+                              <th>Quantidade</th>
+                              <th>Valor</th>
+                              <th>Desconto</th>
+                              <th>&nbsp;</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>
+                                <?php
+                                echo "<select name='vdiProId' id='vdiProId'>";
+                                echo "<option value=''></option>";
+                                foreach($arrProdutos as $Produto){
+                                  $proId    = $Produto["pro_id"];
+                                  $proDesc  = $Produto["pro_descricao"];
 
-                                echo "<option value='$proId'>[$proId] $proDesc</option>";
-                              }
-                              echo "</select>";
-                              ?>
-                            </td>
-                            <td>
-                              <input maxlength="3" class="span10 mask_inteiro" type="text" name="vdiQtde" id="vdiQtde" value="" />
-                            </td>
-                            <td>
-                              <div class="input-prepend">
-                                <span class="add-on">R$</span>
-                                <input class="span10 mask_moeda" type="text" name="vdiValor" id="vdiValor" value="" />
-                              </div>
-                            </td>
-                            <td>
-                              <div class="input-prepend">
-                                <span class="add-on">R$</span>
-                                <input class="span10 mask_moeda" type="text" name="vdiDesconto" id="vdiDesconto" value="" />
-                              </div>
-                            </td>
-                            <td>
-                              <input id="addProdVenda" type='button' value='Incluir Produto' class='btn btn-success' />
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </form>
+                                  echo "<option value='$proId'>[$proId] $proDesc</option>";
+                                }
+                                echo "</select>";
+                                ?>
+                              </td>
+                              <td>
+                                <input maxlength="3" class="span10 mask_inteiro" type="text" name="vdiQtde" id="vdiQtde" value="" />
+                              </td>
+                              <td>
+                                <div class="input-prepend">
+                                  <span class="add-on">R$</span>
+                                  <input class="span10 mask_moeda" type="text" name="vdiValor" id="vdiValor" value="" />
+                                </div>
+                              </td>
+                              <td>
+                                <div class="input-prepend">
+                                  <span class="add-on">R$</span>
+                                  <input class="span10 mask_moeda" type="text" name="vdiDesconto" id="vdiDesconto" value="" />
+                                </div>
+                              </td>
+                              <td>
+                                <input id="addProdVenda" type='button' value='Incluir Produto' class='btn btn-success' />
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </form>
+                  </div>
                 </div>
-              </div>
+                <?php
+              }
+              ?>
 
               <div class="widget-box">
                 <div class="widget-title">
@@ -212,50 +225,56 @@ if($errorMsg != ""){
     </div>
     <div id="tab2" class="tab-pane">
       <div class="row-fluid" style="margin-top: 0;">
-        <div class="widget-box">
-          <div class="widget-title">
-            <span class="icon"> <i class="icon icon-plus"></i> </span>
-            <h5>Incluir</h5>
+        <?php
+        if($editar){
+          ?>
+          <div class="widget-box">
+            <div class="widget-title">
+              <span class="icon"> <i class="icon icon-plus"></i> </span>
+              <h5>Incluir</h5>
+            </div>
+            <div class="widget-content nopadding">
+              <form id="frmAddProdVenda" class="form-horizontal form-validation" method="post" action="">
+                <div class="control-group">
+                  <table class="table table-bordered table-striped" width="100%">
+                    <thead>
+                      <tr>
+                        <th>Vencimento</th>
+                        <th>Valor</th>
+                        <th>Incluir Paga?</th>
+                        <th>&nbsp;</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <input value="" class="span10 mask_datepicker" type="text" id="ctrDtvencimento" name="ctrDtvencimento" />
+                        </td>
+                        <td>
+                          <div class="input-prepend">
+                            <span class="add-on">R$</span>
+                            <input class="span10 mask_moeda" type="text" name="ctrValor" id="ctrValor" value="" />
+                          </div>
+                        </td>
+                        <td>
+                          <select name="ctrContaPaga" id="ctrContaPaga">
+                            <option value="N">Não</option>
+                            <option value="S">Sim</option>
+                          </select>
+                        </td>
+                        <td>
+                          <input id="addParcelaVenda" type='button' value='Incluir Parcela' class='btn btn-success' />
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </form>
+            </div>
           </div>
-          <div class="widget-content nopadding">
-            <form id="frmAddProdVenda" class="form-horizontal form-validation" method="post" action="">
-              <div class="control-group">
-                <table class="table table-bordered table-striped" width="100%">
-                  <thead>
-                    <tr>
-                      <th>Vencimento</th>
-                      <th>Valor</th>
-                      <th>Incluir Paga?</th>
-                      <th>&nbsp;</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <input value="" class="span10 mask_datepicker" type="text" id="ctrDtvencimento" name="ctrDtvencimento" />
-                      </td>
-                      <td>
-                        <div class="input-prepend">
-                          <span class="add-on">R$</span>
-                          <input class="span10 mask_moeda" type="text" name="ctrValor" id="ctrValor" value="" />
-                        </div>
-                      </td>
-                      <td>
-                        <select name="ctrContaPaga" id="ctrContaPaga">
-                          <option value="N">Não</option>
-                          <option value="S">Sim</option>
-                        </select>
-                      </td>
-                      <td>
-                        <input id="addParcelaVenda" type='button' value='Incluir Parcela' class='btn btn-success' />
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </form>
-          </div>
-        </div>
+          <?php
+        }
+        ?>
 
         <div class="widget-box">
           <div class="widget-title">
@@ -272,3 +291,13 @@ if($errorMsg != ""){
     </div>
   </div>
 </div>
+
+<?php
+if($editar){
+  ?>
+  <center>
+    <input id="finalizaVenda" type='button' value='FINALIZAR VENDA' class='btn btn-success' />
+  </center>
+  <?php
+}
+?>
