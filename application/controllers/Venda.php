@@ -190,4 +190,19 @@ class Venda extends MY_Controller {
     $data["editar"]               = false;
     $this->template->load('template', 'Venda/editar', $data);
   }
+
+  public function deletar($vdaId){
+    $data     = [];
+    $errorMsg = "";
+
+    $this->load->model('Tb_Venda');
+    $retEdit = $this->Tb_Venda->cancelarVenda($vdaId);
+    if( $retEdit["erro"] ){
+      $errorMsg = isset($retEdit["msg"]) ? $retEdit["msg"]: "Erro ao cencelar venda!";
+    }
+
+    $this->session->set_userdata('VendaIndex_error_msg', $errorMsg);
+    $redirect = base_url() . "Venda/listaIncluidas";
+    header("location:$redirect");
+  }
 }

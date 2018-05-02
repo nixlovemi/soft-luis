@@ -236,4 +236,54 @@ class Tb_Venda extends CI_Model {
 
     return $arrRet;
   }
+
+  public function cancelarVenda($vdaId){
+    $arrRet           = [];
+    $arrRet["erro"]   = true;
+    $arrRet["msg"]    = "";
+
+    if(!is_numeric($vdaId)){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "ID de Venda inválido para cencelar!";
+
+      return $arrRet;
+    }
+
+    $retGetVenda = $this->getVenda($vdaId);
+    if($retGetVenda["erro"]){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Erro ao pesquisar venda Msg: " . $retGetVenda["msg"];
+
+      return $arrRet;
+    } else {
+      $statusVendaCanc = 3;
+      $Venda = $retGetVenda["arrVendaDados"];
+
+      if($Venda["vda_status"] == $statusVendaCanc){
+        $arrRet["erro"] = true;
+        $arrRet["msg"]  = "A Venda ID $vdaId já está cancelada!";
+
+        return $arrRet;
+      } else {
+        $this->load->database();
+        $this->db->trans_start();
+
+        $sql  = " UPDATE tb_venda SET vda_status = $statusVendaCanc WHERE vda_id = $vdaId; ";
+        $sql2 = " UPDATE tb_cont_receber SET ctr_deletado = 1 WHERE ctr_vda_id = $vdaId; ";
+        $ret = $this->db->query($sql);
+        $ret = $this->db->query($sql2);
+
+        $this->db->trans_complete();
+        if($this->db->trans_status() === FALSE){
+          $arrRet["erro"] = true;
+          $arrRet["msg"]  = "Erro ao cancelar Venda!";
+        } else {
+          $arrRet["erro"] = false;
+          $arrRet["msg"]  = "Venda cancelada com sucesso!";
+        }
+
+        return $arrRet;
+      }
+    }
+  }
 }

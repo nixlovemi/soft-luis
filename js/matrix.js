@@ -172,6 +172,15 @@ $(document).on('click', '.TbVendaItem_deletar', function(){
     });
 	});
 });
+
+$(document).on('click', '.TbVenda_deletar', function(){
+	var vdaId = $(this).data("id");
+	var html  = 'Gostaria de deletar a venda ID ' + vdaId + '?';
+
+	confirmBootbox(html, function(){
+		document.location.href = HOME_URL + 'Venda/deletar/' + vdaId;
+	});
+});
 // ===============
 
 // Tb_Produto
