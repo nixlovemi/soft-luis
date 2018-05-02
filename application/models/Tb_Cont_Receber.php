@@ -121,6 +121,104 @@ class Tb_Cont_Receber extends CI_Model {
     return $arrRet;
   }
 
+  private function validaEdit($arrContRecebDados){
+    $this->load->helper('utils');
+
+    $arrRet         = [];
+    $arrRet["erro"] = true;
+    $arrRet["msg"]  = "";
+
+    $vCtrId = (isset($arrContRecebDados["ctr_id"])) ? $arrContRecebDados["ctr_id"]: "";
+    if(!$vCtrId > 0){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "ID inválido para editar a Conta a Receber!";
+      return $arrRet;
+    }
+
+    $vCliId = (isset($arrContRecebDados["ctr_cli_id"])) ? $arrContRecebDados["ctr_cli_id"]: "";
+    $vVenId = (isset($arrContRecebDados["ctr_ven_id"])) ? $arrContRecebDados["ctr_ven_id"]: "";
+    if( $vCliId == "" && $vVenId == "" ){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "A Conta a Receber precisa ter um Cliente ou uma Venda!";
+      return $arrRet;
+    }
+
+    $vData       = (isset($arrContRecebDados["ctr_dtvencimento"])) ? $arrContRecebDados["ctr_dtvencimento"]: "";
+    $isVctoValid = isValidDate($vData, "Y-m-d");
+    if(!$isVctoValid){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Por favor, informe um data de vencimento válida!";
+      return $arrRet;
+    }
+
+    $vValor = (isset($arrContRecebDados["ctr_valor"])) ? $arrContRecebDados["ctr_valor"]: "";
+    if(!is_numeric($vValor) || !$vValor > 0){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Por favor, informe um valor válido!";
+      return $arrRet;
+    }
+
+    $arrRet["erro"] = false;
+    $arrRet["msg"]  = "";
+    return $arrRet;
+  }
+
+  public function edit($arrContRecebDados){
+    $arrRet         = [];
+    $arrRet["erro"] = true;
+    $arrRet["msg"]  = "";
+
+    $retValidacao = $this->validaEdit($arrContRecebDados);
+    if($retValidacao["erro"]){
+      return $retValidacao;
+    }
+
+    // Conta Receber
+    $vCtrId        = (isset($arrContRecebDados["ctr_id"])) ? $arrContRecebDados["ctr_id"]: "";
+    $retContaReceb = $this->getContaReceber($vCtrId);
+    if($retContaReceb["erro"]){
+      $arrRet["msg"] = $retContaReceb["msg"];
+      return $arrRet;
+    } else {
+      $ContaReceber = $retContaReceb["arrContaRecebDados"];
+    }
+    // =============
+
+    $this->load->database();
+
+    $vCliId    = isset($arrContRecebDados["ctr_cli_id"]) && $arrContRecebDados["ctr_cli_id"] > 0 ? $arrContRecebDados["ctr_cli_id"]: null;
+    $vVenId    = isset($arrContRecebDados["ctr_ven_id"]) && $arrContRecebDados["ctr_ven_id"] > 0 ? $arrContRecebDados["ctr_ven_id"]: null;
+    $vVdaId    = isset($arrContRecebDados["ctr_vda_id"]) && $arrContRecebDados["ctr_vda_id"] > 0 ? $arrContRecebDados["ctr_vda_id"]: null;
+    $vVcto     = isset($arrContRecebDados["ctr_dtvencimento"]) && strlen($arrContRecebDados["ctr_dtvencimento"]) == 10 ? $arrContRecebDados["ctr_dtvencimento"]: null;
+    $vValor    = isset($arrContRecebDados["ctr_valor"]) && $arrContRecebDados["ctr_valor"] > 0 ? $arrContRecebDados["ctr_valor"]: 0.01;
+    $vPgto     = isset($arrContRecebDados["ctr_dtpagamento"]) && strlen($arrContRecebDados["ctr_dtpagamento"]) == 10 ? $arrContRecebDados["ctr_dtpagamento"]: null;
+    $vValorPg  = isset($arrContRecebDados["ctr_valor_pago"]) && $arrContRecebDados["ctr_valor_pago"] > 0 ? $arrContRecebDados["ctr_valor_pago"]: null;
+    $vObs      = isset($arrContRecebDados["ctr_obs"]) && $arrContRecebDados["ctr_obs"] != "" ? $arrContRecebDados["ctr_obs"]: "";
+    $vDeletado = isset($arrContRecebDados["ctr_deletado"]) ? $arrContRecebDados["ctr_deletado"]: false;
+
+    $ContaReceber["ctr_cli_id"]       = $vCliId;
+    $ContaReceber["ctr_ven_id"]       = $vVenId;
+    $ContaReceber["ctr_vda_id"]       = $vVdaId;
+    $ContaReceber["ctr_dtvencimento"] = $vVcto;
+    $ContaReceber["ctr_valor"]        = $vValor;
+    $ContaReceber["ctr_dtpagamento"]  = $vPgto;
+    $ContaReceber["ctr_valor_pago"]   = $vValorPg;
+    $ContaReceber["ctr_obs"]          = $vObs;
+    $ContaReceber["ctr_deletado"]     = $vDeletado;
+
+    $this->db->where('ctr_id', $vCtrId);
+    $retInsert = $this->db->update('tb_cont_receber', $ContaReceber);
+    if(!$retInsert){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = $this->db->_error_message();
+    } else {
+      $arrRet["erro"] = false;
+      $arrRet["msg"]  = "Conta Receber editada com sucesso!";
+    }
+
+    return $arrRet;
+  }
+
   public function getHtmlContasReceber($arrFilters=array()){
     // filtros
     $vVctoIni    = isset($arrFilters["vctoIni"]) ? $arrFilters["vctoIni"]: "";
@@ -223,8 +321,8 @@ class Tb_Cont_Receber extends CI_Model {
         $htmlTable .= "  <td>$vValor</td>";
         $htmlTable .= "  <td>$vPgto</td>";
         $htmlTable .= "  <td>$vValorPg</td>";
-        $htmlTable .= "  <td><a href='javascript:;' class='TbContReceber_ajax_deletar' data-id='$vCtrId'><i class='icon-edit icon-lista'></i></a></td>";
-        $htmlTable .= "  <td><a href='javascript:;' class='TbContReceber_ajax_deletar' data-id='$vCtrId'><i class='icon-trash icon-lista'></i></a></td>";
+        $htmlTable .= "  <td><a href='javascript:;' class='' data-id='$vCtrId'><i class='icon-edit icon-lista'></i></a></td>";
+        $htmlTable .= "  <td><a href='javascript:;' class='TbContReceber_ajax_deletar_v2' data-id='$vCtrId'><i class='icon-trash icon-lista'></i></a></td>";
         $htmlTable .= "</tr>";
       }
     }

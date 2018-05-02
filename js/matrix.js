@@ -184,6 +184,34 @@ $(document).on('click', '.TbVenda_deletar', function(){
 // ===============
 
 // Tb_Cont_Receber
+$(document).on('click', '#dvHtmlContaRecebTable .TbContReceber_ajax_deletar_v2', function(){
+	var ctrId = $(this).data("id");
+	var html  = 'Gostaria de deletar a parcela ' + ctrId + '?';
+
+	confirmBootbox(html, function(){
+    $.ajax({
+      type: "POST",
+      url: HOME_URL + 'ContaReceber/jsonDelContaReceber',
+      data: 'ctrId=' + ctrId,
+  		dataType: 'json',
+  		success: function (ret) {
+  			var erro                = ret.erro;
+  			var msg                 = ret.msg;
+  			var htmlContaRecebTable = ret.htmlContaRecebTable;
+
+  			if(erro){
+  				$.gritter.add({
+  					title: 'Alerta',
+  					text: msg,
+  				});
+  			} else {
+          $("#frmFiltrosRecebimentos #btnFiltrarRecebimentos").click();
+  			}
+      }
+    });
+	});
+});
+
 $(document).on('click', '#frmFiltrosRecebimentos #btnFiltrarRecebimentos', function(){
 	var variaveis = $('#frmFiltrosRecebimentos').serialize();
 
