@@ -121,6 +121,161 @@ class Tb_Cont_Receber extends CI_Model {
     return $arrRet;
   }
 
+  public function getHtmlContasReceber($arrFilters=array()){
+    // filtros
+    $vVctoIni    = isset($arrFilters["vctoIni"]) ? $arrFilters["vctoIni"]: "";
+    $vVctoFim    = isset($arrFilters["vctoFim"]) ? $arrFilters["vctoFim"]: "";
+    $vPgtoIni    = isset($arrFilters["pgtoIni"]) ? $arrFilters["pgtoIni"]: "";
+    $vPgtoFim    = isset($arrFilters["pgtoFim"]) ? $arrFilters["pgtoFim"]: "";
+    $vClienteId  = isset($arrFilters["clienteId"]) ? $arrFilters["clienteId"]: "";
+    $vVendedorId = isset($arrFilters["vendedorId"]) ? $arrFilters["vendedorId"]: "";
+    $vPagas      = isset($arrFilters["apenasPagas"]) ? $arrFilters["apenasPagas"]: "";
+    // =======
+
+    // sql filter
+    $sqlFilter = "";
+
+    if($vVctoIni != ""){
+      $sqlFilter .= " AND ctr_dtvencimento >= '$vVctoIni' ";
+    }
+
+    if($vVctoFim != ""){
+      $sqlFilter .= " AND ctr_dtvencimento <= '$vVctoFim' ";
+    }
+
+    if($vPgtoIni != ""){
+      $sqlFilter .= " AND ctr_dtpagamento >= '$vPgtoIni' ";
+    }
+
+    if($vPgtoFim != ""){
+      $sqlFilter .= " AND ctr_dtpagamento <= '$vPgtoFim' ";
+    }
+
+    if(is_numeric($vClienteId)){
+      $sqlFilter .= " AND ctr_cli_id = $vClienteId ";
+    }
+
+    if(is_numeric($vVendedorId)){
+      $sqlFilter .= " AND ctr_ven_id = $vVendedorId ";
+    }
+
+    if($vPagas == "S"){
+      $sqlFilter .= " AND ctr_dtpagamento IS NOT NULL ";
+    } else if ($vPagas == "N"){
+      $sqlFilter .= " AND ctr_dtpagamento IS NULL ";
+    }
+    // ==========
+
+    $this->load->database();
+    $htmlTable  = "";
+    $htmlTable .= "<table class='table table-bordered dynatable' id='tbProdutoGetHtmlList'>";
+    $htmlTable .= "  <thead>";
+    $htmlTable .= "    <tr>";
+    $htmlTable .= "      <th width='7%'>ID</th>";
+    $htmlTable .= "      <th width='7%'>ID Venda</th>";
+    $htmlTable .= "      <th>Cliente</th>";
+    $htmlTable .= "      <th>Vendedor</th>";
+    $htmlTable .= "      <th width='9%'>Vencimento</th>";
+    $htmlTable .= "      <th width='9%'>Valor</th>";
+    $htmlTable .= "      <th width='9%'>Pagamento</th>";
+    $htmlTable .= "      <th width='9%'>Valor Pago</th>";
+    $htmlTable .= "      <th width='7%'>Alterar</th>";
+    $htmlTable .= "      <th width='7%'>Deletar</th>";
+    $htmlTable .= "    </tr>";
+    $htmlTable .= "  </thead>";
+    $htmlTable .= "  <tbody>";
+
+    $vSql  = " SELECT ctr_id, ctr_vda_id, cli_nome, ven_nome, ctr_dtvencimento, ctr_valor, ctr_dtpagamento, ctr_valor_pago ";
+    $vSql .= " FROM tb_cont_receber ";
+    $vSql .= " LEFT JOIN tb_cliente ON cli_id = ctr_cli_id ";
+    $vSql .= " LEFT JOIN tb_vendedor ON ven_id = ctr_ven_id ";
+    $vSql .= " WHERE 1=1 ";
+    $vSql .= " AND ctr_deletado = 0 ";
+    $vSql .= " $sqlFilter ";
+    $vSql .= " ORDER BY ctr_dtvencimento ";
+
+    $query = $this->db->query($vSql);
+    $arrRs = $query->result_array();
+
+    if(count($arrRs) <= 0){
+      /*$htmlTable .= "  <tr class=''>";
+      $htmlTable .= "    <td colspan='8'>";
+      $htmlTable .= "      <center>Nenhum resultado encontrado!</center>";
+      $htmlTable .= "    </td>";
+      $htmlTable .= "  </tr>";*/
+    } else {
+      foreach($arrRs as $rs1){
+        $vCtrId   = $rs1["ctr_id"];
+        $vVdaId   = $rs1["ctr_vda_id"];
+        $vCliNome = $rs1["cli_nome"];
+        $vVenNome = $rs1["ven_nome"];
+        $vVcto    = (strlen($rs1["ctr_dtvencimento"]) == 10) ? date("d/m/Y", strtotime($rs1["ctr_dtvencimento"])): "";
+        $vValor   = (is_numeric($rs1["ctr_valor"])) ? "R$ " . number_format($rs1["ctr_valor"], 2, ",", "."): "";
+        $vPgto    = (strlen($rs1["ctr_dtpagamento"]) == 10) ? date("d/m/Y", strtotime($rs1["ctr_dtpagamento"])): "";
+        $vValorPg = (is_numeric($rs1["ctr_valor_pago"])) ? "R$ " . number_format($rs1["ctr_valor_pago"], 2, ",", "."): "";
+
+        $htmlTable .= "<tr>";
+        $htmlTable .= "  <td>$vCtrId</td>";
+        $htmlTable .= "  <td>$vVdaId</td>";
+        $htmlTable .= "  <td>$vCliNome</td>";
+        $htmlTable .= "  <td>$vVenNome</td>";
+        $htmlTable .= "  <td>$vVcto</td>";
+        $htmlTable .= "  <td>$vValor</td>";
+        $htmlTable .= "  <td>$vPgto</td>";
+        $htmlTable .= "  <td>$vValorPg</td>";
+        $htmlTable .= "  <td><a href='javascript:;' class='TbContReceber_ajax_deletar' data-id='$vCtrId'><i class='icon-edit icon-lista'></i></a></td>";
+        $htmlTable .= "  <td><a href='javascript:;' class='TbContReceber_ajax_deletar' data-id='$vCtrId'><i class='icon-trash icon-lista'></i></a></td>";
+        $htmlTable .= "</tr>";
+      }
+    }
+
+    $htmlTable .= "  </tbody>";
+    $htmlTable .= "</table>";
+
+    // totais
+    $vSqlT  = " SELECT COUNT(*) AS qt_contas, SUM(COALESCE(ctr_valor, 0)) AS tot_valor, SUM(COALESCE(ctr_valor_pago, 0)) AS tot_pago ";
+    $vSqlT .= " FROM tb_cont_receber ";
+    $vSqlT .= " LEFT JOIN tb_cliente ON cli_id = ctr_cli_id ";
+    $vSqlT .= " LEFT JOIN tb_vendedor ON ven_id = ctr_ven_id ";
+    $vSqlT .= " WHERE 1=1 ";
+    $vSqlT .= " AND ctr_deletado = 0 ";
+    $vSqlT .= " $sqlFilter ";
+
+    $queryT = $this->db->query($vSqlT);
+    $rs    = $queryT->row();
+    if($rs){
+      $qtContas   = $rs->qt_contas;
+      $totalValor = isset($rs->tot_valor) ? "R$ " . number_format($rs->tot_valor, 2, ",", "."): "R$ 0,00";
+      $totalPago  = isset($rs->tot_pago) ? "R$ " . number_format($rs->tot_pago, 2, ",", "."): "R$ 0,00";
+    } else {
+      $qtContas   = 0;
+      $totalValor = "R$ 0,00";
+      $totalPago  = "R$ 0,00";
+    }
+
+    $this->load->helper('utils');
+    $htmlQtdContas = getHtmlBlocoTotais("Qt Contas", $qtContas);
+    $htmlValor     = getHtmlBlocoTotais("Total Valor", $totalValor);
+    $htmlPago      = getHtmlBlocoTotais("Total Pago", $totalPago);
+
+    $htmlTable .= "<div id='htmlTotaisContaReceb' class='widget-content'>";
+    $htmlTable .= "  <div class='control-group' style='width: 100%; display: block; overflow: hidden;'>
+                       <div class='span4 m-wrap'>
+                         $htmlQtdContas
+                       </div>
+                       <div class='span4 m-wrap'>
+                         $htmlValor
+                       </div>
+                       <div class='span4 m-wrap'>
+                         $htmlPago
+                       </div>
+                     </div>";
+    $htmlTable .= "</div>";
+    // ======
+
+    return $htmlTable;
+  }
+
   public function getHtmlContasVenda($vdaId){
     $this->load->database();
     $htmlTable  = "";
@@ -143,6 +298,7 @@ class Tb_Cont_Receber extends CI_Model {
     $vSql .= " FROM tb_cont_receber ";
     $vSql .= " LEFT JOIN tb_cliente ON cli_id = ctr_cli_id ";
     $vSql .= " WHERE ctr_vda_id = $vdaId ";
+    $vSql .= " AND ctr_deletado = 0 ";
     $vSql .= " ORDER BY ctr_dtvencimento ";
 
     $query = $this->db->query($vSql);

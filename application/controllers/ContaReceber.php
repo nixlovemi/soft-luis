@@ -6,6 +6,34 @@ class ContaReceber extends MY_Controller {
     parent::__construct();
   }
 
+  public function index(){
+    $data     = [];
+    $userData = $this->session->get_userdata();
+    $errorMsg = isset($userData["ContaReceberIndex_error_msg"]) ? $userData["ContaReceberIndex_error_msg"]: "";
+
+    if($errorMsg != ""){
+      $this->load->helper('alerts');
+      $errorMsg = showError($errorMsg);
+      $this->session->unset_userdata('ContaReceberIndex_error_msg');
+    }
+
+    $this->load->model('Tb_Cont_Receber');
+    $htmlContasReceber = $this->Tb_Cont_Receber->getHtmlContasReceber();
+    $data["htmlContaRecebTable"] = $htmlContasReceber;
+
+    $this->load->model('Tb_Cliente');
+    $retClientes = $this->Tb_Cliente->getClientes();
+    $arrClientes = (!$retClientes["erro"]) ? $retClientes["arrClientes"]: array();
+    $data["arrClientes"] = $arrClientes;
+
+    $this->load->model('Tb_Vendedor');
+    $retVendedores = $this->Tb_Vendedor->getVendedores();
+    $arrVendedores = (!$retVendedores["erro"]) ? $retVendedores["arrVendedores"]: array();
+    $data["arrVendedores"] = $arrVendedores;
+
+    $this->template->load('template', 'ContaReceber/index', $data);
+  }
+
   public function jsonAddContaVenda(){
     $this->load->helper('utils');
 
@@ -108,6 +136,63 @@ class ContaReceber extends MY_Controller {
 
       $arrRet["htmlContasVenda"] = $htmlContasVenda . "<br />" . $htmlTotalContasVenda;
     }
+
+    echo json_encode($arrRet);
+  }
+
+  public function jsonHtmlContasReceber(){
+    $this->load->helper('utils');
+
+    $arrRet = [];
+    $arrRet["erro"]            = false;
+    $arrRet["msg"]             = "";
+    $arrRet["htmlContasReceb"] = "";
+
+    // variaveis ============
+    $vVctoIni    = $this->input->post('filterDtVctoIni');
+    $vVctoFim    = $this->input->post('filterDtVctoFim');
+    $vPgtoIni    = $this->input->post('filterDtPgtoIni');
+    $vPgtoFim    = $this->input->post('filterDtPgtoFim');
+    $vClienteId  = $this->input->post('filterCliente');
+    $vVendedorId = $this->input->post('filterVendedor');
+    $vPagas      = $this->input->post('filterApenasPagas');
+    // ======================
+
+    // filtro
+    $arrFilters = [];
+
+    if($vVctoIni != ""){
+      $arrFilters["vctoIni"] = acerta_data($vVctoIni);
+    }
+
+    if($vVctoFim != ""){
+      $arrFilters["vctoFim"] = acerta_data($vVctoFim);
+    }
+
+    if($vPgtoIni != ""){
+      $arrFilters["pgtoIni"] = acerta_data($vPgtoIni);
+    }
+
+    if($vPgtoFim != ""){
+      $arrFilters["pgtoFim"] = acerta_data($vPgtoFim);
+    }
+
+    if($vClienteId != ""){
+      $arrFilters["clienteId"] = $vClienteId;
+    }
+
+    if($vVendedorId != ""){
+      $arrFilters["vendedorId"] = $vVendedorId;
+    }
+
+    if($vPagas != ""){
+      $arrFilters["apenasPagas"] = $vPagas;
+    }
+    // ======
+
+    $this->load->model('Tb_Cont_Receber');
+    $htmlContasRecebTable = $this->Tb_Cont_Receber->getHtmlContasReceber($arrFilters);
+    $arrRet["htmlContasReceb"] = $htmlContasRecebTable;
 
     echo json_encode($arrRet);
   }

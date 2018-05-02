@@ -183,6 +183,38 @@ $(document).on('click', '.TbVenda_deletar', function(){
 });
 // ===============
 
+// Tb_Cont_Receber
+$(document).on('click', '#frmFiltrosRecebimentos #btnFiltrarRecebimentos', function(){
+	var variaveis = $('#frmFiltrosRecebimentos').serialize();
+
+  $.ajax({
+    type: "POST",
+    url: HOME_URL + 'ContaReceber/jsonHtmlContasReceber',
+    data: variaveis,
+		dataType: 'json',
+    beforeSend: function(){
+      var htmlLoader = getHtmlLoader();
+      $("#dvHtmlContaRecebTable").html(htmlLoader);
+    },
+		success: function (ret) {
+			var erro            = ret.erro;
+			var msg             = ret.msg;
+			var htmlContasReceb = ret.htmlContasReceb;
+
+			if(erro){
+				$.gritter.add({
+					title: 'Alerta',
+					text: msg,
+				});
+			} else {
+        $("#dvHtmlContaRecebTable").html(htmlContasReceb);
+        setTimeout("loadObjects();", 500);
+			}
+    }
+  });
+});
+// ===============
+
 // Tb_Produto
 $(document).on('click', '.TbProduto_deletar', function(){
 	var proId = $(this).data("id");
@@ -216,8 +248,8 @@ $(document).on('click', '.TbVendedor_deletar', function(){
 });
 // ==========
 
-$(document).ready(function(){
-	$('.dynatable').dynatable({
+function loadObjects(){
+  $('.dynatable').dynatable({
 		inputs: {
 			paginationPrev: 'Anterior',
 			paginationNext: 'Próximo',
@@ -235,6 +267,27 @@ $(document).ready(function(){
       startDate: '+1d',
   });
 	//$('.mask_moeda').mask('000.000.000.000.000,00', {reverse: true});
+
+  // === Tooltips === //
+	$('.tip').tooltip();
+	$('.tip-left').tooltip({ placement: 'left' });
+	$('.tip-right').tooltip({ placement: 'right' });
+	$('.tip-top').tooltip({ placement: 'top' });
+	$('.tip-bottom').tooltip({ placement: 'bottom' });
+
+	// === Search input typeahead === //
+	$('#search input[type=text]').typeahead({
+		source: ['Dashboard','Form elements','Common Elements','Validation','Wizard','Buttons','Icons','Interface elements','Support','Calendar','Gallery','Reports','Charts','Graphs','Widgets'],
+		items: 4
+	});
+}
+
+function getHtmlLoader(){
+  return '<div class="progress progress-striped active"> <div class="bar" style="width: 100%;"></div> </div>';
+}
+
+$(document).ready(function(){
+	loadObjects();
 
 	// === Sidebar navigation === //
 	$('.submenu > a').click(function(e)
@@ -314,19 +367,6 @@ $(document).ready(function(){
 		$('#content-header .btn-group').css({width:'auto'});
 		ul.css({'display':'block'});
 	}
-
-	// === Tooltips === //
-	$('.tip').tooltip();
-	$('.tip-left').tooltip({ placement: 'left' });
-	$('.tip-right').tooltip({ placement: 'right' });
-	$('.tip-top').tooltip({ placement: 'top' });
-	$('.tip-bottom').tooltip({ placement: 'bottom' });
-
-	// === Search input typeahead === //
-	$('#search input[type=text]').typeahead({
-		source: ['Dashboard','Form elements','Common Elements','Validation','Wizard','Buttons','Icons','Interface elements','Support','Calendar','Gallery','Reports','Charts','Graphs','Widgets'],
-		items: 4
-	});
 
 	// === Fixes the position of buttons group in content header and top user navigation === //
 	function fix_position()
