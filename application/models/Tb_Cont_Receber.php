@@ -51,7 +51,7 @@ class Tb_Cont_Receber extends CI_Model {
     $vVenId = (isset($arrContRecebDados["ctr_ven_id"])) ? $arrContRecebDados["ctr_ven_id"]: "";
     if( $vCliId == "" && $vVenId == "" ){
       $arrRet["erro"] = true;
-      $arrRet["msg"]  = "A Conta a Receber precisa ter um Cliente ou uma Venda!";
+      $arrRet["msg"]  = "A Conta a Receber precisa ter um Cliente ou um Vendedor!";
       return $arrRet;
     }
 
@@ -321,7 +321,7 @@ class Tb_Cont_Receber extends CI_Model {
         $htmlTable .= "  <td>$vValor</td>";
         $htmlTable .= "  <td>$vPgto</td>";
         $htmlTable .= "  <td>$vValorPg</td>";
-        $htmlTable .= "  <td><a href='javascript:;' class='' data-id='$vCtrId'><i class='icon-edit icon-lista'></i></a></td>";
+        $htmlTable .= "  <td><a href='javascript:;' class='TbContReceber_ajax_alterar' data-id='$vCtrId'><i class='icon-edit icon-lista'></i></a></td>";
         $htmlTable .= "  <td><a href='javascript:;' class='TbContReceber_ajax_deletar_v2' data-id='$vCtrId'><i class='icon-trash icon-lista'></i></a></td>";
         $htmlTable .= "</tr>";
       }

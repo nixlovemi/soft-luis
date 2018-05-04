@@ -1,13 +1,49 @@
 var HOME_URL = 'http://127.0.0.1/webapp/';
 
-function moedaParaNumero(valor)
-{
+function moedaParaNumero(valor){
     return isNaN(valor) == false ? parseFloat(valor) :   parseFloat(valor.replace("R$","").replace(".","").replace(",","."));
 }
-function numeroParaMoeda(n, c, d, t)
-{
+function numeroParaMoeda(n, c, d, t){
     c = isNaN(c = Math.abs(c)) ? 2 : c, d = d == undefined ? "," : d, t = t == undefined ? "." : t, s = n < 0 ? "-" : "", i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "", j = (j = i.length) > 3 ? j % 3 : 0;
     return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+}
+function getHighIndex(selector) {
+    if (!selector) {
+        selector = "*";
+    }
+
+    var index = 0;
+
+    $(selector).each(function () {
+        var atual = parseInt($(this).css("zIndex"), 10);
+        if (atual > index) {
+            index = atual;
+        }
+    });
+
+    return index;
+}
+function mvc_post_json_ajax_var(controller, action, vars) {
+  // MVC =========================
+  return $.parseJSON($.ajax({
+    type: "POST",
+    url: HOME_URL + controller + '/' + action,
+    data: vars,
+    dataType: 'json',
+    global: false,
+    async: false,
+    beforeSend: function () {
+        /*show_loader();*/
+    },
+    complete: function () {
+        /*hide_loader();
+        setTimeout("obj_jquerys();", 250);*/
+    },
+    success: function (data) {
+        return data;
+    }
+  }).responseText);
+  // =============================
 }
 
 // botoes da lista
@@ -184,6 +220,77 @@ $(document).on('click', '.TbVenda_deletar', function(){
 // ===============
 
 // Tb_Cont_Receber
+$(document).on('click', '#btnJsonAddContaReceb', function(){
+  $.ajax({
+    type: "POST",
+    url: HOME_URL + 'ContaReceber/jsonHtmlAddConta',
+    data: '',
+    dataType: 'json',
+    success: function (ret) {
+      var html = ret.html;
+      confirmBootbox(html, function(){
+        var variaveis = $("#frmJsonAddContaReceb").serialize();
+        var retJson   = mvc_post_json_ajax_var('ContaReceber', 'jsonAddContaReceb', variaveis);
+
+        if(retJson.erro){
+          $.gritter.add({
+  					title: 'Alerta',
+  					text: retJson.msg,
+  				});
+          var maxZindex = getHighIndex();
+          $("#gritter-notice-wrapper").css({'z-index':maxZindex + 5});
+
+          return false;
+        } else {
+          $("#btnFiltrarRecebimentos").click();
+        }
+      });
+      setTimeout("loadObjects()", 750);
+    }
+  });
+});
+
+$(document).on('click', '#dvHtmlContaRecebTable .TbContReceber_ajax_alterar', function(){
+	var ctrId = $(this).data("id");
+
+  $.ajax({
+    type: "POST",
+    url: HOME_URL + 'ContaReceber/jsonHtmlEditConta',
+    data: 'ctrId=' + ctrId,
+    dataType: 'json',
+    success: function (ret) {
+      if(ret.erro){
+        $.gritter.add({
+          title: 'Alerta',
+          text: ret.msg,
+        });
+        var maxZindex = getHighIndex();
+        $("#gritter-notice-wrapper").css({'z-index':maxZindex + 5});
+      } else {
+        var html = ret.html;
+        confirmBootbox(html, function(){
+          var variaveis = $("#frmJsonAddContaReceb").serialize();
+          var retJson   = mvc_post_json_ajax_var('ContaReceber', 'jsonEditContaReceb', variaveis);
+
+          if(retJson.erro){
+            $.gritter.add({
+    					title: 'Alerta',
+    					text: retJson.msg,
+    				});
+            var maxZindex = getHighIndex();
+            $("#gritter-notice-wrapper").css({'z-index':maxZindex + 5});
+
+            return false;
+          } else {
+            $("#btnFiltrarRecebimentos").click();
+          }
+        });
+        setTimeout("loadObjects()", 750);
+      }
+    }
+  });
+});
+
 $(document).on('click', '#dvHtmlContaRecebTable .TbContReceber_ajax_deletar_v2', function(){
 	var ctrId = $(this).data("id");
 	var html  = 'Gostaria de deletar a parcela ' + ctrId + '?';
@@ -290,10 +397,17 @@ function loadObjects(){
 	$(".mask_cep").mask("99.999-999");
 	$(".mask_inteiro").numeric();
 	$('.mask_moeda').mask("#.##0,00", {reverse: true});
+
+  // date picker
   $('.mask_datepicker').datepicker({
       format: 'dd/mm/yyyy',
-      startDate: '+1d',
+      //startDate: '+1d',
   });
+
+  var maxZindex = getHighIndex() + 5;
+  $('div.datepicker').css({'z-index':maxZindex});
+  // ===========
+
 	//$('.mask_moeda').mask('000.000.000.000.000,00', {reverse: true});
 
   // === Tooltips === //

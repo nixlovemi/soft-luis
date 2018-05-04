@@ -240,4 +240,158 @@ class ContaReceber extends MY_Controller {
 
     echo json_encode($arrRet);
   }
+
+  public function jsonHtmlAddConta(){
+    $data     = [];
+
+    $this->load->model('Tb_Cliente');
+    $retClientes = $this->Tb_Cliente->getClientes();
+    $arrClientes = (!$retClientes["erro"]) ? $retClientes["arrClientes"]: array();
+    $data["arrClientes"] = $arrClientes;
+
+    $this->load->model('Tb_Vendedor');
+    $retVendedores = $this->Tb_Vendedor->getVendedores();
+    $arrVendedores = (!$retVendedores["erro"]) ? $retVendedores["arrVendedores"]: array();
+    $data["arrVendedores"] = $arrVendedores;
+
+    $htmlView = $this->load->view('ContaReceber/novo', $data, true);
+
+    $arrRet = [];
+    $arrRet["html"] = $htmlView;
+    echo json_encode($arrRet);
+  }
+
+  public function jsonAddContaReceb(){
+    $this->load->helper('utils');
+
+    $arrRet = [];
+    $arrRet["erro"] = false;
+    $arrRet["msg"]  = "";
+
+    // variaveis ============
+    $vCtrCliente      = ($this->input->post('ctrCliente') > 0) ? $this->input->post('ctrCliente'): null;
+    $vCtrDtpagamento  = (strlen($this->input->post('ctrDtpagamento')) == 10) ? acerta_data($this->input->post('ctrDtpagamento')): null;
+    $vCtrDtvencimento = (strlen($this->input->post('ctrDtvencimento')) == 10) ? acerta_data($this->input->post('ctrDtvencimento')): null;
+    $vCtrObservacao   = ($this->input->post('ctrObservacao') != "") ? $this->input->post('ctrObservacao'): null;
+    $vCtrValor        = ($this->input->post('ctrValor') > 0) ? acerta_moeda($this->input->post('ctrValor')): null;
+    $vCtrValorPago    = ($this->input->post('ctrValorPago') > 0) ? acerta_moeda($this->input->post('ctrValorPago')): null;
+    $vCtrVendedor     = ($this->input->post('ctrVendedor') > 0) ? $this->input->post('ctrVendedor'): null;
+    // ======================
+
+    $ContaReceber = [];
+    $ContaReceber["ctr_cli_id"]       = $vCtrCliente;
+    $ContaReceber["ctr_ven_id"]       = $vCtrVendedor;
+    $ContaReceber["ctr_dtvencimento"] = $vCtrDtvencimento;
+    $ContaReceber["ctr_valor"]        = $vCtrValor;
+    $ContaReceber["ctr_dtpagamento"]  = $vCtrDtpagamento;
+    $ContaReceber["ctr_valor_pago"]   = $vCtrValorPago;
+    $ContaReceber["ctr_obs"]          = $vCtrObservacao;
+
+    $this->load->model('Tb_Cont_Receber');
+    $retInsert = $this->Tb_Cont_Receber->insert($ContaReceber);
+
+    if( $retInsert["erro"] ){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Erro ao inserir Parcela. Msg: " . $retInsert["msg"];
+
+      echo json_encode($arrRet);
+      return;
+    } else {
+      $arrRet["erro"] = false;
+      $arrRet["msg"]  = "Recebimento inserido com sucesso.";
+
+      echo json_encode($arrRet);
+      return;
+    }
+  }
+
+  public function jsonHtmlEditConta(){
+    $data   = [];
+    $arrRet = [];
+    $arrRet["html"] = "";
+    $arrRet["msg"]  = "";
+    $arrRet["erro"] = false;
+
+    $ctrId = $this->input->post('ctrId');
+
+    $this->load->model('Tb_Cont_Receber');
+    $retContReceb = $this->Tb_Cont_Receber->getContaReceber($ctrId);
+    if($retContReceb["erro"]){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Erro ao buscar Conta a Receber. Msg: " . $retContReceb["msg"];
+    } else {
+      $ContReceber         = $retContReceb["arrContaRecebDados"];
+      $data["ContReceber"] = $ContReceber;
+      $data["editar"]      = true;
+    }
+
+    $this->load->model('Tb_Cliente');
+    $retClientes = $this->Tb_Cliente->getClientes();
+    $arrClientes = (!$retClientes["erro"]) ? $retClientes["arrClientes"]: array();
+    $data["arrClientes"] = $arrClientes;
+
+    $this->load->model('Tb_Vendedor');
+    $retVendedores = $this->Tb_Vendedor->getVendedores();
+    $arrVendedores = (!$retVendedores["erro"]) ? $retVendedores["arrVendedores"]: array();
+    $data["arrVendedores"] = $arrVendedores;
+
+    $htmlView       = $this->load->view('ContaReceber/novo', $data, true);
+    $arrRet["html"] = $htmlView;
+    echo json_encode($arrRet);
+  }
+
+  public function jsonEditContaReceb(){
+    $this->load->helper('utils');
+
+    $arrRet = [];
+    $arrRet["erro"] = false;
+    $arrRet["msg"]  = "";
+
+    // variaveis ============
+    $vCtrId           = $this->input->post('ctrId') > 0 ? $this->input->post('ctrId'): -1;
+    $vCtrCliente      = ($this->input->post('ctrCliente') > 0) ? $this->input->post('ctrCliente'): null;
+    $vCtrDtpagamento  = (strlen($this->input->post('ctrDtpagamento')) == 10) ? acerta_data($this->input->post('ctrDtpagamento')): null;
+    $vCtrDtvencimento = (strlen($this->input->post('ctrDtvencimento')) == 10) ? acerta_data($this->input->post('ctrDtvencimento')): null;
+    $vCtrObservacao   = ($this->input->post('ctrObservacao') != "") ? $this->input->post('ctrObservacao'): null;
+    $vCtrValor        = ($this->input->post('ctrValor') > 0) ? acerta_moeda($this->input->post('ctrValor')): null;
+    $vCtrValorPago    = ($this->input->post('ctrValorPago') > 0) ? acerta_moeda($this->input->post('ctrValorPago')): null;
+    $vCtrVendedor     = ($this->input->post('ctrVendedor') > 0) ? $this->input->post('ctrVendedor'): null;
+    // ======================
+
+    $this->load->model('Tb_Cont_Receber');
+    $retContReceb = $this->Tb_Cont_Receber->getContaReceber($vCtrId);
+    if($retContReceb["erro"]){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Erro ao encontrar Parcela. Msg: " . $retContReceb["msg"];
+
+      echo json_encode($arrRet);
+      return;
+    } else {
+      $ContaReceber = $retContReceb["arrContaRecebDados"];
+    }
+
+    $ContaReceber["ctr_cli_id"]       = $vCtrCliente;
+    $ContaReceber["ctr_ven_id"]       = $vCtrVendedor;
+    $ContaReceber["ctr_dtvencimento"] = $vCtrDtvencimento;
+    $ContaReceber["ctr_valor"]        = $vCtrValor;
+    $ContaReceber["ctr_dtpagamento"]  = $vCtrDtpagamento;
+    $ContaReceber["ctr_valor_pago"]   = $vCtrValorPago;
+    $ContaReceber["ctr_obs"]          = $vCtrObservacao;
+
+    $this->db->where('ctr_id', $vCtrId);
+    $retInsert = $this->db->update('tb_cont_receber', $ContaReceber);
+    if( $retInsert["erro"] ){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Erro ao editar Parcela. Msg: " . $retInsert["msg"];
+
+      echo json_encode($arrRet);
+      return;
+    } else {
+      $arrRet["erro"] = false;
+      $arrRet["msg"]  = "Recebimento editado com sucesso.";
+
+      echo json_encode($arrRet);
+      return;
+    }
+  }
 }

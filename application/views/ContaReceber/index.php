@@ -6,7 +6,7 @@ $arrVendedores       = isset($arrVendedores) ? $arrVendedores: array();
 
 <h1>Recebimentos</h1>
 
-<a class="btn btn-info btn-large" href="<?php echo base_url() . "Produto/novoProduto"; ?>">NOVO RECEBIMENTO</a>
+<a class="btn btn-info btn-large" href="javascript:;" id="btnJsonAddContaReceb">NOVO RECEBIMENTO</a>
 
 <?php
 if(isset($errorMsg) && $errorMsg != ""){

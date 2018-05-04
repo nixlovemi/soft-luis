@@ -112,7 +112,7 @@
 			if (!this.isInput) {
 				$(document).off('mousedown', this.hide);
 			}
-			this.set();
+			// this.set(); @se deixa isso descomentado, ele coloca data default mesmo qdo esta em branco
 			this.element.trigger({
 				type: 'hide',
 				date: this.date
