@@ -435,4 +435,39 @@ class Tb_Produto extends CI_Model {
 
     return $arrRet;
   }
+
+  public function addInventario($arrProdutos){
+    $arrRet         = [];
+    $arrRet["erro"] = true;
+    $arrRet["msg"]  = "";
+
+    if( count($arrProdutos) <= 0 ){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Nenhum produto informado para o inventário!";
+
+      return $arrRet;
+    } else {
+      $this->load->database();
+      $this->db->trans_start();
+
+      foreach($arrProdutos as $Produto){
+        $proId      = $Produto["pro_id"];
+        $proEstoque = $Produto["pro_estoque"];
+
+        $sql = "UPDATE tb_produto SET pro_estoque = $proEstoque WHERE pro_id = $proId";
+        $this->db->query($sql);
+      }
+
+      $this->db->trans_complete();
+      if($this->db->trans_status() === FALSE){
+        $arrRet["erro"] = true;
+        $arrRet["msg"]  = "Erro ao gravar Inventário!";
+      } else {
+        $arrRet["erro"] = false;
+        $arrRet["msg"]  = "Inventário gravado com sucesso!";
+      }
+
+      return $arrRet;
+    }
+  }
 }

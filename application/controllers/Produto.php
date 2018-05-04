@@ -216,4 +216,60 @@ class Produto extends MY_Controller {
 
     echo json_encode($arrRet);
   }
+
+  public function inventario(){
+    $data     = [];
+    $errorMsg = "";
+    $this->load->helper("alerts");
+
+    $this->load->model('Tb_Produto');
+    $retProdutos = $this->Tb_Produto->getProdutos();
+    if($retProdutos["erro"]){
+      $arrProdutos = [];
+      $errorMsg    = showWarning("Erro ao buscar produtos. Msg: " . $retProdutos["msg"]);
+    } else {
+      $arrProdutos = $retProdutos["arrProdutos"];
+    }
+
+    $data["errorMsg"] = $errorMsg;
+    $data["arrProdutos"] = $arrProdutos;
+    $this->template->load('template', 'Produto/inventario', $data);
+  }
+
+  public function postInventario(){
+    $this->load->model('Tb_Produto');
+    $this->load->helper("alerts");
+
+    $data                = [];
+    $data["errorMsg"]    = "";
+    $data["arrProdutos"] = [];
+    $arrProdutos         = [];
+
+    foreach($_POST as $key => $value){
+      $ehProd = strpos($key, "proEstoque__") !== false;
+      if($ehProd){
+        if(is_numeric($value)){
+          $idProd = str_replace("proEstoque__", "", $key);
+          $arrProdutos[] = array(
+            "pro_id" => $idProd,
+            "pro_estoque" => $value,
+          );
+        }
+      }
+    }
+
+    $retInventario = $this->Tb_Produto->addInventario($arrProdutos);
+    if($retInventario["erro"]){
+      $data["errorMsg"] = showWarning("Erro ao gravar inventário: Msg: " . $retInventario["msg"]);
+    } else {
+      $data["errorMsg"] = showSuccess("Inventário gravado com sucesso!");
+    }
+
+    $retProdutos = $this->Tb_Produto->getProdutos();
+    if(!$retProdutos["erro"]){
+      $data["arrProdutos"] = $retProdutos["arrProdutos"];
+    }
+
+    $this->template->load('template', 'Produto/inventario', $data);
+  }
 }

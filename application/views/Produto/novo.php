@@ -107,7 +107,7 @@ if($errorMsg != ""){
           <div class="control-group">
             <label class="control-label">Estoque (Und)</label>
             <div class="controls">
-              <input <?php echo $strReadyonly; ?> class="validate-required span10" type="text" name="proEstoque" id="proEstoque" value="<?php echo $vProEstoque; ?>" />
+              <input <?php echo $strReadyonly; ?> class="validate-required span10 mask_inteiro" type="text" name="proEstoque" id="proEstoque" value="<?php echo $vProEstoque; ?>" />
             </div>
           </div>
           <div class="control-group">
