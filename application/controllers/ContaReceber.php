@@ -273,8 +273,8 @@ class ContaReceber extends MY_Controller {
     $vCtrDtpagamento  = (strlen($this->input->post('ctrDtpagamento')) == 10) ? acerta_data($this->input->post('ctrDtpagamento')): null;
     $vCtrDtvencimento = (strlen($this->input->post('ctrDtvencimento')) == 10) ? acerta_data($this->input->post('ctrDtvencimento')): null;
     $vCtrObservacao   = ($this->input->post('ctrObservacao') != "") ? $this->input->post('ctrObservacao'): null;
-    $vCtrValor        = ($this->input->post('ctrValor') > 0) ? acerta_moeda($this->input->post('ctrValor')): null;
-    $vCtrValorPago    = ($this->input->post('ctrValorPago') > 0) ? acerta_moeda($this->input->post('ctrValorPago')): null;
+    $vCtrValor        = ($this->input->post('ctrValor') != "") ? acerta_moeda($this->input->post('ctrValor')): null;
+    $vCtrValorPago    = ($this->input->post('ctrValorPago') != "") ? acerta_moeda($this->input->post('ctrValorPago')): null;
     $vCtrVendedor     = ($this->input->post('ctrVendedor') > 0) ? $this->input->post('ctrVendedor'): null;
     // ======================
 
@@ -353,8 +353,8 @@ class ContaReceber extends MY_Controller {
     $vCtrDtpagamento  = (strlen($this->input->post('ctrDtpagamento')) == 10) ? acerta_data($this->input->post('ctrDtpagamento')): null;
     $vCtrDtvencimento = (strlen($this->input->post('ctrDtvencimento')) == 10) ? acerta_data($this->input->post('ctrDtvencimento')): null;
     $vCtrObservacao   = ($this->input->post('ctrObservacao') != "") ? $this->input->post('ctrObservacao'): null;
-    $vCtrValor        = ($this->input->post('ctrValor') > 0) ? acerta_moeda($this->input->post('ctrValor')): null;
-    $vCtrValorPago    = ($this->input->post('ctrValorPago') > 0) ? acerta_moeda($this->input->post('ctrValorPago')): null;
+    $vCtrValor        = ($this->input->post('ctrValor') != "") ? acerta_moeda($this->input->post('ctrValor')): null;
+    $vCtrValorPago    = ($this->input->post('ctrValorPago') != "") ? acerta_moeda($this->input->post('ctrValorPago')): null;
     $vCtrVendedor     = ($this->input->post('ctrVendedor') > 0) ? $this->input->post('ctrVendedor'): null;
     // ======================
 

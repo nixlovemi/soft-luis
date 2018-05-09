@@ -350,6 +350,137 @@ $(document).on('click', '#frmFiltrosRecebimentos #btnFiltrarRecebimentos', funct
 });
 // ===============
 
+// Tb_Cont_Pagar
+$(document).on('click', '#frmFiltrosPagamentos #btnFiltrarPagamentos', function(){
+	var variaveis = $('#frmFiltrosPagamentos').serialize();
+
+  $.ajax({
+    type: "POST",
+    url: HOME_URL + 'ContaPagar/jsonHtmlContasPagar',
+    data: variaveis,
+		dataType: 'json',
+    beforeSend: function(){
+      var htmlLoader = getHtmlLoader();
+      $("#dvhtmlContasPagarTable").html(htmlLoader);
+    },
+		success: function (ret) {
+			var erro            = ret.erro;
+			var msg             = ret.msg;
+			var htmlContasPagar = ret.htmlContasPagar;
+
+			if(erro){
+				$.gritter.add({
+					title: 'Alerta',
+					text: msg,
+				});
+			} else {
+        $("#dvhtmlContasPagarTable").html(htmlContasPagar);
+        setTimeout("loadObjects();", 500);
+			}
+    }
+  });
+});
+
+$(document).on('click', '#btnJsonAddContaPagar', function(){
+  $.ajax({
+    type: "POST",
+    url: HOME_URL + 'ContaPagar/jsonHtmlAddConta',
+    data: '',
+    dataType: 'json',
+    success: function (ret) {
+      var html = ret.html;
+      confirmBootbox(html, function(){
+        var variaveis = $("#frmJsonAddContaPagar").serialize();
+        var retJson   = mvc_post_json_ajax_var('ContaPagar', 'jsonAddContaPagar', variaveis);
+
+        if(retJson.erro){
+          $.gritter.add({
+  					title: 'Alerta',
+  					text: retJson.msg,
+  				});
+          var maxZindex = getHighIndex();
+          $("#gritter-notice-wrapper").css({'z-index':maxZindex + 5});
+
+          return false;
+        } else {
+          $("#btnFiltrarPagamentos").click();
+        }
+      });
+      setTimeout("loadObjects()", 750);
+    }
+  });
+});
+
+$(document).on('click', '#dvhtmlContasPagarTable .TbContPagar_ajax_deletar', function(){
+	var ctpId = $(this).data("id");
+	var html  = 'Gostaria de deletar o pagamento ' + ctpId + '?';
+
+	confirmBootbox(html, function(){
+    $.ajax({
+      type: "POST",
+      url: HOME_URL + 'ContaPagar/jsonDelContaPagar',
+      data: 'ctpId=' + ctpId,
+  		dataType: 'json',
+  		success: function (ret) {
+  			var erro                = ret.erro;
+  			var msg                 = ret.msg;
+  			var htmlContaPagarTable = ret.htmlContaPagarTable;
+
+  			if(erro){
+  				$.gritter.add({
+  					title: 'Alerta',
+  					text: msg,
+  				});
+  			} else {
+          $("#frmFiltrosPagamentos #btnFiltrarPagamentos").click();
+  			}
+      }
+    });
+	});
+});
+
+$(document).on('click', '#dvhtmlContasPagarTable .TbContReceber_ajax_alterar', function(){
+	var ctpId = $(this).data("id");
+
+  $.ajax({
+    type: "POST",
+    url: HOME_URL + 'ContaPagar/jsonHtmlEditPagamento',
+    data: 'ctpId=' + ctpId,
+    dataType: 'json',
+    success: function (ret) {
+      if(ret.erro){
+        $.gritter.add({
+          title: 'Alerta',
+          text: ret.msg,
+        });
+        var maxZindex = getHighIndex();
+        $("#gritter-notice-wrapper").css({'z-index':maxZindex + 5});
+      } else {
+        var html = ret.html;
+        confirmBootbox(html, function(){
+          var variaveis = $("#frmJsonAddContaPagar").serialize();
+          var retJson   = mvc_post_json_ajax_var('ContaPagar', 'jsonEditContaPagar', variaveis);
+
+          if(retJson.erro){
+            $.gritter.add({
+    					title: 'Alerta',
+    					text: retJson.msg,
+    				});
+            var maxZindex = getHighIndex();
+            $("#gritter-notice-wrapper").css({'z-index':maxZindex + 5});
+
+            return false;
+          } else {
+            $("#btnFiltrarPagamentos").click();
+          }
+        });
+        setTimeout("loadObjects()", 750);
+      }
+    }
+  });
+});
+// =============
+
 // Tb_Produto
 $(document).on('click', '.TbProduto_deletar', function(){
 	var proId = $(this).data("id");
