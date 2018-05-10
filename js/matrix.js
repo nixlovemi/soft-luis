@@ -61,6 +61,41 @@ $(document).on('click', '.dynatableLink', function(){
 // ===============
 
 // Tb_Venda ======
+$(document).on('keyup', '#proEanAddProdVenda', function(event){
+  if (event.keyCode == 13) {
+    var ean8  = $(this).val();
+    var qtde  = $(this).parent().parent().find("#proEanQtde").val();
+    var vdaId = $("#frmEditVendaInfo #vdaId").val();
+
+    $(this).val("");
+
+    $.ajax({
+      type: "POST",
+      url: HOME_URL + 'VendaItens/jsonAddProduto',
+      data: 'vdaId=' + vdaId + '&ean8=' + ean8 + '&eanQtde=' + qtde,
+  		dataType: 'json',
+  		success: function (ret) {
+  			var erro            = ret.erro;
+  			var msg             = ret.msg;
+  			var htmlTbItens     = ret.htmlTbProd;
+        var htmlTbTotais    = ret.htmlTbTotais;
+        var htmlContasVenda = ret.htmlContasVenda;
+
+  			if(erro){
+  				$.gritter.add({
+  					title: 'Alerta',
+  					text: msg,
+  				});
+  			} else {
+  				$("#htmlTbVendaItens").html(htmlTbItens);
+          $("#htmlTbVendaTotais").html(htmlTbTotais);
+          $("#htmlTbContasVenda").html(htmlContasVenda);
+  			}
+      }
+    });
+  }
+});
+
 $(document).on('click', '#htmlTbContasVenda .TbContReceber_ajax_deletar', function(){
 	var ctrId = $(this).data("id");
 	var html  = 'Gostaria de deletar a parcela ' + ctrId + '?';
@@ -173,6 +208,44 @@ $(document).on('change', '#frmAddProdVenda #vdiProId', function(){
 				$("#frmAddProdVenda #vdiValor").val('');
 				$("#frmAddProdVenda #vdiDesconto").val('');
 			}
+    }
+  });
+});
+
+$(document).on('click', '.TbVendaItem_alterar', function(){
+  var vdiId = $(this).data("id");
+
+  $.ajax({
+    type: "POST",
+    url: HOME_URL + 'VendaItens/jsonHtmlEditVendaItem',
+    data: 'vdiId=' + vdiId,
+    dataType: 'json',
+    success: function (ret) {
+      var html = ret.html;
+      confirmBootbox(html, function(){
+        var variaveis = $("#frmJsonEditVendaItem").serialize();
+        var retJson   = mvc_post_json_ajax_var('VendaItens', 'jsonEditProduto', variaveis);
+
+        var htmlTbItens     = retJson.htmlTbProd;
+        var htmlTbTotais    = retJson.htmlTbTotais;
+        var htmlContasVenda = retJson.htmlContasVenda;
+
+        if(retJson.erro){
+          $.gritter.add({
+  					title: 'Alerta',
+  					text: retJson.msg,
+  				});
+          var maxZindex = getHighIndex();
+          $("#gritter-notice-wrapper").css({'z-index':maxZindex + 5});
+
+          return false;
+        } else {
+          $("#htmlTbVendaItens").html(htmlTbItens);
+          $("#htmlTbVendaTotais").html(htmlTbTotais);
+          $("#htmlTbContasVenda").html(htmlContasVenda);
+        }
+      });
+      setTimeout("loadObjects()", 750);
     }
   });
 });

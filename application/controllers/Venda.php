@@ -141,6 +141,7 @@ class Venda extends MY_Controller {
     $htmlContasVenda      = $this->Tb_Cont_Receber->getHtmlContasVenda($vdaId);
     $htmlTotalContasVenda = $this->Tb_Cont_Receber->getHtmlTotaisContasVenda($vdaId);
 
+    $data["editar"]               = true;
     $data["arrVenda"]             = $arrVenda;
     $data["arrClientes"]          = $arrClientes;
     $data["arrVendedores"]        = $arrVendedores;

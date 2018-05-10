@@ -98,12 +98,17 @@ if($errorMsg != ""){
               <input <?php echo $strReadyonly; ?> class="span10" type="text" name="proCodigo" id="proCodigo" value="<?php echo $vProCodigo; ?>" />
             </div>
           </div>
+          <?php
+          /*
+          // tirei pq talvez iria gerar confusao
           <div class="control-group">
             <label class="control-label">EAN (Código de Barra)</label>
             <div class="controls">
               <input <?php echo $strReadyonly; ?> class="span10" type="text" name="proEan" id="proEan" value="<?php echo $vProEan; ?>" />
             </div>
           </div>
+          */
+          ?>
           <div class="control-group">
             <label class="control-label">Estoque (Und)</label>
             <div class="controls">

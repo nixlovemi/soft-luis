@@ -12,6 +12,7 @@ class Tb_Venda_Itens extends CI_Model {
     $htmlTable .= "      <th width='10%'>Valor</th>";
     $htmlTable .= "      <th width='10%'>Desconto</th>";
     $htmlTable .= "      <th width='10%'>Total</th>";
+    $htmlTable .= "      <th width='8%'>Alterar</th>";
     $htmlTable .= "      <th width='8%'>Deletar</th>";
     $htmlTable .= "    </tr>";
     $htmlTable .= "  </thead>";
@@ -35,7 +36,7 @@ class Tb_Venda_Itens extends CI_Model {
     } else {
       foreach($arrRs as $rs1){
         $vVdiId        = $rs1["vdi_id"];
-        $vProId        = $rs1["pro_id"];
+        $vVdiProId     = $rs1["pro_id"];
         $vProDescricao = $rs1["pro_descricao"];
         $vVdiQtde      = $rs1["vdi_qtde"];
         $vVdiValor     = "R$" . number_format($rs1["vdi_valor"], 2, ",", ".");
@@ -43,15 +44,17 @@ class Tb_Venda_Itens extends CI_Model {
         $vVdiTotal     = "R$" . number_format($rs1["vdi_total"], 2, ",", ".");
 
         $htmlTable .= "<tr>";
-        $htmlTable .= "  <td>$vProId</td>";
+        $htmlTable .= "  <td>$vVdiProId</td>";
         $htmlTable .= "  <td>$vProDescricao</td>";
         $htmlTable .= "  <td>$vVdiQtde</td>";
         $htmlTable .= "  <td>$vVdiValor</td>";
         $htmlTable .= "  <td>$vVdiDesconto</td>";
         $htmlTable .= "  <td>$vVdiTotal</td>";
         if($delete){
+          $htmlTable .= "  <td><a href='javascript:;' class='TbVendaItem_alterar' data-id='$vVdiId'><i class='icon-edit icon-lista'></i></a></td>";
           $htmlTable .= "  <td><a href='javascript:;' class='TbVendaItem_deletar' data-id='$vVdiId'><i class='icon-trash icon-lista'></i></a></td>";
         } else {
+          $htmlTable .= "  <td>&nbsp;</td>";
           $htmlTable .= "  <td>&nbsp;</td>";
         }
         $htmlTable .= "</tr>";
@@ -124,8 +127,9 @@ class Tb_Venda_Itens extends CI_Model {
     }
 
     $this->load->database();
-    $this->db->select("vdi_id, vdi_vda_id, vdi_pro_id, vdi_qtde, vdi_valor, vdi_desconto, vdi_total, vdi_status");
+    $this->db->select("vdi_id, vdi_vda_id, vdi_pro_id, pro_descricao, vdi_qtde, vdi_valor, vdi_desconto, vdi_total, vdi_status");
     $this->db->from("tb_venda_itens");
+    $this->db->join('tb_produto', 'pro_id = vdi_pro_id', 'left');
     $this->db->where("vdi_id", $vdiId);
     $query = $this->db->get();
 
@@ -133,14 +137,15 @@ class Tb_Venda_Itens extends CI_Model {
       $row = $query->row();
 
       $arrVendaItemDados = [];
-      $arrVendaItemDados["vdi_id"]       = $row->vdi_id;
-      $arrVendaItemDados["vdi_vda_id"]   = $row->vdi_vda_id;
-      $arrVendaItemDados["vdi_pro_id"]   = $row->vdi_pro_id;
-      $arrVendaItemDados["vdi_qtde"]     = $row->vdi_qtde;
-      $arrVendaItemDados["vdi_valor"]    = $row->vdi_valor;
-      $arrVendaItemDados["vdi_desconto"] = $row->vdi_desconto;
-      $arrVendaItemDados["vdi_total"]    = $row->vdi_total;
-      $arrVendaItemDados["vdi_status"]   = $row->vdi_status;
+      $arrVendaItemDados["vdi_id"]        = $row->vdi_id;
+      $arrVendaItemDados["vdi_vda_id"]    = $row->vdi_vda_id;
+      $arrVendaItemDados["vdi_pro_id"]    = $row->vdi_pro_id;
+      $arrVendaItemDados["vdi_qtde"]      = $row->vdi_qtde;
+      $arrVendaItemDados["vdi_valor"]     = $row->vdi_valor;
+      $arrVendaItemDados["vdi_desconto"]  = $row->vdi_desconto;
+      $arrVendaItemDados["vdi_total"]     = $row->vdi_total;
+      $arrVendaItemDados["vdi_status"]    = $row->vdi_status;
+      $arrVendaItemDados["pro_descricao"] = $row->pro_descricao;
 
       $arrRet["arrVendaItemDados"] = $arrVendaItemDados;
     }
@@ -225,6 +230,89 @@ class Tb_Venda_Itens extends CI_Model {
       $arrRet["vdi_id"] = $vdi_id;
       $arrRet["erro"]   = false;
       $arrRet["msg"]    = "Produto inserido com sucesso!";
+    }
+
+    return $arrRet;
+  }
+
+  private function validaEdit($arrVendaItens){
+    $arrRet         = [];
+    $arrRet["erro"] = true;
+    $arrRet["msg"]  = "";
+
+    $vVdiId = (isset($arrVendaItens["vdi_id"])) ? $arrVendaItens["vdi_id"]: null;
+    if(!$vVdiId > 0){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Erro ao identificar item da venda!";
+      return $arrRet;
+    }
+
+    $vVdiVdaId = (isset($arrVendaItens["vdi_vda_id"])) ? $arrVendaItens["vdi_vda_id"]: null;
+    if( !is_numeric($vVdiVdaId) && !$vVdiVdaId > 0 ){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Por Favor, informe a Venda!";
+      return $arrRet;
+    }
+
+    $vVdiProId = (isset($arrVendaItens["vdi_pro_id"])) ? $arrVendaItens["vdi_pro_id"]: null;
+    if( !is_numeric($vVdiProId) && !$vVdiProId > 0 ){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Por Favor, informe o Produto!";
+      return $arrRet;
+    }
+
+    $vVdiQtde = (isset($arrVendaItens["vdi_qtde"])) ? $arrVendaItens["vdi_qtde"]: null;
+    if( !is_numeric($vVdiQtde) && !$vVdiQtde > 0 ){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Por Favor, informe a Quantidade!";
+      return $arrRet;
+    }
+
+    $vVdiValor = (isset($arrVendaItens["vdi_valor"])) ? $arrVendaItens["vdi_valor"]: null;
+    if( !is_numeric($vVdiValor) && !$vVdiValor > 0 ){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Por Favor, informe o Valor!";
+      return $arrRet;
+    }
+
+    $arrRet["erro"] = false;
+    $arrRet["msg"]  = "";
+    return $arrRet;
+  }
+
+  public function edit($arrVendaItens){
+    $arrRet           = [];
+    $arrRet["erro"]   = true;
+    $arrRet["msg"]    = "";
+
+    $retValidacao = $this->validaEdit($arrVendaItens);
+    if($retValidacao["erro"]){
+      return $retValidacao;
+    }
+
+    $vVdiId       = (isset($arrVendaItens["vdi_id"])) ? $arrVendaItens["vdi_id"]: "";
+    $vVdiVdaId    = isset($arrVendaItens["vdi_vda_id"]) ? $arrVendaItens["vdi_vda_id"]: "";
+    $vVdiProId    = isset($arrVendaItens["vdi_pro_id"]) ? $arrVendaItens["vdi_pro_id"]: "";
+    $vVdiQtde     = isset($arrVendaItens["vdi_qtde"]) ? $arrVendaItens["vdi_qtde"]: "";
+    $vVdiValor    = isset($arrVendaItens["vdi_valor"]) ? $arrVendaItens["vdi_valor"]: 0.01;
+    $vVdiDesconto = isset($arrVendaItens["vdi_desconto"]) ? $arrVendaItens["vdi_desconto"]: 0.01;
+
+    $data = array(
+      'vdi_vda_id'   => $vVdiVdaId,
+      'vdi_pro_id'   => $vVdiProId,
+      'vdi_qtde'     => $vVdiQtde,
+      'vdi_valor'    => $vVdiValor,
+      'vdi_desconto' => $vVdiDesconto,
+    );
+
+    $this->db->where('vdi_id', $vVdiId);
+    $retInsert = $this->db->update('tb_venda_itens', $data);
+    if(!$retInsert){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = $this->db->_error_message();
+    } else {
+      $arrRet["erro"] = false;
+      $arrRet["msg"]  = "Item editado com sucesso!";
     }
 
     return $arrRet;

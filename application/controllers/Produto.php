@@ -272,4 +272,18 @@ class Produto extends MY_Controller {
 
     $this->template->load('template', 'Produto/inventario', $data);
   }
+
+  public function geraEtiqueta($proId){
+    $data = [];
+
+    $this->load->model('Tb_Produto');
+    $retProduto      = $this->Tb_Produto->getProduto($proId);
+    $arrProdutoDados = [];
+    if(!$retProduto["erro"]){
+      $Produto = $retProduto["arrProdutoDados"];
+    }
+
+    $data["Produto"] = $Produto;
+    $this->load->view('Produto/etiqueta', $data);
+  }
 }

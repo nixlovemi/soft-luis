@@ -1,5 +1,12 @@
 <?php
 class Tb_Produto extends CI_Model {
+  private function geraEan8($proId){
+    return "35" . str_pad($proId, 6, "0", STR_PAD_LEFT);
+  }
+
+  private function ean8ToProId($ean8){
+    return (int) substr($ean8, -6);
+  }
 
   public function getProduto($proId){
     $arrRet                     = [];
@@ -32,12 +39,18 @@ class Tb_Produto extends CI_Model {
       $arrProdutoDados["pro_prec_venda"] = $row->pro_prec_venda;
       $arrProdutoDados["pro_observacao"] = $row->pro_observacao;
       $arrProdutoDados["pro_ativo"]      = $row->pro_ativo;
+      $arrProdutoDados["ean8"]           = $this->geraEan8( $row->pro_id );
 
       $arrRet["arrProdutoDados"] = $arrProdutoDados;
     }
 
     $arrRet["erro"] = false;
     return $arrRet;
+  }
+
+  public function getProdutoByEan($ean8){
+    $proId = $this->ean8ToProId($ean8);
+    return $this->getProduto($proId);
   }
 
   public function getProdutos(){
@@ -86,6 +99,7 @@ class Tb_Produto extends CI_Model {
     $htmlTable .= "      <th>Descrição</th>";
     $htmlTable .= "      <th width='8%'>Estoque</th>";
     $htmlTable .= "      <th width='10%'>Preço Venda</th>";
+    $htmlTable .= "      <th width='8%'>Etiqueta</th>";
     $htmlTable .= "      <th width='8%'>Ver</th>";
     $htmlTable .= "      <th width='8%'>Editar</th>";
     $htmlTable .= "      <th width='8%'>Deletar</th>";
@@ -121,6 +135,7 @@ class Tb_Produto extends CI_Model {
         $htmlTable .= "  <td>$vProDescricao</td>";
         $htmlTable .= "  <td>$vProEstoque</td>";
         $htmlTable .= "  <td>$vProPrecVenda</td>";
+        $htmlTable .= "  <td><a target='_blank' href='".base_url() . "Produto/geraEtiqueta/$vProId" . "' class=''><i class='icon-print icon-lista'></i></a></td>";
         $htmlTable .= "  <td><a href='javascript:;' class='dynatableLink' data-url='".base_url() . "Produto/ver/$vProId" . "'><i class='icon-eye-open icon-lista'></i></a></td>";
         $htmlTable .= "  <td><a href='javascript:;' class='dynatableLink' data-url='".base_url() . "Produto/editar/$vProId" . "'><i class='icon-edit icon-lista'></i></a></td>";
         $htmlTable .= "  <td><a href='javascript:;' class='TbProduto_deletar' data-id='$vProId'><i class='icon-trash icon-lista'></i></a></td>";

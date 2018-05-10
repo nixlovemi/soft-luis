@@ -135,62 +135,95 @@ if($errorMsg != ""){
               <?php
               if($editar){
                 ?>
-                <div class="widget-box">
+                <div class="widget-box collapsible">
                   <div class="widget-title">
-                    <span class="icon"> <i class="icon icon-plus"></i> </span>
-                    <h5>Incluir</h5>
+                    <a data-toggle="collapse" href="#collapseOne">
+                      <span class="icon"><i class="icon-plus"></i></span>
+                      <h5>Código Barra</h5>
+                    </a>
                   </div>
-                  <div class="widget-content nopadding">
-                    <form id="frmAddProdVenda" class="form-horizontal form-validation" method="post" action="">
-                      <div class="control-group">
-                        <table class="table table-bordered table-striped" width="100%">
-                          <thead>
-                            <tr>
-                              <th>Produto</th>
-                              <th>Quantidade</th>
-                              <th>Valor</th>
-                              <th>Desconto</th>
-                              <th>&nbsp;</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td>
-                                <?php
-                                echo "<select name='vdiProId' id='vdiProId'>";
-                                echo "<option value=''></option>";
-                                foreach($arrProdutos as $Produto){
-                                  $proId    = $Produto["pro_id"];
-                                  $proDesc  = $Produto["pro_descricao"];
+                  <div id="collapseOne" class="collapse in">
+                    <div class="widget-content">
+                      <table class="table table-bordered table-striped" width="100%">
+                        <thead>
+                          <tr>
+                            <th width="82%">EAN</th>
+                            <th>Quantidade</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>
+                              <input class="span12" type="text" name="proEan" id="proEanAddProdVenda" value="" />
+                            </td>
+                            <td>
+                              <input maxlength="3" class="span12 mask_inteiro" type="text" name="proEanQtde" id="proEanQtde" value="1" />
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
 
-                                  echo "<option value='$proId'>[$proId] $proDesc</option>";
-                                }
-                                echo "</select>";
-                                ?>
-                              </td>
-                              <td>
-                                <input maxlength="3" class="span10 mask_inteiro" type="text" name="vdiQtde" id="vdiQtde" value="" />
-                              </td>
-                              <td>
-                                <div class="input-prepend">
-                                  <span class="add-on">R$</span>
-                                  <input class="span10 mask_moeda" type="text" name="vdiValor" id="vdiValor" value="" />
-                                </div>
-                              </td>
-                              <td>
-                                <div class="input-prepend">
-                                  <span class="add-on">R$</span>
-                                  <input class="span10 mask_moeda" type="text" name="vdiDesconto" id="vdiDesconto" value="" />
-                                </div>
-                              </td>
-                              <td>
-                                <input id="addProdVenda" type='button' value='Incluir Produto' class='btn btn-success' />
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </form>
+                  <div class="widget-title">
+                    <a data-toggle="collapse" href="#collapseTwo">
+                      <span class="icon"><i class="icon-plus"></i></span>
+                      <h5>Manual</h5>
+                    </a>
+                  </div>
+                  <div id="collapseTwo" class="collapse">
+                    <div class="widget-content">
+                      <form id="frmAddProdVenda" class="form-horizontal form-validation" method="post" action="">
+                        <div class="control-group">
+                          <table class="table table-bordered table-striped" width="100%">
+                            <thead>
+                              <tr>
+                                <th>Produto</th>
+                                <th>Quantidade</th>
+                                <th>Valor</th>
+                                <th>Desconto</th>
+                                <th>&nbsp;</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>
+                                  <?php
+                                  echo "<select name='vdiProId' id='vdiProId'>";
+                                  echo "<option value=''></option>";
+                                  foreach($arrProdutos as $Produto){
+                                    $proId    = $Produto["pro_id"];
+                                    $proDesc  = $Produto["pro_descricao"];
+
+                                    echo "<option value='$proId'>[$proId] $proDesc</option>";
+                                  }
+                                  echo "</select>";
+                                  ?>
+                                </td>
+                                <td>
+                                  <input maxlength="3" class="span10 mask_inteiro" type="text" name="vdiQtde" id="vdiQtde" value="" />
+                                </td>
+                                <td>
+                                  <div class="input-prepend">
+                                    <span class="add-on">R$</span>
+                                    <input class="span10 mask_moeda" type="text" name="vdiValor" id="vdiValor" value="" />
+                                  </div>
+                                </td>
+                                <td>
+                                  <div class="input-prepend">
+                                    <span class="add-on">R$</span>
+                                    <input class="span10 mask_moeda" type="text" name="vdiDesconto" id="vdiDesconto" value="" />
+                                  </div>
+                                </td>
+                                <td>
+                                  <input id="addProdVenda" type='button' value='Incluir Produto' class='btn btn-success' />
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </form>
+                    </div>
                   </div>
                 </div>
                 <?php
