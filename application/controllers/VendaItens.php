@@ -24,7 +24,7 @@ class VendaItens extends MY_Controller {
     $vdiValor    = $this->input->post('vdiValor');
     $vdiDesconto = $this->input->post('vdiDesconto');
 
-    $ean8        = $this->input->post('ean8');
+    $ean         = $this->input->post('ean8');
     $eanQtde     = $this->input->post('eanQtde');
     // ======================
 
@@ -33,15 +33,19 @@ class VendaItens extends MY_Controller {
     $arrProdutoDados["vdi_desconto"] = ($vdiDesconto != "") ? acerta_moeda($vdiDesconto): null;
 
     // verifica se veio ean8
-    if( strlen($ean8) == 8 ){
+    if( strlen($ean) == 13 ){
       $this->load->model('Tb_Produto');
-      $retProduto = $this->Tb_Produto->getProdutoByEan($ean8);
+      $retProdEan = $this->Tb_Produto->getProdutoByEan($ean);
+
+      $retProduto = $retProdEan["Produto"];
+      $vlrEan     = $retProdEan["valor"];
+
       if(!$retProduto["erro"]){
         $Produto = $retProduto["arrProdutoDados"];
         if( !empty($Produto) ){
           $arrProdutoDados["vdi_pro_id"]   = $Produto["pro_id"];
           $arrProdutoDados["vdi_qtde"]     = $eanQtde;
-          $arrProdutoDados["vdi_valor"]    = $Produto["pro_prec_venda"];
+          $arrProdutoDados["vdi_valor"]    = $vlrEan;
         }
       }
     } else {

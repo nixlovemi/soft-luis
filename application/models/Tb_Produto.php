@@ -1,11 +1,28 @@
 <?php
 class Tb_Produto extends CI_Model {
-  private function geraEan8($proId){
-    return "35" . str_pad($proId, 6, "0", STR_PAD_LEFT);
+  private function geraEan($Produto){
+    $this->load->helper("utils");
+
+    $idxStart = "2";
+    $proId    = str_pad($Produto["pro_id"], 4, "0", STR_PAD_LEFT);
+
+    $valor    = number_format($Produto["pro_prec_venda"], 2, ".", "");
+    $proVlr   = str_pad(str_replace(".", "", $valor), 5, "0", STR_PAD_LEFT);
+
+    $idxEnd   = "11";
+    return generateEAN($idxStart . $proId . $proVlr . $idxEnd);
   }
 
-  private function ean8ToProId($ean8){
-    return (int) substr($ean8, -6);
+  private function eanToProduto($ean){
+    $proId  = (int) substr($ean, 1, 4);
+
+    $valor  = ((int) substr($ean, 5, 3)) . "." . substr($ean, 8, 2);
+    $strVlr = number_format($valor, 2, ".", "");
+
+    return array(
+      "proId" => $proId,
+      "valor" => $strVlr,
+    );
   }
 
   public function getProduto($proId){
@@ -39,7 +56,7 @@ class Tb_Produto extends CI_Model {
       $arrProdutoDados["pro_prec_venda"] = $row->pro_prec_venda;
       $arrProdutoDados["pro_observacao"] = $row->pro_observacao;
       $arrProdutoDados["pro_ativo"]      = $row->pro_ativo;
-      $arrProdutoDados["ean8"]           = $this->geraEan8( $row->pro_id );
+      $arrProdutoDados["ean"]            = $this->geraEan($arrProdutoDados);
 
       $arrRet["arrProdutoDados"] = $arrProdutoDados;
     }
@@ -48,9 +65,15 @@ class Tb_Produto extends CI_Model {
     return $arrRet;
   }
 
-  public function getProdutoByEan($ean8){
-    $proId = $this->ean8ToProId($ean8);
-    return $this->getProduto($proId);
+  public function getProdutoByEan($ean){
+    $retInfoEan = $this->eanToProduto($ean);
+    $proId      = $retInfoEan["proId"];
+    $valor      = $retInfoEan["valor"];
+
+    return array(
+      "Produto" => $this->getProduto($proId),
+      "valor"   => $valor,
+    );
   }
 
   public function getProdutos(){

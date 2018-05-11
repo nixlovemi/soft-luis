@@ -29,6 +29,31 @@ function getUserIP(){
   return $ip;
 }
 
+/*
+* passa string com 12 digitos e ele calcula DV e retorna 13 caracteres
+*/
+function generateEAN($number)
+{
+  $code = $number;
+
+  if(strlen($code) != 12){
+    return false;
+  }
+
+  $weightflag = true;
+  $sum = 0;
+  // Weight for a digit in the checksum is 3, 1, 3.. starting from the last digit.
+  // loop backwards to make the loop length-agnostic. The same basic functionality
+  // will work for codes of different lengths.
+  for ($i = strlen($code) - 1; $i >= 0; $i--)
+  {
+    $sum += (int)$code[$i] * ($weightflag?3:1);
+    $weightflag = !$weightflag;
+  }
+  $code .= (10 - ($sum % 10)) % 10;
+  return $code;
+}
+
 /**
 * Gera um ID único e inteiro
 *
