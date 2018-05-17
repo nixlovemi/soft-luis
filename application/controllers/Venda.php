@@ -105,10 +105,6 @@ class Venda extends MY_Controller {
 
       $this->template->load('template', 'Venda/novo', $data);
     } else {
-      // $data["arrVendaDados"]   = array();
-      // $data["errorMsg"]        = "";
-      // $data["okMsg"]           = isset($retInsert["msg"]) ? $retInsert["msg"]: "Venda inserida com sucesso!";
-
       $redirect = base_url() . "Venda/editar/" . $retInsert["vda_id"];
       header("location:$redirect");
     }
@@ -205,5 +201,105 @@ class Venda extends MY_Controller {
     $this->session->set_userdata('VendaIndex_error_msg', $errorMsg);
     $redirect = base_url() . "Venda/listaIncluidas";
     header("location:$redirect");
+  }
+
+  public function indexMostruario(){
+    $data     = [];
+    $userData = $this->session->get_userdata();
+    $errorMsg = isset($userData["MostruarioIndex_error_msg"]) ? $userData["MostruarioIndex_error_msg"]: "";
+
+    if($errorMsg != ""){
+      $this->load->helper('alerts');
+      $errorMsg = showError($errorMsg);
+      $this->session->unset_userdata('MostruarioIndex_error_msg');
+    }
+
+    $this->load->model('Tb_Venda_Mostruario');
+    $htmlMostruarioTable         = $this->Tb_Venda_Mostruario->getHtmlList();
+    $data["htmlMostruarioTable"] = $htmlMostruarioTable;
+    $data["errorMsg"]            = $errorMsg;
+
+    $this->template->load('template', 'Venda/mostruario', $data);
+  }
+
+  public function jsonHtmlNovoMostruario(){
+    $dados          = [];
+    $retArr         = [];
+    $retArr["html"] = "";
+
+    $this->load->model('Tb_Vendedor');
+    $retVendedores = $this->Tb_Vendedor->getVendedores();
+    $arrVendedores = (!$retVendedores["erro"]) ? $retVendedores["arrVendedores"]: array();
+
+    $dados["arrVendedores"] = $arrVendedores;
+    $dados["ehJson"]        = true;
+
+    $htmlView = $this->load->view("Venda/novoMostruario", $dados, true);
+    $retArr["html"] = $htmlView;
+    echo json_encode($retArr);
+  }
+
+  public function postIncluirMostruario(){
+    $this->load->helper('utils');
+
+    $arrRet = [];
+    $arrRet["erro"]   = true;
+    $arrRet["msg"]    = "";
+    $arrRet["vdm_id"] = "";
+
+    // variaveis ============
+    $vVdmVendedor  = $this->input->post('vdmVendedor');
+    $vVdmDtEntrega = $this->input->post('vdmDtEntrega');
+    // ======================
+
+    $VendaMostruario = [];
+    $VendaMostruario["vdm_ven_id"]    = $vVdmVendedor;
+    $VendaMostruario["vdm_dtentrega"] = (strlen($vVdmDtEntrega) == 10) ? acerta_data($vVdmDtEntrega): "";
+
+    $this->load->model('Tb_Venda_Mostruario');
+    $retInsert = $this->Tb_Venda_Mostruario->insert($VendaMostruario);
+
+    if($retInsert["erro"]){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = $retInsert["msg"];
+
+      echo json_encode($arrRet);
+      return;
+    } else {
+      $arrRet["erro"]   = false;
+      $arrRet["msg"]    = "Mostruário inserido com sucesso!";
+      $arrRet["vdm_id"] = $retInsert["vdm_id"];
+
+      echo json_encode($arrRet);
+      return;
+    }
+  }
+
+  public function editarMostruario($vdmId){
+    $data = [];
+
+    $this->load->model('Tb_Produto');
+    $retProdutos = $this->Tb_Produto->getProdutos();
+    $arrProdutos = (!$retProdutos["erro"]) ? $retProdutos["arrProdutos"]: array();
+
+    $this->load->model('Tb_Venda_Mostruario');
+    $retMostruario = $this->Tb_Venda_Mostruario->getMostruario($vdmId);
+    $Mostruario    = (!$retMostruario["erro"]) ? $retMostruario["arrVendaMostruarioDados"]: array();
+
+    $this->load->model('Tb_Vendedor');
+    $retVendedores = $this->Tb_Vendedor->getVendedores();
+    $arrVendedores = (!$retVendedores["erro"]) ? $retVendedores["arrVendedores"]: array();
+
+    $this->load->model('Tb_Venda_Mostruario_Itens');
+    $htmlVendaMostruItens  = $this->Tb_Venda_Mostruario_Itens->getHtmlList($vdmId);
+    $htmlVendaMostruTotais = $this->Tb_Venda_Mostruario_Itens->getHtmlTotVendaMostru($vdmId);
+
+    $data["editar"]                = true;
+    $data["Mostruario"]            = $Mostruario;
+    $data["arrProdutos"]           = $arrProdutos;
+    $data["arrVendedores"]         = $arrVendedores;
+    $data["htmlVendaMostruItens"]  = $htmlVendaMostruItens;
+    $data["htmlVendaMostruTotais"] = $htmlVendaMostruTotais;
+    $this->template->load('template', 'Venda/editarMostruario', $data);
   }
 }

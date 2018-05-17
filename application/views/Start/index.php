@@ -1,3 +1,7 @@
+<?php
+$scriptPath = isset($scriptPath) ? $scriptPath: "";
+?>
+
 <div class="quick-actions_homepage">
   <ul class="quick-actions">
     <li class="bg_lb"> <a href="index.html"> <i class="icon-dashboard"></i> <span class="label label-important">20</span> My Dashboard </a> </li>

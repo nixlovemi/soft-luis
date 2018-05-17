@@ -3,10 +3,12 @@ var HOME_URL = 'http://127.0.0.1/webapp/';
 function moedaParaNumero(valor){
     return isNaN(valor) == false ? parseFloat(valor) :   parseFloat(valor.replace("R$","").replace(".","").replace(",","."));
 }
+
 function numeroParaMoeda(n, c, d, t){
     c = isNaN(c = Math.abs(c)) ? 2 : c, d = d == undefined ? "," : d, t = t == undefined ? "." : t, s = n < 0 ? "-" : "", i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "", j = (j = i.length) > 3 ? j % 3 : 0;
     return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
 }
+
 function getHighIndex(selector) {
     if (!selector) {
         selector = "*";
@@ -23,6 +25,7 @@ function getHighIndex(selector) {
 
     return index;
 }
+
 function mvc_post_json_ajax_var(controller, action, vars) {
   // MVC =========================
   return $.parseJSON($.ajax({
@@ -46,6 +49,38 @@ function mvc_post_json_ajax_var(controller, action, vars) {
   // =============================
 }
 
+function fncTelaUpdateBd(scriptPath){
+  $.ajax({
+    type: "POST",
+    url: HOME_URL + 'Start/jsonHtmlUpdateBd',
+    data: 'scriptPath=' + scriptPath,
+    dataType: 'json',
+    success: function (ret) {
+      var html = ret.html;
+      confirmBootbox(html, function(){
+        $("#dvLoaderBarUpdateDb").html( getHtmlLoader() );
+        var retJson = mvc_post_json_ajax_var('Start', 'jsonUpdateDbScript', 'scriptPath=' + scriptPath);
+
+        if(retJson.erro){
+          $.gritter.add({
+  					title: 'Alerta',
+  					text: retJson.msg,
+  				});
+          var maxZindex = getHighIndex();
+          $("#gritter-notice-wrapper").css({'z-index':maxZindex + 5});
+
+          return false;
+        } else {
+          $("#dvLoaderBarUpdateDb").html(retJson.msg);
+          setTimeout(" $('.bootbox .modal-dialog .btn-danger').click() ", 1500);
+          return false;
+        }
+      });
+      setTimeout("loadObjects()", 750);
+    }
+  });
+}
+
 // botoes da lista
 $(document).on('click', '.dynatableLink', function(){
 	var url = $(this).data('url');
@@ -59,6 +94,171 @@ $(document).on('click', '.dynatableLink', function(){
 	document.location.href = url;
 });
 // ===============
+
+// Tb_Venda_Mostruario
+$(document).on('click', '.TbVendaMostruarioItem_deletar', function(){
+	var vmiId = $(this).data("id");
+	var html  = 'Gostaria de remover esse produto do mostruario?';
+
+	confirmBootbox(html, function(){
+    $.ajax({
+      type: "POST",
+      url: HOME_URL + 'VendaMostruarioItens/jsonRemoveProduto',
+      data: 'vmiId=' + vmiId,
+  		dataType: 'json',
+  		success: function (ret) {
+  			var erro            = ret.erro;
+  			var msg             = ret.msg;
+  			var htmlTbItens     = ret.htmlTbProd;
+        var htmlTbTotais    = ret.htmlTbTotais;
+
+  			if(erro){
+  				$.gritter.add({
+  					title: 'Alerta',
+  					text: msg,
+  				});
+  			} else {
+  				$("#htmlTbVendaItens").html(htmlTbItens);
+          $("#htmlTbVendaTotais").html(htmlTbTotais);
+  			}
+      }
+    });
+	});
+});
+
+$(document).on('click', '.TbVendaMostruarioItem_alterar', function(){
+  var vmiId = $(this).data("id");
+
+  $.ajax({
+    type: "POST",
+    url: HOME_URL + 'VendaMostruarioItens/jsonHtmlEditVendaItemMostru',
+    data: 'vmiId=' + vmiId,
+    dataType: 'json',
+    success: function (ret) {
+      var html = ret.html;
+      confirmBootbox(html, function(){
+        var variaveis = $("#frmJsonEditVendaMostruItem").serialize();
+        var retJson   = mvc_post_json_ajax_var('VendaMostruarioItens', 'jsonEditProduto', variaveis);
+
+        var htmlTbItens     = retJson.htmlTbProd;
+        var htmlTbTotais    = retJson.htmlTbTotais;
+        var htmlContasVenda = retJson.htmlContasVenda;
+
+        if(retJson.erro){
+          $.gritter.add({
+  					title: 'Alerta',
+  					text: retJson.msg,
+  				});
+          var maxZindex = getHighIndex();
+          $("#gritter-notice-wrapper").css({'z-index':maxZindex + 5});
+
+          return false;
+        } else {
+          $("#htmlTbVendaItens").html(htmlTbItens);
+          $("#htmlTbVendaTotais").html(htmlTbTotais);
+          $("#htmlTbContasVenda").html(htmlContasVenda);
+        }
+      });
+      setTimeout("loadObjects()", 750);
+    }
+  });
+});
+
+$(document).on('click', '#frmAddProdVendaMostru #addProdVendaMostru', function(){
+	var vdmId = $("#frmEditVendaMostruInfo #vdmId").val();
+	var frmVdm = $("#frmAddProdVendaMostru").serialize();
+
+	$.ajax({
+    type: "POST",
+    url: HOME_URL + 'VendaMostruarioItens/jsonAddProdutoMostruario',
+    data: frmVdm + '&vdmId=' + vdmId,
+		dataType: 'json',
+		success: function (ret) {
+			var erro            = ret.erro;
+			var msg             = ret.msg;
+			var htmlTbItens     = ret.htmlTbProd;
+      var htmlTbTotais    = ret.htmlTbTotais;
+
+			if(erro){
+				$.gritter.add({
+					title: 'Alerta',
+					text: msg,
+				});
+			} else {
+				$("#frmAddProdVendaMostru #vmiProId").val("");
+				$("#frmAddProdVendaMostru #vmiQtde").val("");
+				$("#frmAddProdVendaMostru #vmiValor").val("");
+				$("#frmAddProdVendaMostru #vmiDesconto").val("");
+				$("#htmlTbVendaItens").html(htmlTbItens);
+        $("#htmlTbVendaTotais").html(htmlTbTotais);
+			}
+    }
+  });
+});
+
+$(document).on('keyup', '#proEanAddProdVendaMostru', function(event){
+  if (event.keyCode == 13) {
+    var ean8  = $(this).val();
+    var qtde  = $(this).parent().parent().find("#proEanQtde").val();
+    var vdmId = $("#frmEditVendaMostruInfo #vdmId").val();
+
+    $(this).val("");
+
+    $.ajax({
+      type: "POST",
+      url: HOME_URL + 'VendaMostruarioItens/jsonAddProdutoMostruario',
+      data: 'vdmId=' + vdmId + '&ean8=' + ean8 + '&eanQtde=' + qtde,
+  		dataType: 'json',
+  		success: function (ret) {
+  			var erro            = ret.erro;
+  			var msg             = ret.msg;
+  			var htmlTbItens     = ret.htmlTbProd;
+        var htmlTbTotais    = ret.htmlTbTotais;
+
+  			if(erro){
+  				$.gritter.add({
+  					title: 'Alerta',
+  					text: msg,
+  				});
+  			} else {
+  				$("#htmlTbVendaItens").html(htmlTbItens);
+          $("#htmlTbVendaTotais").html(htmlTbTotais);
+  			}
+      }
+    });
+  }
+});
+
+$(document).on('click', '#btnNovoMostruario', function(){
+  $.ajax({
+    type: "POST",
+    url: HOME_URL + 'Venda/jsonHtmlNovoMostruario',
+    data: '',
+    dataType: 'json',
+    success: function (ret) {
+      var html = ret.html;
+      confirmBootbox(html, function(){
+        var variaveis = $("#frmNovoMostruario").serialize();
+        var jsonRet   = mvc_post_json_ajax_var("Venda", "postIncluirMostruario", variaveis);
+
+        if(jsonRet.erro){
+          $.gritter.add({
+  					title: 'Alerta',
+  					text: jsonRet.msg,
+  				});
+          var maxZindex = getHighIndex();
+          $("#gritter-notice-wrapper").css({'z-index':maxZindex + 5});
+
+          return false;
+        } else {
+          document.location.href = HOME_URL + "Venda/editarMostruario/" + jsonRet.vdm_id;
+        }
+      });
+      setTimeout("loadObjects()", 750);
+    }
+  });
+});
+// ===================
 
 // Tb_Venda ======
 $(document).on('keyup', '#proEanAddProdVenda', function(event){

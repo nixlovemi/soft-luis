@@ -608,5 +608,17 @@
           document.gomenu.selector.selectedIndex = 2;
          }
       </script>
+
+      <?php
+      // essa variavel vem do Start/index
+      $scriptPath = (isset($scriptPath)) ? $scriptPath: "";
+      if( file_exists($scriptPath) ){
+        ?>
+        <script>
+        fncTelaUpdateBd('<?php echo $scriptPath; ?>');
+        </script>
+        <?php
+      }
+      ?>
    </body>
 </html>
