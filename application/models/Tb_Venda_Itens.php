@@ -211,28 +211,54 @@ class Tb_Venda_Itens extends CI_Model {
     $vVdiValor    = isset($arrVendaItens["vdi_valor"]) ? $arrVendaItens["vdi_valor"]: null;
     $vVdiDesconto = isset($arrVendaItens["vdi_desconto"]) ? $arrVendaItens["vdi_desconto"]: 0;
 
-    $data = array(
-      'vdi_vda_id' => $vVdiVdaId,
-      'vdi_pro_id' => $vVdiProId,
-      'vdi_qtde' => $vVdiQtde,
-      'vdi_valor' => $vVdiValor,
-      'vdi_desconto' => $vVdiDesconto,
-      'vdi_status' => $vdaStatusInc,
-    );
+    // verifica se ja tem msm item com msm Valor
+    $sqlV = "SELECT vdi_id, vdi_qtde
+             FROM tb_venda_itens
+             WHERE vdi_vda_id = $vVdiVdaId
+             AND vdi_pro_id = $vVdiProId
+             AND vdi_valor = $vVdiValor";
+    $rsV  = $this->db->query($sqlV);
+    $rowV = $rsV->row();
+    // =========================================
 
-    $retInsert = $this->db->insert('tb_venda_itens', $data);
-    if(!$retInsert){
-      $arrRet["erro"] = true;
-      $arrRet["msg"]  = $this->db->_error_message();
+    if(isset($rowV)){
+      $vdiId       = $rowV->vdi_id;
+      $retVdaItens = $this->getVendaItem($vdiId);
+      
+      if($retVdaItens["erro"]){
+        $arrRet["erro"] = true;
+        $arrRet["msg"]  = $retVdaItens["msg"];
+        return $arrRet;
+      } else {
+        $VendaItem = $retVdaItens["arrVendaItemDados"];
+        $VendaItem["vdi_qtde"] += $vVdiQtde;
+
+        return $this->edit($VendaItem);
+      }
     } else {
-      $vdi_id = $this->db->insert_id();
+      $data = array(
+        'vdi_vda_id' => $vVdiVdaId,
+        'vdi_pro_id' => $vVdiProId,
+        'vdi_qtde' => $vVdiQtde,
+        'vdi_valor' => $vVdiValor,
+        'vdi_desconto' => $vVdiDesconto,
+        'vdi_status' => $vdaStatusInc,
+      );
 
-      $arrRet["vdi_id"] = $vdi_id;
-      $arrRet["erro"]   = false;
-      $arrRet["msg"]    = "Produto inserido com sucesso!";
+      $retInsert = $this->db->insert('tb_venda_itens', $data);
+      if(!$retInsert){
+        $arrRet["erro"] = true;
+        $arrRet["msg"]  = $this->db->_error_message();
+      } else {
+        $vdi_id = $this->db->insert_id();
+
+        $arrRet["vdi_id"] = $vdi_id;
+        $arrRet["erro"]   = false;
+        $arrRet["msg"]    = "Produto inserido com sucesso!";
+      }
+
+      return $arrRet;
     }
-
-    return $arrRet;
   }
 
   private function validaEdit($arrVendaItens){
