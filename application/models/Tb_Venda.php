@@ -176,9 +176,14 @@ class Tb_Venda extends CI_Model {
     $arrRet["msg"]  = "";
 
     $vCliId = (isset($arrVendaDados["vda_cli_id"])) ? $arrVendaDados["vda_cli_id"]: null;
-    if( !is_numeric($vCliId) && !$vCliId > 0 ){
+    $vVenId = (isset($arrVendaDados["vda_ven_id"])) ? $arrVendaDados["vda_ven_id"]: null;
+
+    $temCli = is_numeric($vCliId) && $vCliId > 0;
+    $temVen = is_numeric($vVenId) && $vVenId > 0;
+
+    if( !$temCli && !$temVen ){
       $arrRet["erro"] = true;
-      $arrRet["msg"]  = "Por Favor, informe o Cliente!";
+      $arrRet["msg"]  = "Por Favor, informe o Cliente OU o Vendedor!";
       return $arrRet;
     }
 

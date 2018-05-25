@@ -159,7 +159,7 @@ if($errorMsg != ""){
                                 <th>Produto</th>
                                 <th>Quantidade</th>
                                 <th>Valor</th>
-                                <th>Desconto</th>
+                                <?php // <th>Desconto</th> ?>
                                 <th>&nbsp;</th>
                               </tr>
                             </thead>
@@ -187,12 +187,16 @@ if($errorMsg != ""){
                                     <input class="span10 mask_moeda" type="text" name="vmiValor" id="vmiValor" value="" />
                                   </div>
                                 </td>
+                                <?php
+                                /*
                                 <td>
                                   <div class="input-prepend">
                                     <span class="add-on">R$</span>
                                     <input class="span10 mask_moeda" type="text" name="vmiDesconto" id="vmiDesconto" value="" />
                                   </div>
                                 </td>
+                                */
+                                ?>
                                 <td>
                                   <input id="addProdVendaMostru" type='button' value='Incluir Produto' class='btn btn-success' />
                                 </td>
@@ -211,7 +215,7 @@ if($errorMsg != ""){
               <div class="widget-box">
                 <div class="widget-title">
                   <span class="icon"> <i class="icon icon-tasks"></i> </span>
-                  <h5>Itens na Venda</h5>
+                  <h5>Itens no Mostruário</h5>
                 </div>
                 <div id="htmlTbVendaItens" class="widget-content nopadding">
                   <?php
@@ -241,7 +245,7 @@ if($errorMsg != ""){
 if($editar){
   ?>
   <center>
-    <input id="finalizaVenda" type='button' value='FAZER ACERTO' class='btn btn-success' />
+    <input onClick="document.location.href='<?php echo base_url() ?>Venda/acertoMostruario/<?php echo $vVdmId; ?>'" id="finalizaVenda" type='button' value='FAZER ACERTO' class='btn btn-success' />
   </center>
   <?php
 }

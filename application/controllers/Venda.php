@@ -294,6 +294,11 @@ class Venda extends MY_Controller {
     $htmlVendaMostruItens  = $this->Tb_Venda_Mostruario_Itens->getHtmlList($vdmId);
     $htmlVendaMostruTotais = $this->Tb_Venda_Mostruario_Itens->getHtmlTotVendaMostru($vdmId);
 
+    $userData = $this->session->get_userdata();
+    $errorMsg = isset($userData["VendaMostruario_error_msg"]) ? $userData["VendaMostruario_error_msg"]: "";
+    $this->session->set_userdata('VendaMostruario_error_msg', "");
+
+    $data["errorMsg"]              = $errorMsg;
     $data["editar"]                = true;
     $data["Mostruario"]            = $Mostruario;
     $data["arrProdutos"]           = $arrProdutos;
@@ -301,5 +306,63 @@ class Venda extends MY_Controller {
     $data["htmlVendaMostruItens"]  = $htmlVendaMostruItens;
     $data["htmlVendaMostruTotais"] = $htmlVendaMostruTotais;
     $this->template->load('template', 'Venda/editarMostruario', $data);
+  }
+
+  public function acertoMostruario($vdmId){
+    $data = [];
+
+    $this->load->model('Tb_Venda_Mostruario');
+    $retMostruario = $this->Tb_Venda_Mostruario->getMostruario($vdmId);
+    $Mostruario    = (!$retMostruario["erro"]) ? $retMostruario["arrVendaMostruarioDados"]: array();
+
+    $this->load->model('Tb_Venda_Mostruario_Itens');
+    $htmlVendaMostruItens  = $this->Tb_Venda_Mostruario_Itens->getHtmlList($vdmId, false);
+
+    $retProdutos = $this->Tb_Venda_Mostruario_Itens->getProdutosVdm($vdmId);
+    $arrProdutos = (!$retProdutos["erro"]) ? $retProdutos["arrProdutosVdm"]: array();
+
+    $this->load->model('Tb_Venda_Mostruario_Itens_Ret');
+    $retHtmlItensConfVendido = $this->Tb_Venda_Mostruario_Itens_Ret->getHtmlItensConfVendido($vdmId);
+    $htmlVendidos   = $retHtmlItensConfVendido["htmlVendido"];
+    $htmlConferidos = $retHtmlItensConfVendido["htmlConferido"];
+
+    $userData = $this->session->get_userdata();
+    $errorMsg = isset($userData["VendaMostruarioAcerto_error_msg"]) ? $userData["VendaMostruarioAcerto_error_msg"]: "";
+    $this->session->set_userdata('VendaMostruarioAcerto_error_msg', "");
+
+    $data["errorMsg"]             = $errorMsg;
+    $data["editar"]               = true;
+    $data["Mostruario"]           = $Mostruario;
+    $data["arrProdutos"]          = $arrProdutos;
+    $data["htmlVendaMostruItens"] = $htmlVendaMostruItens;
+    $data["htmlVendidos"]         = $htmlVendidos;
+    $data["htmlConferidos"]       = $htmlConferidos;
+    $this->template->load('template', 'Venda/acertoMostruario', $data);
+  }
+
+  public function finalizaAcerto($vdmId){
+    $erro = false;
+    $msg  = "";
+
+    $this->load->model('Tb_Venda_Mostruario_Itens_Ret');
+    $retArrConfVend = $this->Tb_Venda_Mostruario_Itens_Ret->getArrItensConfVendido($vdmId);
+    $arrProdVendido = (!$retArrConfVend["erro"]) ? $retArrConfVend["arrItens"]["vendidos"]: array();
+
+    if(count($arrProdVendido) <= 0){
+      $erro = true;
+      $msg  = "Acerto sem nenhum item!";
+    } else {
+      $this->load->model('Tb_Venda_Mostruario');
+      $retFinaliza = $this->Tb_Venda_Mostruario->finalizaAcerto($vdmId, $arrProdVendido);
+
+      if($retFinaliza["erro"]){
+        $this->session->set_userdata('VendaMostruarioAcerto_error_msg', $retFinaliza["msg"]);
+        $redirect = base_url() . "Venda/acertoMostruario/$vdmId";
+        header("location:$redirect");
+      } else {
+        $vdaId = $retFinaliza["vda_id"];
+        $this->editar($vdaId);
+      }
+    }
   }
 }

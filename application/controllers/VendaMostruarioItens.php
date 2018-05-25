@@ -166,4 +166,106 @@ class VendaMostruarioItens extends MY_Controller {
 
     echo json_encode($arrRet);
   }
+
+  public function jsonRemoveProdutoAcerto(){
+    $this->load->helper('utils');
+    $this->load->model('Tb_Venda_Mostruario_Itens_Ret');
+
+    $arrRet = [];
+    $arrRet["erro"]           = true;
+    $arrRet["msg"]            = "";
+    $arrRet["htmlVendidos"]   = "";
+    $arrRet["htmlConferidos"] = "";
+
+    // variaveis ============
+    $vmirId = $this->input->post('vmirId');
+    // ======================
+
+    $retVendaMostruItem  = $this->Tb_Venda_Mostruario_Itens_Ret->getVendaItemMostruRet($vmirId);
+    $VendaMostruarioItemRet = isset($retVendaMostruItem["VendaMostruarioItemRet"]) ? $retVendaMostruItem["VendaMostruarioItemRet"]: array();
+
+    $retDelete = $this->Tb_Venda_Mostruario_Itens_Ret->delete($vmirId);
+    if($retDelete["erro"]){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Erro ao remover item do acerto. Msg: " . $retDelete["msg"];
+    } else {
+      $arrRet["erro"] = false;
+      $arrRet["msg"]  = $retDelete["msg"];
+
+      $vdmId = isset($VendaMostruarioItemRet["vmir_vdm_id"]) ? $VendaMostruarioItemRet["vmir_vdm_id"]: 0;
+
+      $retHtmlItensConfVendido = $this->Tb_Venda_Mostruario_Itens_Ret->getHtmlItensConfVendido($vdmId);
+      $htmlVendidos   = $retHtmlItensConfVendido["htmlVendido"];
+      $htmlConferidos = $retHtmlItensConfVendido["htmlConferido"];
+
+      $arrRet["htmlVendidos"]   = $htmlVendidos;
+      $arrRet["htmlConferidos"] = $htmlConferidos;
+    }
+
+    echo json_encode($arrRet);
+  }
+
+  public function jsonAddProdutoMostruarioRet(){
+    $this->load->helper('utils');
+    $this->load->model('Tb_Venda_Mostruario_Itens_Ret');
+
+    $arrRet = [];
+    $arrRet["erro"]           = true;
+    $arrRet["msg"]            = "";
+    $arrRet["htmlVendidos"]   = "";
+    $arrRet["htmlConferidos"] = "";
+
+    // variaveis ============
+    $vdmId       = $this->input->post('vdmId');
+
+    $vmirProId    = $this->input->post('vmirProId');
+    $vmirQtde     = $this->input->post('vmirQtde');
+    $vmirValor    = $this->input->post('vmirValor');
+
+    $ean         = $this->input->post('ean8');
+    $eanQtde     = $this->input->post('eanQtde');
+    // ======================
+
+    $arrProdutoDados = [];
+    $arrProdutoDados["vmir_vdm_id"] = $vdmId;
+
+    // verifica se veio ean8
+    if( strlen($ean) == 13 ){
+      $this->load->model('Tb_Produto');
+      $retProdEan = $this->Tb_Produto->getProdutoByEan($ean);
+
+      $retProduto = $retProdEan["Produto"];
+      $vlrEan     = $retProdEan["valor"];
+
+      if(!$retProduto["erro"]){
+        $Produto = $retProduto["arrProdutoDados"];
+        if( !empty($Produto) ){
+          $arrProdutoDados["vmir_pro_id"]   = $Produto["pro_id"];
+          $arrProdutoDados["vmir_qtde"]     = $eanQtde;
+          $arrProdutoDados["vmir_valor"]    = $vlrEan;
+        }
+      }
+    } else {
+      $arrProdutoDados["vmir_pro_id"]   = $vmirProId;
+      $arrProdutoDados["vmir_qtde"]     = $vmirQtde;
+      $arrProdutoDados["vmir_valor"]    = ($vmirValor != "") ? acerta_moeda($vmirValor): null;
+    }
+
+    $retAdd = $this->Tb_Venda_Mostruario_Itens_Ret->insert($arrProdutoDados);
+    if( $retAdd["erro"] ){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = $retAdd["msg"];
+    } else {
+      $arrRet["erro"]         = false;
+
+      $retHtmlItensConfVendido = $this->Tb_Venda_Mostruario_Itens_Ret->getHtmlItensConfVendido($vdmId);
+      $htmlVendidos   = $retHtmlItensConfVendido["htmlVendido"];
+      $htmlConferidos = $retHtmlItensConfVendido["htmlConferido"];
+
+      $arrRet["htmlVendidos"]   = $htmlVendidos;
+      $arrRet["htmlConferidos"] = $htmlConferidos;
+    }
+
+    echo json_encode($arrRet);
+  }
 }

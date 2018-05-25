@@ -153,6 +153,41 @@ class Tb_Venda_Mostruario_Itens extends CI_Model {
     return $arrRet;
   }
 
+  public function getProdutosVdm($vdmId){
+    $arrRet = [];
+    $arrRet["erro"]           = true;
+    $arrRet["msg"]            = "";
+    $arrRet["arrProdutosVdm"] = array();
+
+    $this->load->database();
+    $this->db->select("pro_id, pro_descricao, pro_codigo, pro_ean, pro_estoque, pro_prec_custo, pro_prec_venda, pro_observacao, pro_ativo");
+    $this->db->from("tb_produto");
+    $this->db->join('tb_venda_mostruario_itens', 'pro_id = vmi_pro_id');
+    $this->db->order_by("pro_descricao", "asc");
+    $query = $this->db->get();
+
+    if($query->num_rows() > 0){
+      $arrRs = $query->result_array();
+      foreach($arrRs as $rs1){
+        $arrProdutosDados = [];
+        $arrProdutosDados["pro_id"]         = $rs1["pro_id"];
+        $arrProdutosDados["pro_descricao"]  = $rs1["pro_descricao"];
+        $arrProdutosDados["pro_codigo"]     = $rs1["pro_codigo"];
+        $arrProdutosDados["pro_ean"]        = $rs1["pro_ean"];
+        $arrProdutosDados["pro_estoque"]    = $rs1["pro_estoque"];
+        $arrProdutosDados["pro_prec_custo"] = $rs1["pro_prec_custo"];
+        $arrProdutosDados["pro_prec_venda"] = $rs1["pro_prec_venda"];
+        $arrProdutosDados["pro_observacao"] = $rs1["pro_observacao"];
+        $arrProdutosDados["pro_ativo"]      = $rs1["pro_ativo"];
+
+        $arrRet["arrProdutosVdm"][] = $arrProdutosDados;
+      }
+    }
+
+    $arrRet["erro"] = false;
+    return $arrRet;
+  }
+
   private function validaInsert($arrVendaMostruItens){
     $arrRet         = [];
     $arrRet["erro"] = true;

@@ -96,6 +96,100 @@ $(document).on('click', '.dynatableLink', function(){
 // ===============
 
 // Tb_Venda_Mostruario
+$(document).on('click', '#frmAddProdVendaMostruRet #addProdVendaMostruRet', function(){
+	var vdmId = $("#frmEditVendaMostruInfo #vdmId").val();
+	var frmVdm = $("#frmAddProdVendaMostruRet").serialize();
+
+	$.ajax({
+    type: "POST",
+    url: HOME_URL + 'VendaMostruarioItens/jsonAddProdutoMostruarioRet',
+    data: frmVdm + '&vdmId=' + vdmId,
+		dataType: 'json',
+		success: function (ret) {
+			var erro            = ret.erro;
+			var msg             = ret.msg;
+      var htmlVendidos    = ret.htmlVendidos;
+      var htmlConferidos  = ret.htmlConferidos;
+
+			if(erro){
+				$.gritter.add({
+					title: 'Alerta',
+					text: msg,
+				});
+			} else {
+				$("#frmAddProdVendaMostruRet #vmirProId").val("");
+				$("#frmAddProdVendaMostruRet #vmirQtde").val("");
+				$("#frmAddProdVendaMostruRet #vmirValor").val("");
+        $(".vmirHtmlVendidos").html(htmlVendidos);
+        $(".vmirHtmlConferidos").html(htmlConferidos);
+			}
+    }
+  });
+});
+
+$(document).on('keyup', '#proEanAddProdVendaMostruRet', function(event){
+  if (event.keyCode == 13) {
+    var ean8  = $(this).val();
+    var qtde  = $(this).parent().parent().find("#proEanQtdeRet").val();
+    var vdmId = $("#frmEditVendaMostruInfo #vdmId").val();
+
+    $(this).val("");
+
+    $.ajax({
+      type: "POST",
+      url: HOME_URL + 'VendaMostruarioItens/jsonAddProdutoMostruarioRet',
+      data: 'vdmId=' + vdmId + '&ean8=' + ean8 + '&eanQtde=' + qtde,
+  		dataType: 'json',
+  		success: function (ret) {
+        var erro            = ret.erro;
+  			var msg             = ret.msg;
+  			var htmlVendidos    = ret.htmlVendidos;
+        var htmlConferidos  = ret.htmlConferidos;
+
+  			if(erro){
+  				$.gritter.add({
+  					title: 'Alerta',
+  					text: msg,
+  				});
+  			} else {
+  				$(".vmirHtmlVendidos").html(htmlVendidos);
+          $(".vmirHtmlConferidos").html(htmlConferidos);
+  			}
+      }
+    });
+  }
+});
+
+$(document).on('click', '.TbVendaMostruarioItemRet_deletar', function(){
+	var vmirId = $(this).data("id");
+	var html   = 'Gostaria de remover esse produto do acerto?';
+
+	confirmBootbox(html, function(){
+    $.ajax({
+      type: "POST",
+      url: HOME_URL + 'VendaMostruarioItens/jsonRemoveProdutoAcerto',
+      data: 'vmirId=' + vmirId,
+  		dataType: 'json',
+  		success: function (ret) {
+  			var erro            = ret.erro;
+  			var msg             = ret.msg;
+  			var htmlVendidos    = ret.htmlVendidos;
+        var htmlConferidos  = ret.htmlConferidos;
+
+  			if(erro){
+  				$.gritter.add({
+  					title: 'Alerta',
+  					text: msg,
+  				});
+  			} else {
+  				$(".vmirHtmlVendidos").html(htmlVendidos);
+          $(".vmirHtmlConferidos").html(htmlConferidos);
+  			}
+      }
+    });
+	});
+});
+
 $(document).on('click', '.TbVendaMostruarioItem_deletar', function(){
 	var vmiId = $(this).data("id");
 	var html  = 'Gostaria de remover esse produto do mostruario?';

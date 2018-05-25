@@ -163,11 +163,13 @@ class Tb_Venda_Mostruario extends CI_Model {
     $vVdmVenId     = isset($arrVendaMostruarioDados["vdm_ven_id"]) && $arrVendaMostruarioDados["vdm_ven_id"] > 0 ? $arrVendaMostruarioDados["vdm_ven_id"]: null;
     $vVdmDtEntrega = isset($arrVendaMostruarioDados["vdm_dtentrega"]) && strlen($arrVendaMostruarioDados["vdm_dtentrega"]) == 10 ? $arrVendaMostruarioDados["vdm_dtentrega"]: null;
     $vVdmDtAcerto  = isset($arrVendaMostruarioDados["vdm_dtacerto"]) && strlen($arrVendaMostruarioDados["vdm_dtacerto"]) == 10 ? $arrVendaMostruarioDados["vdm_dtacerto"]: null;
+    $vVdmVdaId     = isset($arrVendaMostruarioDados["vdm_vda_id"]) && $arrVendaMostruarioDados["vdm_vda_id"] > 0 ? $arrVendaMostruarioDados["vdm_ven_id"]: null;
 
     $data = array(
       'vdm_ven_id' => $vVdmVenId,
       'vdm_dtentrega' => $vVdmDtEntrega,
       'vdm_dtacerto' => $vVdmDtAcerto,
+      'vdm_vda_id' => $vVdmVdaId,
     );
 
     $retInsert = $this->db->insert('tb_venda_mostruario', $data);
@@ -183,5 +185,203 @@ class Tb_Venda_Mostruario extends CI_Model {
     }
 
     return $arrRet;
+  }
+
+  private function validaEdit($arrVendaMostruarioDados){
+    $arrRet         = [];
+    $arrRet["erro"] = true;
+    $arrRet["msg"]  = "";
+
+    $vVdmId = (isset($arrVendaMostruarioDados["vdm_id"])) ? $arrVendaMostruarioDados["vdm_id"]: "";
+    if(!$vVdmId > 0){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Não é possível editar o Mostruário! ID inválido!";
+      return $arrRet;
+    }
+
+    $vVenId = (isset($arrVendaMostruarioDados["vdm_ven_id"])) ? $arrVendaMostruarioDados["vdm_ven_id"]: null;
+    if( !is_numeric($vVenId) && !$vVenId > 0 ){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Por Favor, informe o Vendedor!";
+      return $arrRet;
+    }
+
+    $this->load->helper('utils');
+
+    $vData       = (isset($arrVendaMostruarioDados["vdm_dtentrega"])) ? $arrVendaMostruarioDados["vdm_dtentrega"]: "";
+    $isDateValid = isValidDate($vData, "Y-m-d");
+    if(!$isDateValid){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Por favor, informe uma data de entrega válida!";
+      return $arrRet;
+    }
+
+    // checa se o vendedor ja esta com um Mostruario
+    $sql = "SELECT vdm_id, ven_nome
+            FROM tb_venda_mostruario
+            INNER JOIN tb_vendedor ON ven_id = vdm_ven_id
+            WHERE vdm_ven_id = $vVenId
+            AND vdm_id <> $vVdmId
+            AND vdm_deletado <> 1
+            AND vdm_dtacerto IS NULL";
+    $this->load->database();
+    $query = $this->db->query($sql);
+    $row   = $query->row();
+
+    if(isset($row)){
+      $vVdmId   = $row->vdm_id;
+      $vVenNome = $row->ven_nome;
+
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "O vendedor $vVenNome já está com um mostruário (ID $vVdmId)! Faça o acerto antes de incluir um novo.";
+      return $arrRet;
+    }
+    // =============================================
+
+    $arrRet["erro"] = false;
+    $arrRet["msg"]  = "";
+    return $arrRet;
+  }
+
+  public function edit($arrVendaMostruarioDados){
+    $arrRet         = [];
+    $arrRet["erro"] = true;
+    $arrRet["msg"]  = "";
+
+    $retValidacao = $this->validaEdit($arrVendaMostruarioDados);
+    if($retValidacao["erro"]){
+      return $retValidacao;
+    }
+
+    $this->load->database();
+
+    $vVdmId        = isset($arrVendaMostruarioDados["vdm_id"]) ? $arrVendaMostruarioDados["vdm_id"]: null;
+    $vVdmVenId     = isset($arrVendaMostruarioDados["vdm_ven_id"]) && $arrVendaMostruarioDados["vdm_ven_id"] > 0 ? $arrVendaMostruarioDados["vdm_ven_id"]: null;
+    $vVdmDtEntrega = isset($arrVendaMostruarioDados["vdm_dtentrega"]) && strlen($arrVendaMostruarioDados["vdm_dtentrega"]) == 10 ? $arrVendaMostruarioDados["vdm_dtentrega"]: null;
+    $vVdmDtAcerto  = isset($arrVendaMostruarioDados["vdm_dtacerto"]) && strlen($arrVendaMostruarioDados["vdm_dtacerto"]) == 10 ? $arrVendaMostruarioDados["vdm_dtacerto"]: null;
+    $vVdmDeletado  = isset($arrVendaMostruarioDados["vdm_deletado"]) ? $arrVendaMostruarioDados["vdm_deletado"]: 0;
+    $vVdmVdaId     = isset($arrVendaMostruarioDados["vdm_vda_id"]) && $arrVendaMostruarioDados["vdm_vda_id"] > 0 ? $arrVendaMostruarioDados["vdm_vda_id"]: null;
+
+    $data = array(
+      'vdm_ven_id' => $vVdmVenId,
+      'vdm_dtentrega' => $vVdmDtEntrega,
+      'vdm_dtacerto' => $vVdmDtAcerto,
+      'vdm_deletado' => $vVdmDeletado,
+      'vdm_vda_id' => $vVdmVdaId,
+    );
+
+    $this->db->where('vdm_id', $vVdmId);
+    $retInsert = $this->db->update('tb_venda_mostruario', $data);
+    if(!$retInsert){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = $this->db->_error_message();
+    } else {
+      $arrRet["erro"] = false;
+      $arrRet["msg"]  = "Mostruario editado com sucesso!";
+    }
+
+    return $arrRet;
+  }
+
+  public function finalizaAcerto($vdmId, $arrProdVenda){
+    $arrRet           = [];
+    $arrRet["erro"]   = true;
+    $arrRet["msg"]    = "";
+    $arrRet["vda_id"] = "";
+
+    if( !is_numeric($vdmId) ){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Mostruário inválido para finalizar!";
+
+      return $arrRet;
+    }
+
+    if( count($arrProdVenda) <= 0 ){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Mostruário sem itens vendidos!";
+
+      return $arrRet;
+    }
+
+    $this->load->database();
+    $this->db->trans_begin();
+
+    // pega venda mostruario
+    $retVendaMostruario = $this->getMostruario($vdmId);
+    if($retVendaMostruario["erro"]){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Erro ao finalizar acerto. Msg: " . $retVendaMostruario["msg"];
+
+      return $arrRet;
+    } else {
+      $VendaMostruario = $retVendaMostruario["arrVendaMostruarioDados"];
+    }
+    // =====================
+
+    // insere uma venda ====
+    $this->load->model('Tb_Venda');
+
+    $arrSession   = $this->session->get_userdata('logged_in');
+    $loggedUsuId  = $arrSession["logged_in"]["usu_id"];
+
+    $Venda = [];
+    $Venda["vda_data"]   = date("Y-m-d H:i:s");
+    $Venda["vda_usu_id"] = $loggedUsuId;
+    $Venda["vda_ven_id"] = $VendaMostruario["vdm_ven_id"];
+
+    $retAddVenda = $this->Tb_Venda->insert($Venda);
+    if($retAddVenda["erro"]){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Erro ao gerar parcelas do acordo. Msg: " . $retAddVenda["msg"];
+
+      return $arrRet;
+    } else {
+      $vdaId = $retAddVenda["vda_id"];
+    }
+    // =====================
+
+    // insere os itens da venda
+    $this->load->model('Tb_Venda_Itens');
+
+    foreach($arrProdVenda as $key => $ProdVenda){
+      $VendaItens = [];
+      $VendaItens["vdi_vda_id"]   = $vdaId;
+      $VendaItens["vdi_pro_id"]   = $ProdVenda["pro_id"];
+      $VendaItens["vdi_qtde"]     = $ProdVenda["qtde"];
+      $VendaItens["vdi_valor"]    = $ProdVenda["valor"];
+      $VendaItens["vdi_desconto"] = 0;
+
+      $retVendaItens = $this->Tb_Venda_Itens->insert($VendaItens);
+      if($retVendaItens["erro"]){
+        $arrRet["erro"] = true;
+        $arrRet["msg"]  = "Erro ao inserir itens do acordo. Msg: " . $retVendaItens["msg"];
+
+        return $arrRet;
+      }
+    }
+    // ========================
+
+    // atualiza mostruario
+    $VendaMostruario["vdm_dtacerto"] = $Venda["vda_data"];
+    $VendaMostruario["vdm_vda_id"]   = $vdaId;
+
+    $retEditMostruario = $this->edit($VendaMostruario);
+    if($retEditMostruario["erro"]){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Erro ao finalizar acordo. Msg: " . $retEditMostruario["msg"];
+
+      return $arrRet;
+    }
+    // ===================
+
+    $this->db->trans_commit();
+
+    // tudo certo
+    $arrRet["erro"]   = false;
+    $arrRet["msg"]    = "Acerto finalizado!";
+    $arrRet["vda_id"] = $vdaId;
+
+    return $arrRet;
+    // ==========
   }
 }
