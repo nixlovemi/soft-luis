@@ -365,4 +365,32 @@ class Venda extends MY_Controller {
       }
     }
   }
+
+  public function jsonFinalizaVenda(){
+    $this->load->helper('utils');
+
+    $arrRet = [];
+    $arrRet["erro"] = false;
+    $arrRet["msg"]  = "";
+
+    // variaveis ============
+    $vdaId = $this->input->post('vdaId');
+    // ======================
+
+    if(!$vdaId > 0){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "ID inválido para finalizar!";
+
+      echo json_encode($arrRet);
+      return;
+    }
+
+    $this->load->model("Tb_Venda");
+    $retFinVda = $this->Tb_Venda->finalizaVenda($vdaId);
+
+    $arrRet["erro"] = $retFinVda["erro"];
+    $arrRet["msg"]  = $retFinVda["msg"];
+
+    echo json_encode($arrRet);
+  }
 }

@@ -355,6 +355,33 @@ $(document).on('click', '#btnNovoMostruario', function(){
 // ===================
 
 // Tb_Venda ======
+$(document).on('click', '#finalizaVenda', function(){
+	var vdaId = $(this).data("id");
+	var html  = 'Gostaria de finalizar a venda ' + vdaId + '?';
+
+	confirmBootbox(html, function(){
+    $.ajax({
+      type: "POST",
+      url: HOME_URL + 'Venda/jsonFinalizaVenda',
+      data: 'vdaId=' + vdaId,
+  		dataType: 'json',
+  		success: function (ret) {
+  			var erro            = ret.erro;
+  			var msg             = ret.msg;
+
+  			if(erro){
+  				$.gritter.add({
+  					title: 'Alerta',
+  					text: msg,
+  				});
+  			} else {
+          document.location.href = HOME_URL + 'Venda/listaFinalizadas';
+  			}
+      }
+    });
+	});
+});
+
 $(document).on('keyup', '#proEanAddProdVenda', function(event){
   if (event.keyCode == 13) {
     var ean8  = $(this).val();

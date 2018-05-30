@@ -329,7 +329,7 @@ if($errorMsg != ""){
 if($editar){
   ?>
   <center>
-    <input id="finalizaVenda" type='button' value='FINALIZAR VENDA' class='btn btn-success' />
+    <input data-id="<?php echo $vVdaId; ?>" id="finalizaVenda" type='button' value='FINALIZAR VENDA' class='btn btn-success' />
   </center>
   <?php
 }

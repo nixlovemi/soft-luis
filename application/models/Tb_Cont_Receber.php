@@ -283,10 +283,11 @@ class Tb_Cont_Receber extends CI_Model {
     $htmlTable .= "  </thead>";
     $htmlTable .= "  <tbody>";
 
-    $vSql  = " SELECT ctr_id, ctr_vda_id, cli_nome, ven_nome, ctr_dtvencimento, ctr_valor, ctr_dtpagamento, ctr_valor_pago ";
+    $vSql  = " SELECT ctr_id, ctr_vda_id, vda_status, cli_nome, ven_nome, ctr_dtvencimento, ctr_valor, ctr_dtpagamento, ctr_valor_pago ";
     $vSql .= " FROM tb_cont_receber ";
     $vSql .= " LEFT JOIN tb_cliente ON cli_id = ctr_cli_id ";
     $vSql .= " LEFT JOIN tb_vendedor ON ven_id = ctr_ven_id ";
+    $vSql .= " LEFT JOIN tb_venda ON vda_id = ctr_vda_id ";
     $vSql .= " WHERE 1=1 ";
     $vSql .= " AND ctr_deletado = 0 ";
     $vSql .= " $sqlFilter ";
@@ -311,8 +312,9 @@ class Tb_Cont_Receber extends CI_Model {
         $vValor   = (is_numeric($rs1["ctr_valor"])) ? "R$ " . number_format($rs1["ctr_valor"], 2, ",", "."): "";
         $vPgto    = (strlen($rs1["ctr_dtpagamento"]) == 10) ? date("d/m/Y", strtotime($rs1["ctr_dtpagamento"])): "";
         $vValorPg = (is_numeric($rs1["ctr_valor_pago"])) ? "R$ " . number_format($rs1["ctr_valor_pago"], 2, ",", "."): "";
+        $vVdaSts  = ($rs1["vda_status"] != "" && $rs1["vda_status"] == 1) ? "color:gray;": "";
 
-        $htmlTable .= "<tr>";
+        $htmlTable .= "<tr bgcolor='$vVdaSts'>";
         $htmlTable .= "  <td>$vCtrId</td>";
         $htmlTable .= "  <td>$vVdaId</td>";
         $htmlTable .= "  <td>$vCliNome</td>";

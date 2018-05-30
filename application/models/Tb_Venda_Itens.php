@@ -9,6 +9,7 @@ class Tb_Venda_Itens extends CI_Model {
     $htmlTable .= "      <th width='8%'>ID</th>";
     $htmlTable .= "      <th>Produto</th>";
     $htmlTable .= "      <th width='8%'>Quantidade</th>";
+    $htmlTable .= "      <th width='8%'>Estoque</th>";
     $htmlTable .= "      <th width='10%'>Valor</th>";
     $htmlTable .= "      <th width='10%'>Desconto</th>";
     $htmlTable .= "      <th width='10%'>Total</th>";
@@ -18,7 +19,7 @@ class Tb_Venda_Itens extends CI_Model {
     $htmlTable .= "  </thead>";
     $htmlTable .= "  <tbody>";
 
-    $vSql  = " SELECT vdi_id, pro_id, pro_descricao, vdi_qtde, vdi_valor, vdi_desconto, vdi_total ";
+    $vSql  = " SELECT vdi_id, pro_id, pro_descricao, pro_estoque, vdi_qtde, vdi_valor, vdi_desconto, vdi_total ";
     $vSql .= " FROM tb_venda_itens ";
     $vSql .= " LEFT JOIN tb_produto ON pro_id = vdi_pro_id ";
     $vSql .= " WHERE vdi_vda_id = $vdaId ";
@@ -39,6 +40,7 @@ class Tb_Venda_Itens extends CI_Model {
         $vVdiProId     = $rs1["pro_id"];
         $vProDescricao = $rs1["pro_descricao"];
         $vVdiQtde      = $rs1["vdi_qtde"];
+        $vProEstoque   = $rs1["pro_estoque"];
         $vVdiValor     = "R$" . number_format($rs1["vdi_valor"], 2, ",", ".");
         $vVdiDesconto  = "R$" . number_format($rs1["vdi_desconto"], 2, ",", ".");
         $vVdiTotal     = "R$" . number_format($rs1["vdi_total"], 2, ",", ".");
@@ -47,6 +49,7 @@ class Tb_Venda_Itens extends CI_Model {
         $htmlTable .= "  <td>$vVdiProId</td>";
         $htmlTable .= "  <td>$vProDescricao</td>";
         $htmlTable .= "  <td>$vVdiQtde</td>";
+        $htmlTable .= "  <td>$vProEstoque</td>";
         $htmlTable .= "  <td>$vVdiValor</td>";
         $htmlTable .= "  <td>$vVdiDesconto</td>";
         $htmlTable .= "  <td>$vVdiTotal</td>";
@@ -224,7 +227,7 @@ class Tb_Venda_Itens extends CI_Model {
     if(isset($rowV)){
       $vdiId       = $rowV->vdi_id;
       $retVdaItens = $this->getVendaItem($vdiId);
-      
+
       if($retVdaItens["erro"]){
         $arrRet["erro"] = true;
         $arrRet["msg"]  = $retVdaItens["msg"];

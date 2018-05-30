@@ -65,6 +65,7 @@ class ContaReceber extends MY_Controller {
     $vValor = ($vCtrValor != "") ? acerta_moeda($vCtrValor): "";
 
     $ContaReceber = [];
+    $ContaReceber["ctr_ven_id"]       = $VendaDados["vda_ven_id"];
     $ContaReceber["ctr_cli_id"]       = $VendaDados["vda_cli_id"];
     $ContaReceber["ctr_vda_id"]       = $VendaDados["vda_id"];
     $ContaReceber["ctr_dtvencimento"] = $vVcto;

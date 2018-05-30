@@ -11,6 +11,7 @@ class Tb_Venda extends CI_Model {
     $htmlTable .= "      <th width='6%'>ID</th>";
     $htmlTable .= "      <th width='12%'>Data</th>";
     $htmlTable .= "      <th>Cliente</th>";
+    $htmlTable .= "      <th>Vendedor</th>";
     $htmlTable .= "      <th width='8%'>Itens</th>";
     $htmlTable .= "      <th width='10%'>Valor</th>";
     $htmlTable .= "      <th width='10%'>Status</th>";
@@ -21,7 +22,7 @@ class Tb_Venda extends CI_Model {
     $htmlTable .= "  </thead>";
     $htmlTable .= "  <tbody>";
 
-    $vSql  = " SELECT vda_id, vda_data, cli_nome, vda_tot_itens, vda_vlr_itens, vds_status ";
+    $vSql  = " SELECT vda_id, vda_data, cli_nome, ven_nome, vda_tot_itens, vda_vlr_itens, vds_status ";
     $vSql .= " FROM tb_venda ";
     $vSql .= " INNER JOIN tb_venda_status ON vds_id = vda_status ";
     $vSql .= " LEFT JOIN tb_cliente ON cli_id = vda_cli_id ";
@@ -43,6 +44,7 @@ class Tb_Venda extends CI_Model {
         $vVdaId    = $rs1["vda_id"];
         $vVdaData  = ($rs1["vda_data"] != "") ? date("d/m/Y H:i", strtotime($rs1["vda_data"])): "";
         $vCliente  = $rs1["cli_nome"];
+        $vVendedor = $rs1["ven_nome"];
         $vTotItens = $rs1["vda_tot_itens"];
         $vVlrItens = "R$" . number_format($rs1["vda_vlr_itens"], 2, ",", ".");
         $vStatus   = $rs1["vds_status"];
@@ -51,6 +53,7 @@ class Tb_Venda extends CI_Model {
         $htmlTable .= "  <td>$vVdaId</td>";
         $htmlTable .= "  <td>$vVdaData</td>";
         $htmlTable .= "  <td>$vCliente</td>";
+        $htmlTable .= "  <td>$vVendedor</td>";
         $htmlTable .= "  <td>$vTotItens</td>";
         $htmlTable .= "  <td>$vVlrItens</td>";
         $htmlTable .= "  <td>$vStatus</td>";
@@ -78,6 +81,7 @@ class Tb_Venda extends CI_Model {
     $htmlTable .= "      <th width='6%'>ID</th>";
     $htmlTable .= "      <th width='12%'>Data</th>";
     $htmlTable .= "      <th>Cliente</th>";
+    $htmlTable .= "      <th>Vendedor</th>";
     $htmlTable .= "      <th width='8%'>Itens</th>";
     $htmlTable .= "      <th width='10%'>Valor</th>";
     $htmlTable .= "      <th width='10%'>Status</th>";
@@ -87,7 +91,7 @@ class Tb_Venda extends CI_Model {
     $htmlTable .= "  </thead>";
     $htmlTable .= "  <tbody>";
 
-    $vSql  = " SELECT vda_id, vda_data, cli_nome, vda_tot_itens, vda_vlr_itens, vds_status ";
+    $vSql  = " SELECT vda_id, vda_data, cli_nome, ven_nome, vda_tot_itens, vda_vlr_itens, vds_status ";
     $vSql .= " FROM tb_venda ";
     $vSql .= " INNER JOIN tb_venda_status ON vds_id = vda_status ";
     $vSql .= " LEFT JOIN tb_cliente ON cli_id = vda_cli_id ";
@@ -109,6 +113,7 @@ class Tb_Venda extends CI_Model {
         $vVdaId    = $rs1["vda_id"];
         $vVdaData  = ($rs1["vda_data"] != "") ? date("d/m/Y H:i", strtotime($rs1["vda_data"])): "";
         $vCliente  = $rs1["cli_nome"];
+        $vVendedor = $rs1["ven_nome"];
         $vTotItens = $rs1["vda_tot_itens"];
         $vVlrItens = "R$" . number_format($rs1["vda_vlr_itens"], 2, ",", ".");
         $vStatus   = $rs1["vds_status"];
@@ -117,6 +122,7 @@ class Tb_Venda extends CI_Model {
         $htmlTable .= "  <td>$vVdaId</td>";
         $htmlTable .= "  <td>$vVdaData</td>";
         $htmlTable .= "  <td>$vCliente</td>";
+        $htmlTable .= "  <td>$vVendedor</td>";
         $htmlTable .= "  <td>$vTotItens</td>";
         $htmlTable .= "  <td>$vVlrItens</td>";
         $htmlTable .= "  <td>$vStatus</td>";
@@ -290,5 +296,99 @@ class Tb_Venda extends CI_Model {
         return $arrRet;
       }
     }
+  }
+
+  public function finalizaVenda($vdaId){
+    $arrRet         = [];
+    $arrRet["erro"] = true;
+    $arrRet["msg"]  = "";
+
+    if(!is_numeric($vdaId)){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "ID de Venda inválido para cencelar!";
+
+      return $arrRet;
+    }
+
+    $this->load->database();
+
+    // verifica se tem pelo menos 1 item
+    $sqlVI = "SELECT COALESCE(COUNT(*), 0) AS tot
+              FROM tb_venda_itens
+              WHERE vdi_vda_id = $vdaId";
+    $queryVI = $this->db->query($sqlVI);
+    $rowVI   = $queryVI->row();
+
+    if(!isset($rowVI) || $rowVI->tot <= 0){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Não é possível finalizar venda - sem itens!";
+
+      return $arrRet;
+    }
+    // =================================
+
+    // valida estoque dos itens ========
+    $sqlES = "SELECT COUNT(*) AS tot
+              FROM tb_venda_itens
+              LEFT JOIN tb_produto ON pro_id = vdi_pro_id
+              WHERE vdi_vda_id = $vdaId
+              AND vdi_qtde > pro_estoque";
+    $queryES = $this->db->query($sqlES);
+    $rowES   = $queryES->row();
+
+    if(!isset($rowES) || $rowES->tot > 0){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Não é possível finalizar venda - itens sem estoque!";
+
+      return $arrRet;
+    }
+    // =================================
+
+    // verifica parcelas ===============
+    $sqlCR = "SELECT COUNT(*) AS tot
+              FROM tb_cont_receber
+              WHERE ctr_vda_id = $vdaId";
+    $queryCR = $this->db->query($sqlCR);
+    $rowCR   = $queryCR->row();
+
+    if(!isset($rowCR) || $rowCR->tot <= 0){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Não é possível finalizar venda - sem parcelas!";
+
+      return $arrRet;
+    }
+    // =================================
+
+    // valida total da venda com as parcelas
+    $sqlTV = "SELECT vda_id, vda_vlr_itens, SUM(COALESCE(ctr_valor, 0)) AS parcelas
+              FROM tb_venda
+              LEFT JOIN tb_cont_receber ON ctr_vda_id = vda_id
+              WHERE vda_id = $vdaId
+              GROUP BY vda_id";
+    $queryTV = $this->db->query($sqlTV);
+    $rowTV   = $queryTV->row();
+
+    if(!isset($rowTV) || $rowTV->parcelas <> $rowTV->vda_vlr_itens){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Não é possível finalizar venda - parcelas diferem do total da venda!";
+
+      return $arrRet;
+    }
+    // =====================================
+
+    // finaliza venda - estoque eh controlado por trigger
+    $statusFin = 2;
+    $sql1  = "UPDATE tb_venda SET vda_status = $statusFin WHERE vda_id = $vdaId";
+    $retUP = $this->db->query($sql1);
+
+    if($retUP == false){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Erro ao finalizar venda!";
+    } else {
+      $arrRet["erro"] = false;
+      $arrRet["msg"]  = "Venda finalizada com sucesso!";
+    }
+
+    return $arrRet;
   }
 }

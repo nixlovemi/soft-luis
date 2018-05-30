@@ -6,17 +6,18 @@ class Tb_Produto extends CI_Model {
     $idxStart = "2";
     $proId    = str_pad($Produto["pro_id"], 4, "0", STR_PAD_LEFT);
 
+    $idxMid   = "11";
+
     $valor    = number_format($Produto["pro_prec_venda"], 2, ".", "");
     $proVlr   = str_pad(str_replace(".", "", $valor), 5, "0", STR_PAD_LEFT);
 
-    $idxEnd   = "11";
-    return generateEAN($idxStart . $proId . $proVlr . $idxEnd);
+    return generateEAN($idxStart . $proId . $idxMid . $proVlr);
   }
 
   private function eanToProduto($ean){
     $proId  = (int) substr($ean, 1, 4);
 
-    $valor  = ((int) substr($ean, 5, 3)) . "." . substr($ean, 8, 2);
+    $valor  = ((int) substr($ean, 7, 3)) . "." . substr($ean, 10, 2);
     $strVlr = number_format($valor, 2, ".", "");
 
     return array(
