@@ -14,8 +14,16 @@ class Start extends MY_Controller {
     foreach (glob(APPPATH . "cache/script*.sql") as $arquivo) {
       $scriptPath = $arquivo;
     }
+    // ==============================
 
-    $data["scriptPath"] = $scriptPath;
+    // pega arr info ================
+    $this->load->model("M_Start");
+    $retArrInfoStart = $this->M_Start->getArrInfoStart();
+    $arrInfoStart    = (!$retArrInfoStart["erro"]) ? $retArrInfoStart["array"]: array();
+    // ==============================
+
+    $data["scriptPath"]   = $scriptPath;
+    $data["arrInfoStart"] = $arrInfoStart;
     $this->template->load('template', 'Start/index', $data);
 	}
 

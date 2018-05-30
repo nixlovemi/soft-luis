@@ -1,7 +1,82 @@
 <?php
-$scriptPath = isset($scriptPath) ? $scriptPath: "";
+$basePath     = base_url();
+$scriptPath   = isset($scriptPath) ? $scriptPath: "";
+$arrInfoStart = isset($arrInfoStart) ? $arrInfoStart: array();
+$iconSize     = "43px";
 ?>
 
+<br />
+
+<div class="widget-box widget-plain">
+  <div class="center">
+    <ul class="stat-boxes2">
+      <?php
+      if( isset($arrInfoStart["qtd_venda"]) ){
+        $qtdVenda = $arrInfoStart["qtd_venda"];
+        echo "<li>
+                <div class='left'>
+                  <a href='".$basePath."Venda/listaFinalizadas'>
+                    <i style='font-size:$iconSize;' class='icon icon-money'></i>
+                  </a>
+                </div>
+                <div class='right'>
+                  <strong>$qtdVenda</strong>
+                  Vendas no mês
+                </div>
+              </li>";
+      }
+
+      if( isset($arrInfoStart["tot_venda"]) ){
+        $totVenda = "R$" . number_format($arrInfoStart["tot_venda"], 2, ",", ".");
+        echo "<li>
+                <div class='left'>
+                  <a href='".$basePath."Venda/listaFinalizadas'>
+                    <i style='font-size:$iconSize;' class='icon icon-money'></i>
+                  </a>
+                </div>
+                <div class='right'>
+                  <strong>$totVenda</strong>
+                  Vendido no mês
+                </div>
+              </li>";
+      }
+
+      if( isset($arrInfoStart["cts_receber"]) ){
+        $totReceber = "R$" . number_format($arrInfoStart["cts_receber"], 2, ",", ".");
+        echo "<li>
+                <div class='left'>
+                  <a href='".$basePath."ContaReceber/index'>
+                    <i style='font-size:$iconSize;' class='icon icon-money'></i>
+                  </a>
+                </div>
+                <div class='right'>
+                  <strong>$totReceber</strong>
+                  A Receber no mês
+                </div>
+              </li>";
+      }
+
+      if( isset($arrInfoStart["cts_pagar"]) ){
+        $totPagar = "R$" . number_format($arrInfoStart["cts_pagar"], 2, ",", ".");
+        echo "<li>
+                <div class='left'>
+                  <a href='".$basePath."ContaPagar/index'>
+                    <i style='font-size:$iconSize;' class='icon icon-money'></i>
+                  </a>
+                </div>
+                <div class='right'>
+                  <strong>$totPagar</strong>
+                  A Pagar no mês
+                </div>
+              </li>";
+      }
+      ?>
+    </ul>
+  </div>
+</div>
+
+<?php
+/*
 <div class="quick-actions_homepage">
   <ul class="quick-actions">
     <li class="bg_lb"> <a href="index.html"> <i class="icon-dashboard"></i> <span class="label label-important">20</span> My Dashboard </a> </li>
@@ -16,3 +91,5 @@ $scriptPath = isset($scriptPath) ? $scriptPath: "";
     <li class="bg_lr"> <a href="error404.html"> <i class="icon-info-sign"></i> Error</a> </li>
   </ul>
 </div>
+*/
+?>
