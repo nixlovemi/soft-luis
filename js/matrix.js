@@ -95,6 +95,49 @@ $(document).on('click', '.dynatableLink', function(){
 });
 // ===============
 
+// Relatorios ====
+$(document).on('change', '#frmRelatorios #cbRelatorios', function(){
+  var objDvRet  = $('#dvOpenRelatorio');
+  var stringRel = $(this).val();
+
+  if(stringRel == ''){
+    objDvRet.html('');
+  } else {
+    var splitRel   = stringRel.split('@');
+    var controller = splitRel[0];
+    var action     = splitRel[1];
+
+    $.ajax({
+      type: "POST",
+      url: HOME_URL + controller + '/' + action,
+      data: '',
+  		success: function (ret) {
+  			objDvRet.html(ret);
+        setTimeout("loadObjects()", 350);
+      }
+    });
+  }
+});
+
+$(document).on('click', '#postRelVendas', function(){
+  var frmVariaveis = $("#frmInfoRelVendas").serialize();
+  var dvRet        = $("#dvPostRelVendas");
+
+  $.ajax({
+    type: "POST",
+    url: HOME_URL + 'Relatorio/postRelVendas',
+    data: frmVariaveis,
+    beforeSend: function(){
+      dvRet.html(getHtmlLoader());
+    },
+    success: function (ret) {
+      dvRet.html(ret);
+      setTimeout("loadObjects()", 350);
+    }
+  });
+});
+// ===============
+
 // Tb_Venda_Mostruario
 $(document).on('click', '#frmAddProdVendaMostruRet #addProdVendaMostruRet', function(){
 	var vdmId = $("#frmEditVendaMostruInfo #vdmId").val();

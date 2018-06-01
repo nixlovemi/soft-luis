@@ -36,3 +36,6 @@ ALTER TABLE tb_venda_mostruario_itens_ret ADD vmir_valor DOUBLE PRECISION NOT NU
 
 ALTER TABLE tb_venda_mostruario ADD vdm_vda_id INTEGER;
 ALTER TABLE tb_venda_mostruario ADD FOREIGN KEY (vdm_vda_id) REFERENCES tb_venda(vda_id);
+
+INSERT INTO tb_menu(men_descricao, men_controller, men_action, men_ativo, men_order, men_icon)
+VALUES ('Relatórios', 'Relatorio', 'index', 1, 1, '<i class="icon icon-print"></i>');

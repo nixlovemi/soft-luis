@@ -391,4 +391,56 @@ class Tb_Venda extends CI_Model {
 
     return $arrRet;
   }
+
+  public function relVendas($arrFiltros){
+    $statusFinalizadas = 2;
+
+    $arrRet = [];
+    $arrRet["erro"]      = false;
+    $arrRet["msg"]       = "";
+    $arrRet["recordset"] = array();
+
+    $vDataIni  = isset($arrFiltros["vdaDataIni"]) ? $arrFiltros["vdaDataIni"]: "";
+    $vDataFim  = isset($arrFiltros["vdaDataFim"]) ? $arrFiltros["vdaDataFim"]: "";
+    $vCliente  = isset($arrFiltros["vdaCliente"]) ? $arrFiltros["vdaCliente"]: "";
+    $vVendedor = isset($arrFiltros["vdaVendedor"]) ? $arrFiltros["vdaVendedor"]: "";
+
+    if( $vDataIni == "" && $vDataFim == "" ){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Por favor, informe pelo menos uma data!";
+
+      return $arrRet;
+    }
+
+    $vSql  = " SELECT vda_id, vda_data, cli_nome, ven_nome, vda_tot_itens, vda_vlr_itens ";
+    $vSql .= " FROM tb_venda ";
+    $vSql .= " INNER JOIN tb_venda_status ON vds_id = vda_status ";
+    $vSql .= " LEFT JOIN tb_cliente ON cli_id = vda_cli_id ";
+    $vSql .= " LEFT JOIN tb_vendedor ON ven_id = vda_ven_id ";
+    $vSql .= " WHERE vds_id = $statusFinalizadas ";
+
+    if(strlen($vDataIni) == 10){
+      $vSql .= " AND vda_data >= '$vDataIni 00:00:00' ";
+    }
+
+    if(strlen($vDataFim) == 10){
+      $vSql .= " AND vda_data <= '$vDataFim 23:59:59' ";
+    }
+
+    if($vCliente > 0){
+      $vSql .= " AND vda_cli_id = $vCliente ";
+    }
+
+    if($vVendedor > 0){
+      $vSql .= " AND vda_ven_id = $vVendedor ";
+    }
+
+    $vSql .= " ORDER BY vda_data ";
+
+    $query = $this->db->query($vSql);
+    $arrRs = $query->result_array();
+
+    $arrRet["recordset"] = $arrRs;
+    return $arrRet;
+  }
 }
