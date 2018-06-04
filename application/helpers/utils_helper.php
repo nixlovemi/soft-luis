@@ -1,4 +1,25 @@
 <?php
+/**
+* encoda uma string para passar como parametro
+*/
+function base64url_encode($data)
+{
+    // return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+    return base64_encode(urlencode($data));
+}
+
+/**
+* decoda uma string para passar como parametro
+*/
+function base64url_decode($data)
+{
+    // return base64_decode(str_pad(strtr($data, '-_', '+/'), strlen($data) % 4, '=', STR_PAD_RIGHT));
+    return urldecode(base64_decode($data));
+}
+
+/**
+* retorna o HTML do bloco de totais
+*/
 function getHtmlBlocoTotais($label, $value, $colorClass="bg_lb"){
   $vLabel = mb_strtoupper($label);
 

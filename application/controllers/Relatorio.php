@@ -66,4 +66,19 @@ class Relatorio extends MY_Controller {
       $this->load->view('Relatorio/postRelVendas', $data);
     }
   }
+
+  public function pdfRelVendas(){
+    $this->load->helper('utils');
+
+    // variaveis ============
+    $codedJsonRelVendas = $this->input->post('jsonRelVendas');
+    $jsonRelVendas      = ($codedJsonRelVendas != "") ? base64url_decode($codedJsonRelVendas): "";
+    $arrRelVendas       = json_decode($jsonRelVendas, 1);
+    // ======================
+
+    $data = [];
+    $data["arrRelVendas"] = $arrRelVendas;
+
+    $this->load->view('Relatorio/pdfRelVendas', $data);
+  }
 }
