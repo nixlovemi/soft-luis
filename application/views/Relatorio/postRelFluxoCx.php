@@ -15,7 +15,7 @@ $htmlTable .= "    </tr>";
 $htmlTable .= "  </thead>";
 $htmlTable .= "  <tbody>";
 
-foreach($rsFluxo as $row){
+foreach($rsFluxo as $diaAtual => $row){
   $dia       = $row["dia"];
   $receber   = "R$" . number_format($row["receber"], 2, ",", ".");
   $pagar     = "R$" . number_format($row["pagar"], 2, ",", ".");
@@ -28,8 +28,8 @@ foreach($rsFluxo as $row){
 
   $htmlTable .= "<tr>";
   $htmlTable .= "  <td>$dia</td>";
-  $htmlTable .= "  <td style='color:blue;'>$receber</td>";
-  $htmlTable .= "  <td style='color:red;'>$pagar</td>";
+  $htmlTable .= "  <td><a style='color:blue;' href='javascript:;' id='opnDetRelFluxoCx' data-tipo='CR' data-dia='$diaAtual'>$receber</a></td>";
+  $htmlTable .= "  <td><a style='color:red;' href='javascript:;' id='opnDetRelFluxoCx' data-tipo='CP' data-dia='$diaAtual'>$pagar</a></td>";
   $htmlTable .= "  <td>$saldoIni</td>";
   $htmlTable .= "  <td style='color:$cssSaldoDia;'>$saldoDia</td>";
   $htmlTable .= "  <td style='color:$cssAcumulado;'>$acumulado</td>";

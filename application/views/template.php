@@ -2,7 +2,11 @@
 <!DOCTYPE html>
 <html lang="en">
    <head>
-      <title>Controle Admin</title>
+      <script>
+      var HOME_URL = '<?php echo base_url(); ?>';
+      </script>
+
+      <title>Controle Admin - <?php echo base_url(); ?></title>
       <meta charset="UTF-8" />
       <link rel="icon" type="image/x-icon" href="<?php echo base_url(); ?>img/favicon.ico" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />

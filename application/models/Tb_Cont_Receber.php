@@ -219,7 +219,7 @@ class Tb_Cont_Receber extends CI_Model {
     return $arrRet;
   }
 
-  public function getHtmlContasReceber($arrFilters=array()){
+  public function getHtmlContasReceber($arrFilters=array(), $edit=true, $totais=true){
     // filtros
     $vVctoIni    = isset($arrFilters["vctoIni"]) ? $arrFilters["vctoIni"]: "";
     $vVctoFim    = isset($arrFilters["vctoFim"]) ? $arrFilters["vctoFim"]: "";
@@ -277,8 +277,10 @@ class Tb_Cont_Receber extends CI_Model {
     $htmlTable .= "      <th width='9%'>Valor</th>";
     $htmlTable .= "      <th width='9%'>Pagamento</th>";
     $htmlTable .= "      <th width='9%'>Valor Pago</th>";
-    $htmlTable .= "      <th width='7%'>Alterar</th>";
-    $htmlTable .= "      <th width='7%'>Deletar</th>";
+    if($edit){
+      $htmlTable .= "    <th width='7%'>Alterar</th>";
+      $htmlTable .= "    <th width='7%'>Deletar</th>";
+    }
     $htmlTable .= "    </tr>";
     $htmlTable .= "  </thead>";
     $htmlTable .= "  <tbody>";
@@ -312,7 +314,9 @@ class Tb_Cont_Receber extends CI_Model {
         $vValor   = (is_numeric($rs1["ctr_valor"])) ? "R$ " . number_format($rs1["ctr_valor"], 2, ",", "."): "";
         $vPgto    = (strlen($rs1["ctr_dtpagamento"]) == 10) ? date("d/m/Y", strtotime($rs1["ctr_dtpagamento"])): "";
         $vValorPg = (is_numeric($rs1["ctr_valor_pago"])) ? "R$ " . number_format($rs1["ctr_valor_pago"], 2, ",", "."): "";
-        $vVdaSts  = ($rs1["vda_status"] != "" && $rs1["vda_status"] == 1) ? "color:gray;": "";
+
+        // $vVdaSts  = ($rs1["vda_status"] != "" && $rs1["vda_status"] == 1) ? "color:gray;": "";
+        $vVdaSts = ""; //@todo deixar cor diferente dependendo do status da venda
 
         $htmlTable .= "<tr bgcolor='$vVdaSts'>";
         $htmlTable .= "  <td>$vCtrId</td>";
@@ -323,8 +327,10 @@ class Tb_Cont_Receber extends CI_Model {
         $htmlTable .= "  <td>$vValor</td>";
         $htmlTable .= "  <td>$vPgto</td>";
         $htmlTable .= "  <td>$vValorPg</td>";
-        $htmlTable .= "  <td><a href='javascript:;' class='TbContReceber_ajax_alterar' data-id='$vCtrId'><i class='icon-edit icon-lista'></i></a></td>";
-        $htmlTable .= "  <td><a href='javascript:;' class='TbContReceber_ajax_deletar_v2' data-id='$vCtrId'><i class='icon-trash icon-lista'></i></a></td>";
+        if($edit){
+          $htmlTable .= "<td><a href='javascript:;' class='TbContReceber_ajax_alterar' data-id='$vCtrId'><i class='icon-edit icon-lista'></i></a></td>";
+          $htmlTable .= "<td><a href='javascript:;' class='TbContReceber_ajax_deletar_v2' data-id='$vCtrId'><i class='icon-trash icon-lista'></i></a></td>";
+        }
         $htmlTable .= "</tr>";
       }
     }
@@ -332,46 +338,48 @@ class Tb_Cont_Receber extends CI_Model {
     $htmlTable .= "  </tbody>";
     $htmlTable .= "</table>";
 
-    // totais
-    $vSqlT  = " SELECT COUNT(*) AS qt_contas, SUM(COALESCE(ctr_valor, 0)) AS tot_valor, SUM(COALESCE(ctr_valor_pago, 0)) AS tot_pago ";
-    $vSqlT .= " FROM tb_cont_receber ";
-    $vSqlT .= " LEFT JOIN tb_cliente ON cli_id = ctr_cli_id ";
-    $vSqlT .= " LEFT JOIN tb_vendedor ON ven_id = ctr_ven_id ";
-    $vSqlT .= " WHERE 1=1 ";
-    $vSqlT .= " AND ctr_deletado = 0 ";
-    $vSqlT .= " $sqlFilter ";
+    if( $totais ){
+      // totais
+      $vSqlT  = " SELECT COUNT(*) AS qt_contas, SUM(COALESCE(ctr_valor, 0)) AS tot_valor, SUM(COALESCE(ctr_valor_pago, 0)) AS tot_pago ";
+      $vSqlT .= " FROM tb_cont_receber ";
+      $vSqlT .= " LEFT JOIN tb_cliente ON cli_id = ctr_cli_id ";
+      $vSqlT .= " LEFT JOIN tb_vendedor ON ven_id = ctr_ven_id ";
+      $vSqlT .= " WHERE 1=1 ";
+      $vSqlT .= " AND ctr_deletado = 0 ";
+      $vSqlT .= " $sqlFilter ";
 
-    $queryT = $this->db->query($vSqlT);
-    $rs    = $queryT->row();
-    if($rs){
-      $qtContas   = $rs->qt_contas;
-      $totalValor = isset($rs->tot_valor) ? "R$ " . number_format($rs->tot_valor, 2, ",", "."): "R$ 0,00";
-      $totalPago  = isset($rs->tot_pago) ? "R$ " . number_format($rs->tot_pago, 2, ",", "."): "R$ 0,00";
-    } else {
-      $qtContas   = 0;
-      $totalValor = "R$ 0,00";
-      $totalPago  = "R$ 0,00";
+      $queryT = $this->db->query($vSqlT);
+      $rs    = $queryT->row();
+      if($rs){
+        $qtContas   = $rs->qt_contas;
+        $totalValor = isset($rs->tot_valor) ? "R$ " . number_format($rs->tot_valor, 2, ",", "."): "R$ 0,00";
+        $totalPago  = isset($rs->tot_pago) ? "R$ " . number_format($rs->tot_pago, 2, ",", "."): "R$ 0,00";
+      } else {
+        $qtContas   = 0;
+        $totalValor = "R$ 0,00";
+        $totalPago  = "R$ 0,00";
+      }
+
+      $this->load->helper('utils');
+      $htmlQtdContas = getHtmlBlocoTotais("Qt Contas", $qtContas);
+      $htmlValor     = getHtmlBlocoTotais("Total Valor", $totalValor);
+      $htmlPago      = getHtmlBlocoTotais("Total Pago", $totalPago);
+
+      $htmlTable .= "<div id='htmlTotaisContaReceb' class='widget-content'>";
+      $htmlTable .= "  <div class='control-group' style='width: 100%; display: block; overflow: hidden;'>
+                         <div class='span4 m-wrap'>
+                           $htmlQtdContas
+                         </div>
+                         <div class='span4 m-wrap'>
+                           $htmlValor
+                         </div>
+                         <div class='span4 m-wrap'>
+                           $htmlPago
+                         </div>
+                       </div>";
+      $htmlTable .= "</div>";
+      // ======
     }
-
-    $this->load->helper('utils');
-    $htmlQtdContas = getHtmlBlocoTotais("Qt Contas", $qtContas);
-    $htmlValor     = getHtmlBlocoTotais("Total Valor", $totalValor);
-    $htmlPago      = getHtmlBlocoTotais("Total Pago", $totalPago);
-
-    $htmlTable .= "<div id='htmlTotaisContaReceb' class='widget-content'>";
-    $htmlTable .= "  <div class='control-group' style='width: 100%; display: block; overflow: hidden;'>
-                       <div class='span4 m-wrap'>
-                         $htmlQtdContas
-                       </div>
-                       <div class='span4 m-wrap'>
-                         $htmlValor
-                       </div>
-                       <div class='span4 m-wrap'>
-                         $htmlPago
-                       </div>
-                     </div>";
-    $htmlTable .= "</div>";
-    // ======
 
     return $htmlTable;
   }

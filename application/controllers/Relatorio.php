@@ -132,4 +132,40 @@ class Relatorio extends MY_Controller {
 
     $this->load->view('Relatorio/pdfRelFluxoCx', $data);
   }
+
+  public function jsonDetRelFluxoCx(){
+    $arrRet = [];
+    $arrRet["erro"] = false;
+    $arrRet["msg"]  = "";
+    $arrRet["html"] = "&nbsp;";
+
+    // variaveis ============
+    $tipo = $this->input->post('tipo');
+    $dia  = $this->input->post('dia');
+    // ======================
+
+    $data       = [];
+    $arrFilters = [];
+
+    $arrFilters["vctoIni"]     = $dia;
+    $arrFilters["vctoFim"]     = $dia;
+    $arrFilters["apenasPagas"] = "N";
+
+    if($tipo == "CR"){
+      $this->load->model("Tb_Cont_Receber");
+
+      $data["titulo"]    = "Detalhes das Contas a Receber - " . date("d/m/Y", strtotime($dia));
+      $data["htmlTable"] = $this->Tb_Cont_Receber->getHtmlContasReceber($arrFilters, false, false);
+    } else if($tipo == "CP"){
+      $this->load->model("Tb_Cont_Pagar");
+
+     $data["titulo"]    = "Detalhes das Contas a Pagar - " . date("d/m/Y", strtotime($dia));
+     $data["htmlTable"] = $this->Tb_Cont_Pagar->getHtmlContasPagar($arrFilters, false, false);
+    }
+
+    $htmlView       = $this->load->view("Relatorio/detRelFLuxoCx", $data, true);
+    $arrRet["html"] = $htmlView;
+
+    echo json_encode($arrRet);
+  }
 }

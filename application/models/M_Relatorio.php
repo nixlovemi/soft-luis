@@ -48,6 +48,7 @@ class M_Relatorio extends CI_Model {
               FROM tb_cont_receber
               WHERE ctr_dtpagamento IS NULL
               AND ctr_dtvencimento BETWEEN '$vDataIni' AND '$vDataFim'
+              AND ctr_deletado = 0
               GROUP BY ctr_dtvencimento";
     $qryCR = $this->db->query($sqlCR);
     $rsCR = $qryCR->result_array();
@@ -66,6 +67,7 @@ class M_Relatorio extends CI_Model {
               FROM tb_cont_pagar
               WHERE ctp_dtpagamento IS NULL
               AND ctp_dtvencimento BETWEEN '$vDataIni' AND '$vDataFim'
+              AND ctp_deletado = 0
               GROUP BY ctp_dtvencimento";
     $qryCP = $this->db->query($sqlCP);
     $rsCP = $qryCP->result_array();

@@ -1,5 +1,3 @@
-var HOME_URL = 'http://127.0.0.1/webapp/';
-
 function moedaParaNumero(valor){
     return isNaN(valor) == false ? parseFloat(valor) :   parseFloat(valor.replace("R$","").replace(".","").replace(",","."));
 }
@@ -151,6 +149,32 @@ $(document).on('click', '#postRelFluxoCx', function(){
     success: function (ret) {
       dvRet.html(ret);
       setTimeout("loadObjects()", 350);
+    }
+  });
+});
+
+$(document).on('click', 'a#opnDetRelFluxoCx', function(){
+  var tipo = $(this).data("tipo");
+  var dia  = $(this).data("dia");
+
+  $.ajax({
+    type: "POST",
+    url: HOME_URL + 'Relatorio/jsonDetRelFluxoCx',
+    data: 'tipo=' + tipo + '&dia=' + dia,
+		dataType: 'json',
+		success: function (ret) {
+			var erro = ret.erro;
+			var msg  = ret.msg;
+      var html = ret.html;
+
+			if(erro){
+				$.gritter.add({
+					title: 'Alerta',
+					text: msg,
+				});
+			} else {
+				openBootbox(html, false);
+			}
     }
   });
 });
