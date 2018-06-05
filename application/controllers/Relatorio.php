@@ -81,4 +81,55 @@ class Relatorio extends MY_Controller {
 
     $this->load->view('Relatorio/pdfRelVendas', $data);
   }
+
+  public function abreRelFluxoCx(){
+    $data = [];
+    $this->load->view('Relatorio/relFluxoCx', $data);
+  }
+
+  public function postRelFluxoCx(){
+    $this->load->helper("utils");
+
+    // variaveis ============
+    $cxaDataIni   = $this->input->post('cxaDataIni');
+    $cxaDataFim   = $this->input->post('cxaDataFim');
+    $cxaDataSaldo = $this->input->post('cxaDataSaldo');
+    $cxaVlrSaldo  = $this->input->post('cxaVlrSaldo');
+    // ======================
+
+    $arrFiltros = [];
+    $arrFiltros["cxaDataIni"]   = (isset($cxaDataIni) && strlen($cxaDataIni) == 10) ? acerta_data($cxaDataIni): "";
+    $arrFiltros["cxaDataFim"]   = (isset($cxaDataFim) && strlen($cxaDataFim) == 10) ? acerta_data($cxaDataFim): "";
+    $arrFiltros["cxaDataSaldo"] = (isset($cxaDataSaldo) && strlen($cxaDataSaldo) == 10) ? acerta_data($cxaDataSaldo): "";
+    $arrFiltros["cxaVlrSaldo"]  = ($cxaVlrSaldo != "") ? acerta_moeda($cxaVlrSaldo): "";
+
+    $this->load->model("M_Relatorio");
+    $retRelFluxo = $this->M_Relatorio->relFluxoCx($arrFiltros);
+
+    if($retRelFluxo["erro"] == true){
+      $this->load->helper("alerts");
+      echo showWarning($retRelFluxo["msg"]);
+      return;
+    } else {
+      $data = [];
+      $data["rsFluxo"] = $retRelFluxo["recordset"];
+
+      $this->load->view('Relatorio/postRelFluxoCx', $data);
+    }
+  }
+
+  public function pdfRelFluxoCx(){
+    $this->load->helper('utils');
+
+    // variaveis ============
+    $codedJsonRelFluxo = $this->input->post('jsonRelFluxoCx');
+    $jsonRelFluxo      = ($codedJsonRelFluxo != "") ? base64url_decode($codedJsonRelFluxo): "";
+    $arrRelFluxo       = json_decode($jsonRelFluxo, 1);
+    // ======================
+
+    $data = [];
+    $data["arrRelFluxo"] = $arrRelFluxo;
+
+    $this->load->view('Relatorio/pdfRelFluxoCx', $data);
+  }
 }

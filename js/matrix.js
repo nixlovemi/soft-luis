@@ -136,6 +136,24 @@ $(document).on('click', '#postRelVendas', function(){
     }
   });
 });
+
+$(document).on('click', '#postRelFluxoCx', function(){
+  var frmVariaveis = $("#frmInfoRelFluxoCx").serialize();
+  var dvRet        = $("#dvPostRelFluxoCx");
+
+  $.ajax({
+    type: "POST",
+    url: HOME_URL + 'Relatorio/postRelFluxoCx',
+    data: frmVariaveis,
+    beforeSend: function(){
+      dvRet.html(getHtmlLoader());
+    },
+    success: function (ret) {
+      dvRet.html(ret);
+      setTimeout("loadObjects()", 350);
+    }
+  });
+});
 // ===============
 
 // Tb_Venda_Mostruario

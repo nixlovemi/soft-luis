@@ -6,6 +6,10 @@ $arrRelatorios["Relatório de Vendas"] = [];
 $arrRelatorios["Relatório de Vendas"]["controller"] = "Relatorio";
 $arrRelatorios["Relatório de Vendas"]["action"]     = "abreRelVendas";
 
+$arrRelatorios["Fluxo de Caixa"] = [];
+$arrRelatorios["Fluxo de Caixa"]["controller"] = "Relatorio";
+$arrRelatorios["Fluxo de Caixa"]["action"]     = "abreRelFluxoCx";
+
 if(isset($errorMsg) && $errorMsg != ""){
   echo $errorMsg;
 }
