@@ -186,7 +186,7 @@ class Tb_Produto extends CI_Model {
     }
 
     // descricao duplicada
-    $this->load->database();
+    /*$this->load->database();
     $this->db->select("pro_id");
     $this->db->from("tb_produto");
     $this->db->where("pro_descricao", $vProDescricao);
@@ -200,7 +200,7 @@ class Tb_Produto extends CI_Model {
       $arrRet["msg"]  = "Já existe um produto com essa descrição (ID $vProId)! Verifique!";
       return $arrRet;
     }
-    $this->db->reset_query();
+    $this->db->reset_query();*/
     // ===================
 
     // codigo duplicado ==
@@ -338,7 +338,7 @@ class Tb_Produto extends CI_Model {
     }
 
     // descricao duplicada
-    $this->load->database();
+    /*$this->load->database();
     $this->db->select("pro_id");
     $this->db->from("tb_produto");
     $this->db->where("pro_descricao", $vProDescricao);
@@ -353,7 +353,7 @@ class Tb_Produto extends CI_Model {
       $arrRet["msg"]  = "Já existe um produto com essa descrição (ID $vProId)! Verifique!";
       return $arrRet;
     }
-    $this->db->reset_query();
+    $this->db->reset_query();*/
     // ===================
 
     // codigo duplicado ==
