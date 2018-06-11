@@ -204,7 +204,7 @@ class Tb_Produto extends CI_Model {
     // ===================
 
     // codigo duplicado ==
-    $vProCodigo = (isset($arrProdutoDados["pro_codigo"])) ? $arrProdutoDados["pro_codigo"]: "";
+    /*$vProCodigo = (isset($arrProdutoDados["pro_codigo"])) ? $arrProdutoDados["pro_codigo"]: "";
 
     $this->db->select("pro_id");
     $this->db->from("tb_produto");
@@ -219,7 +219,7 @@ class Tb_Produto extends CI_Model {
       $arrRet["msg"]  = "Já existe um produto com esse código (ID $vProId)! Verifique!";
       return $arrRet;
     }
-    $this->db->reset_query();
+    $this->db->reset_query();*/
     // ===================
 
     // ean duplicado =====
@@ -357,7 +357,7 @@ class Tb_Produto extends CI_Model {
     // ===================
 
     // codigo duplicado ==
-    $vProCodigo = (isset($arrProdutoDados["pro_codigo"])) ? $arrProdutoDados["pro_codigo"]: "";
+    /*$vProCodigo = (isset($arrProdutoDados["pro_codigo"])) ? $arrProdutoDados["pro_codigo"]: "";
 
     $this->db->select("pro_id");
     $this->db->from("tb_produto");
@@ -373,7 +373,7 @@ class Tb_Produto extends CI_Model {
       $arrRet["msg"]  = "Já existe um produto com esse código (ID $vProId)! Verifique!";
       return $arrRet;
     }
-    $this->db->reset_query();
+    $this->db->reset_query();*/
     // ===================
 
     // ean duplicado =====
