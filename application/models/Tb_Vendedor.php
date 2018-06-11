@@ -151,15 +151,15 @@ class Tb_Vendedor extends CI_Model {
     // cpf duplicado
     $vVenCpfCnpj = isset($arrVendedorDados["ven_cpf_cnpj"]) ? $arrVendedorDados["ven_cpf_cnpj"]: "";
 
-    $this->load->helper('utils');
-    $validCPF = is_cpf($vVenCpfCnpj);
-    if(!$validCPF){
-      $arrRet["erro"] = true;
-      $arrRet["msg"]  = "CPF inválido!";
-      return $arrRet;
-    }
-
     if($vVenCpfCnpj != ""){
+      $this->load->helper('utils');
+      $validCPF = is_cpf($vVenCpfCnpj);
+      if(!$validCPF){
+        $arrRet["erro"] = true;
+        $arrRet["msg"]  = "CPF inválido!";
+        return $arrRet;
+      }
+      
       $this->load->database();
       $this->db->select("ven_id");
       $this->db->from("tb_vendedor");
@@ -294,15 +294,15 @@ class Tb_Vendedor extends CI_Model {
     // cpf duplicado
     $vVenCpfCnpj = isset($arrVendedorDados["ven_cpf_cnpj"]) ? $arrVendedorDados["ven_cpf_cnpj"]: "";
 
-    $this->load->helper('utils');
-    $validCPF = is_cpf($vVenCpfCnpj);
-    if(!$validCPF){
-      $arrRet["erro"] = true;
-      $arrRet["msg"]  = "CPF inválido!";
-      return $arrRet;
-    }
-
     if($vVenCpfCnpj != ""){
+      $this->load->helper('utils');
+      $validCPF = is_cpf($vVenCpfCnpj);
+      if(!$validCPF){
+        $arrRet["erro"] = true;
+        $arrRet["msg"]  = "CPF inválido!";
+        return $arrRet;
+      }
+      
       $this->load->database();
       $this->db->select("ven_id");
       $this->db->from("tb_vendedor");
