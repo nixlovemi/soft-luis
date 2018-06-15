@@ -11,6 +11,7 @@ class Tb_Venda_Mostruario extends CI_Model {
     $htmlTable .= "      <th>Data Entrega</th>";
     $htmlTable .= "      <th width='8%'>Qt Itens</th>";
     $htmlTable .= "      <th width='8%'>Total</th>";
+    $htmlTable .= "      <th width='8%'>PDF</th>";
     $htmlTable .= "      <th width='8%'>Ver</th>";
     $htmlTable .= "      <th width='8%'>Editar</th>";
     $htmlTable .= "      <th width='8%'>Deletar</th>";
@@ -51,9 +52,75 @@ class Tb_Venda_Mostruario extends CI_Model {
         $htmlTable .= "  <td>$vEntrega</td>";
         $htmlTable .= "  <td>$vQtItens</td>";
         $htmlTable .= "  <td>$vTotal</td>";
+        $htmlTable .= "  <td><a href='".base_url() . "Venda/pdfMostruario/$vVdmId" . "' target='_blank'><i class='icon-print icon-lista'></i></a></td>";
         $htmlTable .= "  <td><a href='javascript:;' class='dynatableLink' data-url='".base_url() . "Venda/verMostruario/$vVdmId" . "'><i class='icon-eye-open icon-lista'></i></a></td>";
         $htmlTable .= "  <td><a href='javascript:;' class='dynatableLink' data-url='".base_url() . "Venda/editarMostruario/$vVdmId" . "'><i class='icon-edit icon-lista'></i></a></td>";
         $htmlTable .= "  <td><a href='javascript:;' class='TbVendaMostruario_deletar' data-id='$vVdmId'><i class='icon-trash icon-lista'></i></a></td>";
+        $htmlTable .= "</tr>";
+      }
+    }
+
+    $htmlTable .= "  </tbody>";
+    $htmlTable .= "</table>";
+
+    return $htmlTable;
+  }
+
+  public function getHtmlListFinalizadas(){
+    $this->load->database();
+    $htmlTable  = "";
+    $htmlTable .= "<table class='table table-bordered dynatable' id='tbProdutoGetHtmlList'>";
+    $htmlTable .= "  <thead>";
+    $htmlTable .= "    <tr>";
+    $htmlTable .= "      <th width='8%'>ID Mostruário</th>";
+    $htmlTable .= "      <th>ID Venda</th>";
+    $htmlTable .= "      <th>Data</th>";
+    $htmlTable .= "      <th>Vendedor</th>";
+    $htmlTable .= "      <th width='8%'>Qt Itens</th>";
+    $htmlTable .= "      <th width='8%'>Total</th>";
+    $htmlTable .= "      <th width='8%'>Ver</th>";
+    $htmlTable .= "    </tr>";
+    $htmlTable .= "  </thead>";
+    $htmlTable .= "  <tbody>";
+
+    $vSql  = " SELECT vdm_id, vda_id, ven_nome AS vendedor, vda_data AS data ";
+    $vSql .= "        ,COALESCE(COUNT(vdi_id), 0) AS qt_itens, COALESCE(SUM((vdi_qtde * vdi_valor) - vdi_desconto), 0) AS total ";
+    $vSql .= " FROM tb_venda_mostruario ";
+    $vSql .= " INNER JOIN tb_vendedor ON ven_id = vdm_ven_id ";
+    $vSql .= " INNER JOIN tb_venda ON vda_id = vdm_vda_id ";
+    $vSql .= " INNER JOIN tb_venda_itens ON vdi_vda_id = vdm_vda_id ";
+    $vSql .= " WHERE vdm_vda_id IS NOT NULL ";
+    $vSql .= " AND vdm_deletado = 0 ";
+    $vSql .= " GROUP BY vdm_id ";
+    $vSql .= " ORDER BY vdm_dtentrega ";
+
+    $query   = $this->db->query($vSql);
+    $arrRs   = $query->result_array();
+    $baseUrl = base_url();
+
+    if(count($arrRs) <= 0){
+      /*$htmlTable .= "  <tr class=''>";
+      $htmlTable .= "    <td colspan='8'>";
+      $htmlTable .= "      <center>Nenhum resultado encontrado!</center>";
+      $htmlTable .= "    </td>";
+      $htmlTable .= "  </tr>";*/
+    } else {
+      foreach($arrRs as $rs1){
+        $vVdmId    = $rs1["vdm_id"];
+        $vVdaId    = $rs1["vda_id"];
+        $vData     = ($rs1["data"] != "") ? date("d/m/Y", strtotime($rs1["data"])): "";
+        $vVendedor = $rs1["vendedor"];
+        $vQtItens  = $rs1["qt_itens"];
+        $vTotal    = "R$" . number_format($rs1["total"], 2, ",", ".");
+
+        $htmlTable .= "<tr>";
+        $htmlTable .= "  <td>$vVdmId</td>";
+        $htmlTable .= "  <td>$vVdaId</td>";
+        $htmlTable .= "  <td>$vData</td>";
+        $htmlTable .= "  <td>$vVendedor</td>";
+        $htmlTable .= "  <td>$vQtItens</td>";
+        $htmlTable .= "  <td>$vTotal</td>";
+        $htmlTable .= "  <td><a href='javascript:;' class='' onClick='document.location.href=\"".$baseUrl."Venda/ver/$vVdaId\"'><i class='icon-eye-open icon-lista'></i></a></td>";
         $htmlTable .= "</tr>";
       }
     }
@@ -95,6 +162,42 @@ class Tb_Venda_Mostruario extends CI_Model {
       $arrVendaMostruarioDados["vdm_deletado"]  = $row->vdm_deletado;
 
       $arrRet["arrVendaMostruarioDados"] = $arrVendaMostruarioDados;
+    }
+
+    $arrRet["erro"] = false;
+    return $arrRet;
+  }
+
+  public function getMostruarioItens($vdmId){
+    $arrRet = [];
+    $arrRet["erro"]        = true;
+    $arrRet["msg"]         = "";
+    $arrRet["arrVmiDados"] = array();
+
+    if(!is_numeric($vdmId)){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "ID inválido para buscar os itens do Mostruário!";
+      return $arrRet;
+    }
+
+    $this->load->database();
+    $this->db->select("vmi_id, vmi_pro_id, pro_descricao, vmi_qtde, vmi_valor, vmi_desconto");
+    $this->db->from("tb_venda_mostruario_itens");
+    $this->db->join('tb_produto', 'pro_id = vmi_pro_id', 'left');
+    $this->db->where("vmi_vdm_id", $vdmId);
+    $this->db->order_by("pro_descricao", "asc");
+    $query = $this->db->get();
+
+    foreach ($query->result() as $row) {
+      $arrVim = [];
+      $arrVim["vmi_id"]        = $row->vmi_id;
+      $arrVim["vmi_pro_id"]    = $row->vmi_pro_id;
+      $arrVim["pro_descricao"] = $row->pro_descricao;
+      $arrVim["vmi_qtde"]      = $row->vmi_qtde;
+      $arrVim["vmi_valor"]     = $row->vmi_valor;
+      $arrVim["vmi_desconto"]  = $row->vmi_desconto;
+
+      $arrRet["arrVmiDados"][] = $arrVim;
     }
 
     $arrRet["erro"] = false;

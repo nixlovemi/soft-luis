@@ -219,6 +219,9 @@ class Venda extends MY_Controller {
     $data["htmlMostruarioTable"] = $htmlMostruarioTable;
     $data["errorMsg"]            = $errorMsg;
 
+    $htmlMostruarioTableFin         = $this->Tb_Venda_Mostruario->getHtmlListFinalizadas();
+    $data["htmlMostruarioTableFin"] = $htmlMostruarioTableFin;
+
     $this->template->load('template', 'Venda/mostruario', $data);
   }
 
@@ -392,5 +395,21 @@ class Venda extends MY_Controller {
     $arrRet["msg"]  = $retFinVda["msg"];
 
     echo json_encode($arrRet);
+  }
+
+  public function pdfMostruario($vdmId){
+    $data = [];
+
+    $this->load->model('Tb_Venda_Mostruario');
+    $retVdaMostruario = $this->Tb_Venda_Mostruario->getMostruario($vdmId);
+    $VendaMostruario  = ($retVdaMostruario["erro"] == false) ? $retVdaMostruario["arrVendaMostruarioDados"]: array();
+
+    $retVmItens   = $this->Tb_Venda_Mostruario->getMostruarioItens($vdmId);
+    $VdaMostItens = ($retVmItens["erro"] == false) ? $retVmItens["arrVmiDados"]: array();
+
+    $data["VendaMostruario"] = $VendaMostruario;
+    $data["VdaMostItens"]    = $VdaMostItens;
+
+    $this->load->view("Venda/pdfMostruario", $data);
   }
 }
