@@ -82,6 +82,7 @@ class Vendedor extends MY_Controller {
     $vVenEndEstado     = $this->input->post('venEndEstado');
     $vVenObs           = $this->input->post('venObservacao');
     $vVenAtivo         = $this->input->post('venAtivo');
+    $vVenComissao      = acerta_moeda($this->input->post('venComissao'));
     // ======================
 
     $arrVendedorDados = [];
@@ -101,6 +102,7 @@ class Vendedor extends MY_Controller {
     $arrVendedorDados["ven_end_estado"]     = $vVenEndEstado;
     $arrVendedorDados["ven_observacao"]     = $vVenObs;
     $arrVendedorDados["ven_ativo"]          = $vVenAtivo;
+    $arrVendedorDados["ven_comissao"]       = $vVenComissao;
 
     $this->load->model('Tb_Vendedor');
     $retInsert = $this->Tb_Vendedor->insert($arrVendedorDados);
@@ -172,6 +174,7 @@ class Vendedor extends MY_Controller {
     $vVenEndEstado     = $this->input->post('venEndEstado');
     $vVenObs           = $this->input->post('venObservacao');
     $vVenAtivo         = $this->input->post('venAtivo');
+    $vVenComissao      = acerta_moeda($this->input->post('venComissao'));
     // ======================
 
     $retVendedor      = $this->Tb_Vendedor->getVendedor($vVenId);
@@ -197,6 +200,7 @@ class Vendedor extends MY_Controller {
     $arrVendedorDados["ven_end_estado"]     = $vVenEndEstado;
     $arrVendedorDados["ven_observacao"]     = $vVenObs;
     $arrVendedorDados["ven_ativo"]          = $vVenAtivo;
+    $arrVendedorDados["ven_comissao"]       = $vVenComissao;
 
     $retEdit = $this->Tb_Vendedor->edit($arrVendedorDados);
     $data    = [];

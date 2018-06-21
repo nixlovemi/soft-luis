@@ -151,7 +151,7 @@ class Tb_Venda extends CI_Model {
     }
 
     $this->load->database();
-    $this->db->select("vda_id, vda_data, vda_cli_id, vda_usu_id, vda_ven_id, vda_tot_itens, vda_vlr_itens, vda_status");
+    $this->db->select("vda_id, vda_data, vda_cli_id, vda_usu_id, vda_ven_id, vda_tot_itens, vda_vlr_itens, vda_status, vda_comissao");
     $this->db->from("tb_venda");
     $this->db->where("vda_id", $vdaId);
     $query = $this->db->get();
@@ -168,6 +168,7 @@ class Tb_Venda extends CI_Model {
       $arrVendaDados["vda_tot_itens"] = $row->vda_tot_itens;
       $arrVendaDados["vda_vlr_itens"] = $row->vda_vlr_itens;
       $arrVendaDados["vda_status"]    = $row->vda_status;
+      $arrVendaDados["vda_comissao"]  = $row->vda_comissao;
 
       $arrRet["arrVendaDados"] = $arrVendaDados;
     }
@@ -225,12 +226,26 @@ class Tb_Venda extends CI_Model {
     $vVdaVenId    = isset($arrVendaDados["vda_ven_id"]) && $arrVendaDados["vda_ven_id"] > 0 ? $arrVendaDados["vda_ven_id"]: null;
     $vVdaStatus   = isset($arrVendaDados["vda_status"]) ? $arrVendaDados["vda_status"]: $vdaStatusInc;
 
+    if($vVdaVenId > 0){
+      $this->db->select("ven_comissao");
+      $this->db->from("tb_vendedor");
+      $this->db->where("ven_id", $vVdaVenId);
+      $query = $this->db->get();
+      $row   = $query->row();
+
+      $vVdaComissao = (isset($row->ven_comissao) && $row->ven_comissao > 0) ? $row->ven_comissao: 0;
+      $this->db->reset_query();
+    } else {
+        $vVdaComissao = 0;
+    }
+
     $data = array(
-      'vda_data'   => $vVdaData,
-      'vda_cli_id' => $vVdaCliId,
-      'vda_usu_id' => $vVdaUsuId,
-      'vda_ven_id' => $vVdaVenId,
-      'vda_status' => $vVdaStatus,
+      'vda_data'     => $vVdaData,
+      'vda_cli_id'   => $vVdaCliId,
+      'vda_usu_id'   => $vVdaUsuId,
+      'vda_ven_id'   => $vVdaVenId,
+      'vda_status'   => $vVdaStatus,
+      'vda_comissao' => $vVdaComissao,
     );
 
     $retInsert = $this->db->insert('tb_venda', $data);
@@ -360,7 +375,7 @@ class Tb_Venda extends CI_Model {
     // =================================
 
     // valida total da venda com as parcelas
-    $sqlTV = "SELECT vda_id, vda_vlr_itens, SUM(COALESCE(ctr_valor, 0)) AS parcelas
+    $sqlTV = "SELECT vda_id, vda_vlr_itens, SUM(COALESCE(ctr_valor, 0)) AS parcelas, vda_comissao
               FROM tb_venda
               LEFT JOIN tb_cont_receber ON ctr_vda_id = vda_id
               WHERE vda_id = $vdaId
@@ -368,7 +383,8 @@ class Tb_Venda extends CI_Model {
     $queryTV = $this->db->query($sqlTV);
     $rowTV   = $queryTV->row();
 
-    if(!isset($rowTV) || $rowTV->parcelas <> $rowTV->vda_vlr_itens){
+    $vlrComissao = ($rowTV->vda_comissao / 100) * $rowTV->vda_vlr_itens;
+    if(!isset($rowTV) || $rowTV->parcelas <> $rowTV->vda_vlr_itens - $vlrComissao){
       $arrRet["erro"] = true;
       $arrRet["msg"]  = "Não é possível finalizar venda - parcelas diferem do total da venda!";
 

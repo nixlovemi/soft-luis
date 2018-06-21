@@ -77,8 +77,9 @@ class Tb_Venda_Itens extends CI_Model {
     $vVlrProdutos = "R$ 0,00";
     $vTotDesconto = "R$ 0,00";
     $vTotVenda    = "R$ 0,00";
+    $vComissao    = "R$ 0,00";
 
-    $vSql  = " SELECT vda_id, vda_tot_itens, vda_vlr_itens, SUM(vdi_qtde * vdi_valor) AS vlr_produtos, SUM(vdi_desconto) AS vlr_desconto ";
+    $vSql  = " SELECT vda_id, vda_tot_itens, vda_vlr_itens, SUM(vdi_qtde * vdi_valor) AS vlr_produtos, SUM(vdi_desconto) AS vlr_desconto, vda_comissao ";
     $vSql .= " FROM tb_venda ";
     $vSql .= " INNER JOIN tb_venda_itens ON vdi_vda_id = vda_id ";
     $vSql .= " WHERE vda_id = $vdaId ";
@@ -92,6 +93,7 @@ class Tb_Venda_Itens extends CI_Model {
       $vVlrProdutos = isset($rs->vlr_produtos) ? "R$ " . number_format($rs->vlr_produtos, 2, ",", "."): "R$ 0,00";
       $vTotDesconto = isset($rs->vlr_desconto) ? "R$ " . number_format($rs->vlr_desconto, 2, ",", "."): "R$ 0,00";
       $vTotVenda    = isset($rs->vda_vlr_itens) ? "R$ " . number_format($rs->vda_vlr_itens, 2, ",", "."): "R$ 0,00";
+      $vComissao    = isset($rs->vda_vlr_itens) ? "R$ " . number_format($rs->vda_vlr_itens * ($rs->vda_comissao/100), 2, ",", "."): "R$ 0,00";
     }
 
     $this->load->helper('utils');
@@ -99,9 +101,10 @@ class Tb_Venda_Itens extends CI_Model {
     $htmlTotProdutos = getHtmlBlocoTotais("TOTAL PRODUTOS", $vVlrProdutos);
     $htmlTotDesconto = getHtmlBlocoTotais("TOTAL DESCONTO", $vTotDesconto);
     $htmlTotVenda    = getHtmlBlocoTotais("TOTAL VENDA", $vTotVenda, "bg_lg");
+    $htmlTotComissao = getHtmlBlocoTotais("COMISSÃO", $vComissao, "bg_ly");
 
     $htmlTable = "<div class='control-group' style='width: 100%; display: block; overflow: hidden;'>
-                    <div class='span3 m-wrap'>
+                    <div class='span2 m-wrap'>
                       $htmlProdutos
                     </div>
                     <div class='span3 m-wrap'>
@@ -110,8 +113,11 @@ class Tb_Venda_Itens extends CI_Model {
                     <div class='span3 m-wrap'>
                       $htmlTotDesconto
                     </div>
-                    <div class='span3 m-wrap'>
+                    <div class='span2 m-wrap'>
                       $htmlTotVenda
+                    </div>
+                    <div class='span2 m-wrap'>
+                      $htmlTotComissao
                     </div>
                   </div>";
     return $htmlTable;

@@ -73,7 +73,7 @@ class Tb_Vendedor extends CI_Model {
     }
 
     $this->load->database();
-    $this->db->select("ven_id, ven_nome, ven_cpf_cnpj, ven_rg_ie, ven_tel_ddd, ven_tel_numero, ven_cel_ddd, ven_cel_numero, ven_end_cep, ven_end_tp_lgr, ven_end_logradouro, ven_end_numero, ven_end_bairro, ven_end_cidade, ven_end_estado, ven_observacao, ven_ativo");
+    $this->db->select("ven_id, ven_nome, ven_cpf_cnpj, ven_rg_ie, ven_tel_ddd, ven_tel_numero, ven_cel_ddd, ven_cel_numero, ven_end_cep, ven_end_tp_lgr, ven_end_logradouro, ven_end_numero, ven_end_bairro, ven_end_cidade, ven_end_estado, ven_observacao, ven_ativo, ven_comissao");
     $this->db->from("tb_vendedor");
     $this->db->where("ven_id", $venId);
     $query = $this->db->get();
@@ -99,6 +99,7 @@ class Tb_Vendedor extends CI_Model {
       $arrVendedorDados["ven_end_estado"]     = $row->ven_end_estado;
       $arrVendedorDados["ven_observacao"]     = $row->ven_observacao;
       $arrVendedorDados["ven_ativo"]          = $row->ven_ativo;
+      $arrVendedorDados["ven_comissao"]       = $row->ven_comissao;
 
       $arrRet["arrVendedorDados"] = $arrVendedorDados;
     }
@@ -114,7 +115,7 @@ class Tb_Vendedor extends CI_Model {
     $arrRet["arrVendedores"] = array();
 
     $this->load->database();
-    $this->db->select("ven_id, ven_nome, ven_cpf_cnpj");
+    $this->db->select("ven_id, ven_nome, ven_cpf_cnpj, ven_comissao");
     $this->db->from("tb_vendedor");
     $this->db->where("ven_ativo", 1);
     $this->db->order_by("ven_nome", "asc");
@@ -127,6 +128,7 @@ class Tb_Vendedor extends CI_Model {
         $arrVendedorDados["ven_id"]       = $rs1["ven_id"];
         $arrVendedorDados["ven_nome"]     = $rs1["ven_nome"];
         $arrVendedorDados["ven_cpf_cnpj"] = $rs1["ven_cpf_cnpj"];
+        $arrVendedorDados["ven_comissao"] = $rs1["ven_comissao"];
 
         $arrRet["arrVendedores"][] = $arrVendedorDados;
       }
@@ -159,7 +161,7 @@ class Tb_Vendedor extends CI_Model {
         $arrRet["msg"]  = "CPF inválido!";
         return $arrRet;
       }
-      
+
       $this->load->database();
       $this->db->select("ven_id");
       $this->db->from("tb_vendedor");
@@ -240,6 +242,7 @@ class Tb_Vendedor extends CI_Model {
     $vVenEndEstado     = isset($arrVendedorDados["ven_end_estado"]) ? $arrVendedorDados["ven_end_estado"]: "null";
     $vVenObs           = isset($arrVendedorDados["ven_observacao"]) ? $arrVendedorDados["ven_observacao"]: "null";
     $vVenAtivo         = isset($arrVendedorDados["ven_ativo"]) ? $arrVendedorDados["ven_ativo"]: "null";
+    $vVenComissao      = isset($arrVendedorDados["ven_comissao"]) ? $arrVendedorDados["ven_comissao"]: 0;
 
     $data = array(
       'ven_nome'           => $vVenNome,
@@ -258,6 +261,7 @@ class Tb_Vendedor extends CI_Model {
       'ven_end_estado'     => $vVenEndEstado,
       'ven_observacao'     => $vVenObs,
       'ven_ativo'          => $vVenAtivo,
+      'ven_comissao'       => $vVenComissao,
     );
 
     $retInsert = $this->db->insert('tb_vendedor', $data);
@@ -302,7 +306,7 @@ class Tb_Vendedor extends CI_Model {
         $arrRet["msg"]  = "CPF inválido!";
         return $arrRet;
       }
-      
+
       $this->load->database();
       $this->db->select("ven_id");
       $this->db->from("tb_vendedor");
@@ -386,6 +390,7 @@ class Tb_Vendedor extends CI_Model {
     $vVenEndEstado     = isset($arrVendedorDados["ven_end_estado"]) ? $arrVendedorDados["ven_end_estado"]: "null";
     $vVenObs           = isset($arrVendedorDados["ven_observacao"]) ? $arrVendedorDados["ven_observacao"]: "null";
     $vVenAtivo         = isset($arrVendedorDados["ven_ativo"]) ? $arrVendedorDados["ven_ativo"]: "null";
+    $vVenComissao      = isset($arrVendedorDados["ven_comissao"]) ? $arrVendedorDados["ven_comissao"]: 0;
 
     $data = array(
       'ven_nome'           => $vVenNome,
@@ -404,6 +409,7 @@ class Tb_Vendedor extends CI_Model {
       'ven_end_estado'     => $vVenEndEstado,
       'ven_observacao'     => $vVenObs,
       'ven_ativo'          => $vVenAtivo,
+      'ven_comissao'       => $vVenComissao,
     );
 
     $this->db->where('ven_id', $vVenId);

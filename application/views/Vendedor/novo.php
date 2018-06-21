@@ -28,6 +28,7 @@ $vVenEndCidade     = isset($arrVendedorDados["ven_end_cidade"]) ? $arrVendedorDa
 $vVenEndEstado     = isset($arrVendedorDados["ven_end_estado"]) ? $arrVendedorDados["ven_end_estado"]: "";
 $vVenObs           = isset($arrVendedorDados["ven_observacao"]) ? $arrVendedorDados["ven_observacao"]: "";
 $vVenAtivo         = isset($arrVendedorDados["ven_ativo"]) ? $arrVendedorDados["ven_ativo"]: "";
+$vVenComissao      = isset($arrVendedorDados["ven_comissao"]) ? number_format($arrVendedorDados["ven_comissao"], 2, ",", "."): 0;
 // ===============
 
 // info do form ==
@@ -200,6 +201,16 @@ if($errorMsg != ""){
 
           <div class="control-group">
             <div style="height:20px;"></div>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label">Comissão</label>
+            <div class="controls">
+              <div class="input-append">
+                <input <?php echo $strReadyonly; ?> name="venComissao" id="venComissao" class="span11 mask_moeda" type="text" value="<?php echo $vVenComissao; ?>" />
+                <span class="add-on">%</span>
+              </div>
+            </div>
           </div>
 
           <div class="control-group">
