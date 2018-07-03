@@ -9,7 +9,7 @@ $proCodigo = isset($Produto["pro_codigo"]) ? $Produto["pro_codigo"]: "";
 $proEan    = isset($Produto["ean"]) ? $Produto["ean"]: "0000000000000";
 // =========
 
-$pdf = new FPDF('L','mm',array(24, 111));
+$pdf = new FPDF('L','mm',array(21, 111));
 $pdf->Open();
 $pdf->AliasNbPages();
 $pdf->AddPage();
@@ -29,17 +29,17 @@ $bar  = new BARCODE();
 $bar->BarCode_save('EAN-13', $vBarCode, $nome, $path, 'jpeg', 50, 2, "#FFFFFF", "#000000", true);
 $vNomeArq = $path.$nome.'.jpeg';
 
-$pdf->Image($vNomeArq, 3, null, 35, 16, 'jpeg');
+$pdf->Image($vNomeArq, 3, null, 35, 11, 'jpeg');
 $pdf->SetFont('Arial', '', 7);
-$pdf->Text(10, 20, utf8_decode("ID $proId - Cód: $proCodigo"));
+$pdf->Text(8, 16, utf8_decode("ID $proId - Cód: $proCodigo"));
 
 $pdf->SetY(1.5);
-$pdf->Image($vNomeArq, 38, null, 35, 16, 'jpeg');
-$pdf->Text(48, 20, utf8_decode("ID $proId - Cód: $proCodigo"));
+$pdf->Image($vNomeArq, 38, null, 35, 11, 'jpeg');
+$pdf->Text(46, 16, utf8_decode("ID $proId - Cód: $proCodigo"));
 
 $pdf->SetY(1.5);
-$pdf->Image($vNomeArq, 75, null, 35, 16, 'jpeg');
-$pdf->Text(86, 20, utf8_decode("ID $proId - Cód: $proCodigo"));
+$pdf->Image($vNomeArq, 75, null, 35, 11, 'jpeg');
+$pdf->Text(84, 16, utf8_decode("ID $proId - Cód: $proCodigo"));
 
 $pdf->Ln(4);
 unlink($vNomeArq);
