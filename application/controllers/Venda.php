@@ -412,4 +412,26 @@ class Venda extends MY_Controller {
 
     $this->load->view("Venda/pdfMostruario", $data);
   }
+
+  public function jsonRemoveVendaMostruario(){
+    $arrRet = [];
+    $arrRet["erro"] = false;
+    $arrRet["msg"]  = "";
+
+    // variaveis ============
+    $vdmId = $this->input->post('vdmId');
+    // ======================
+
+    $this->load->model('Tb_Venda_Mostruario');
+    $retDelete = $this->Tb_Venda_Mostruario->delete($vdmId);
+    if( $retDelete["erro"] ){
+      $errorMsg = isset($retDelete["msg"]) ? $retDelete["msg"]: "Erro ao deletar mostruário!";
+
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = $errorMsg;
+      echo json_encode($arrRet);
+    }
+
+    echo json_encode($arrRet);
+  }
 }

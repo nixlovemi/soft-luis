@@ -386,6 +386,38 @@ class Tb_Venda_Mostruario extends CI_Model {
     return $arrRet;
   }
 
+  public function delete($vdmId){
+    $arrRet           = [];
+    $arrRet["erro"]   = true;
+    $arrRet["msg"]    = "";
+
+    if(!is_numeric($vdmId)){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "ID inválido para deletar!";
+
+      return $arrRet;
+    } else {
+      $this->load->database();
+
+      $data = array(
+        'vdm_deletado' => 1,
+      );
+
+      $this->db->where('vdm_id', $vdmId);
+      $retDelete = $this->db->update('tb_venda_mostruario', $data);
+
+      if(!$retDelete){
+        $arrRet["erro"] = true;
+        $arrRet["msg"]  = $this->db->_error_message();
+      } else {
+        $arrRet["erro"] = false;
+        $arrRet["msg"] = "Mostruário deletado com sucesso!";
+      }
+
+      return $arrRet;
+    }
+  }
+
   public function finalizaAcerto($vdmId, $arrProdVenda){
     $arrRet           = [];
     $arrRet["erro"]   = true;

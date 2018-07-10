@@ -437,6 +437,33 @@ $(document).on('click', '#btnNovoMostruario', function(){
     }
   });
 });
+
+$(document).on('click', '.TbVendaMostruario_deletar', function(){
+	var vdmId = $(this).data("id");
+	var html   = 'Gostaria de deletar o mostruário ID '+vdmId+'?';
+
+	confirmBootbox(html, function(){
+    $.ajax({
+      type: "POST",
+      url: HOME_URL + 'Venda/jsonRemoveVendaMostruario',
+      data: 'vdmId=' + vdmId,
+  		dataType: 'json',
+  		success: function (ret) {
+  			var erro            = ret.erro;
+  			var msg             = ret.msg;
+
+  			if(erro){
+  				$.gritter.add({
+  					title: 'Alerta',
+  					text: msg,
+  				});
+  			} else {
+  				document.location.href = HOME_URL + 'Venda/indexMostruario';
+  			}
+      }
+    });
+	});
+});
 // ===================
 
 // Tb_Venda ======
