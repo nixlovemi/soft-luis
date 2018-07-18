@@ -62,4 +62,41 @@ class Start extends MY_Controller {
 
     echo json_encode($retArr);
   }
+
+  public function indexBkp(){
+    $data     = [];
+    $userData = $this->session->get_userdata();
+    $errorMsg = isset($userData["indexBkp_error_msg"]) ? $userData["indexBkp_error_msg"]: "";
+
+    if($errorMsg != ""){
+      $this->load->helper('alerts');
+      $errorMsg = showError($errorMsg);
+      $this->session->unset_userdata('indexBkp_error_msg');
+    }
+
+    $data["errorMsg"] = $errorMsg;
+    $this->template->load('template', 'Start/indexBkp', $data);
+  }
+
+  public function jsonIniciaBackup(){
+    $arrRet = [];
+    $arrRet["erro"] = false;
+    $arrRet["msg"]  = "";
+    $arrRet["html"] = "";
+
+    $this->load->model("M_Start");
+    $retBKP = $this->M_Start->sendBackup();
+
+    if($retBKP["erro"]){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = $retBKP["msg"];
+    } else {
+      $arrRet["erro"] = false;
+
+      $this->load->helper("alerts");
+      $arrRet["html"] = showSuccess($retBKP["msg"]);
+    }
+
+    echo json_encode($arrRet);
+  }
 }

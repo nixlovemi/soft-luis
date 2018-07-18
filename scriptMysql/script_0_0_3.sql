@@ -1,0 +1,1 @@
+INSERT INTO `tb_menu` (`men_id`, `men_descricao`, `men_controller`, `men_action`, `men_vars`, `men_id_pai`, `men_ativo`, `men_icon`, `men_order`) VALUES (NULL, 'Backup', 'Start', 'indexBkp', NULL, NULL, '1', '<i class=\"icon icon-save\"></i>', '1');

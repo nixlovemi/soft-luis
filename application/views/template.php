@@ -557,7 +557,7 @@
       <!--end-main-container-part-->
       <!--Footer-part-->
       <div class="row-fluid">
-         <div id="footer" class="span12"> 2018 &copy; Controle Admin - Versão 0.0.2</div>
+         <div id="footer" class="span12"> 2018 &copy; Controle Admin - Versão 0.0.3</div>
       </div>
       <!--end-Footer-part-->
       <script src="<?php echo base_url(); ?>js/excanvas.min.js"></script>

@@ -62,4 +62,74 @@ class M_Start extends CI_Model {
 
     return $arrRet;
   }
+
+  public function sendBackup(){
+    $arrRet = [];
+    $arrRet["erro"] = true;
+    $arrRet["msg"]  = "Erro ao fazer Backup.";
+
+    $this->load->dbutil();
+
+    /*
+    $bkpcf = array(
+        'tables'        => array('tabela', 'tabela_2'),   // Lista de tabelas que serão adicionadas ao backup
+        'ignore'        => array(),                       // Lista de tabelas que serão omitidas do backup
+        'format'        => 'txt',                         // Formato do backup: gzip, zip, txt
+        'filename'      => 'backup.sql',                  // Nome do arquivo (utilizado somente se o formato for ZIP)
+        'add_drop'      => TRUE,                          // Adição de DROP TABLE
+        'add_insert'    => TRUE,                          // Adição de INSERT (útil caso queira fazer o backup não só da estrutura, mas também dos dados)
+        'newline'       => "\n"                           // Caracter usado para definir quebra de linha
+    );
+    */
+    $prefs = array(
+        'format'      => 'zip',
+        'filename'    => 'my_db_backup.sql',
+        'add_insert'  => TRUE,
+    );
+    $backup = $this->dbutil->backup($prefs);
+
+    $db_name = 'backup-on-'. date("Y-m-d-H-i-s") .'.zip';
+    $save = APPPATH . 'cache/'.$db_name;
+
+    $this->load->helper('file');
+    write_file($save, $backup);
+
+    if(file_exists($save)){
+      // manda email
+      $this->load->library('email');
+
+      $this->email->from('luiscesartruculo@hotmail.com', 'Soft Luis');
+      $this->email->to('nixlovemi@gmail.com', 'Leandro Nix');
+
+      $this->email->subject('Backup Soft Luis - ' . date("d/m/Y H:i"));
+      $this->email->message('Segue anexo do backup');
+      $this->email->attach($save);
+
+      $ret = $this->email->send();
+      if($ret == false){
+        // erro na hora de enviar email
+        $arrRet["erro"] = true;
+        $arrRet["msg"]  = "Erro ao enviar email do Backup.";
+        return $arrRet;
+      } else {
+        // deu certo
+        $arrRet["erro"] = false;
+        $arrRet["msg"]  = "Backup enviado com sucesso!";
+        return $arrRet;
+      }
+      // ===========
+    } else {
+      // erro no bkp
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Erro ao salvar arquivo do Backup.";
+      return $arrRet;
+    }
+
+    delete_files($save);
+
+    // $this->load->helper('download');
+    // force_download($db_name, $backup);
+
+    return $arrRet;
+  }
 }

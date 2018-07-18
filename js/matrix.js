@@ -47,6 +47,34 @@ function mvc_post_json_ajax_var(controller, action, vars) {
   // =============================
 }
 
+$(document).on('click', '#btnIniciarBackup', function(){
+  $.ajax({
+    type: "POST",
+    url: HOME_URL + 'Start/jsonIniciaBackup',
+    data: '',
+    dataType: 'json',
+    success: function (ret) {
+      var erro = ret.erro;
+      var msg  = ret.msg;
+      var html = ret.html;
+
+      if(erro){
+        $.gritter.add({
+          title: 'Alerta',
+          text: msg,
+        });
+        var maxZindex = getHighIndex();
+        $("#gritter-notice-wrapper").css({'z-index':maxZindex + 5});
+
+        return false;
+      } else {
+        $("#dvRetIniciarBackup").html(html).css({'margin-top':'15px'});
+        setTimeout(" $('#dvRetIniciarBackup').html('') ", 5000);
+      }
+    }
+  });
+});
+
 function fncTelaUpdateBd(scriptPath){
   $.ajax({
     type: "POST",
