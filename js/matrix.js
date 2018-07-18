@@ -395,6 +395,7 @@ $(document).on('click', '#frmAddProdVendaMostru #addProdVendaMostru', function()
 				$("#frmAddProdVendaMostru #vmiDesconto").val("");
 				$("#htmlTbVendaItens").html(htmlTbItens);
         $("#htmlTbVendaTotais").html(htmlTbTotais);
+        $('html,body').animate({scrollTop: $("#htmlTbVendaItens").offset().top},300);
 			}
     }
   });
@@ -427,6 +428,7 @@ $(document).on('keyup', '#proEanAddProdVendaMostru', function(event){
   			} else {
   				$("#htmlTbVendaItens").html(htmlTbItens);
           $("#htmlTbVendaTotais").html(htmlTbTotais);
+          $('html,body').animate({scrollTop: $("#htmlTbVendaItens").offset().top},300);
   			}
       }
     });
