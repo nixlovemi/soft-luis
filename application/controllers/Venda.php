@@ -434,4 +434,31 @@ class Venda extends MY_Controller {
 
     echo json_encode($arrRet);
   }
+
+  public function jsonTrocaVendMostruario(){
+    $arrRet = [];
+    $arrRet["erro"] = false;
+    $arrRet["msg"]  = "";
+
+    // variaveis ============
+    $vdmId = $this->input->post('vdmId');
+    $venId = $this->input->post('venId');
+    // ======================
+
+    $this->load->model("Tb_Venda_Mostruario");
+    $retVdaMostru = $this->Tb_Venda_Mostruario->getMostruario($vdmId);
+    if($retVdaMostru["erro"]){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = $retVdaMostru["msg"];
+    } else {
+      $VendaMostruario               = $retVdaMostru["arrVendaMostruarioDados"];
+      $VendaMostruario["vdm_ven_id"] = $venId;
+
+      $retEdit        = $this->Tb_Venda_Mostruario->edit($VendaMostruario);
+      $arrRet["erro"] = $retEdit["erro"];
+      $arrRet["msg"]  = $retEdit["msg"];
+    }
+
+    echo json_encode($arrRet);
+  }
 }

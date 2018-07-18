@@ -74,9 +74,7 @@ if($errorMsg != ""){
                   <label class="control-label">Vendedor</label>
                   <div class="controls">
                     <?php
-                    echo "<select disabled class='span3 m-wrap' name='vdmVendedor' id='vdmVendedor'>";
-                    echo "<option value=''></option>";
-                    var_dump($arrVendedores);
+                    echo "<select class='span6 m-wrap' name='vdmVendedor' id='vdmVendedor'>";
                     foreach($arrVendedores as $Vendedor){
                       $venId    = $Vendedor["ven_id"];
                       $venNome  = $Vendedor["ven_nome"];
@@ -86,6 +84,7 @@ if($errorMsg != ""){
                     }
                     echo "</select>";
                     ?>
+                    <a href="javascript:;" id="btnTrocaVendMostruario" class="btn btn-mini btn-success"><i class="icon-save"></i></a>
                   </div>
                 </div>
 

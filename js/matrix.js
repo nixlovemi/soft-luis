@@ -181,6 +181,31 @@ $(document).on('click', 'a#opnDetRelFluxoCx', function(){
 // ===============
 
 // Tb_Venda_Mostruario
+$(document).on('click', '#btnTrocaVendMostruario', function(){
+  var vdmId = $("#frmEditVendaMostruInfo #vdmId").val();
+  var venId = $("#frmEditVendaMostruInfo #vdmVendedor").val();
+
+  $.ajax({
+    type: "POST",
+    url: HOME_URL + 'Venda/jsonTrocaVendMostruario',
+    data: 'vdmId=' + vdmId + '&venId=' + venId,
+		dataType: 'json',
+		success: function (ret) {
+			var erro = ret.erro;
+			var msg  = ret.msg;
+
+			if(erro){
+				$.gritter.add({
+					title: 'Alerta',
+					text: msg,
+				});
+			} else {
+        document.location.href = HOME_URL + 'Venda/editarMostruario/' + vdmId;
+			}
+    }
+  });
+});
+
 $(document).on('click', '#frmAddProdVendaMostruRet #addProdVendaMostruRet', function(){
 	var vdmId = $("#frmEditVendaMostruInfo #vdmId").val();
 	var frmVdm = $("#frmAddProdVendaMostruRet").serialize();
