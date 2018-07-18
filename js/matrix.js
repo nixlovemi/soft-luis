@@ -53,6 +53,9 @@ $(document).on('click', '#btnIniciarBackup', function(){
     url: HOME_URL + 'Start/jsonIniciaBackup',
     data: '',
     dataType: 'json',
+    beforeSend: function(){
+	$("#dvRetIniciarBackup").html(getHtmlLoader()).css({'margin-top':'15px'});
+    },
     success: function (ret) {
       var erro = ret.erro;
       var msg  = ret.msg;
