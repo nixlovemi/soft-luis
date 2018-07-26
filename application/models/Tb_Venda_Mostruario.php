@@ -24,7 +24,7 @@ class Tb_Venda_Mostruario extends CI_Model {
     $vSql .= " FROM tb_venda_mostruario ";
     $vSql .= " INNER JOIN tb_vendedor ON ven_id = vdm_ven_id ";
     $vSql .= " LEFT JOIN tb_venda_mostruario_itens ON vmi_vdm_id = vdm_id ";
-    $vSql .= " WHERE vdm_dtacerto IS NULL ";
+    $vSql .= " WHERE vdm_vda_id IS NULL ";
     $vSql .= " AND vdm_deletado = 0 ";
     $vSql .= " GROUP BY vdm_id ";
     $vSql .= " ORDER BY vdm_dtentrega ";
