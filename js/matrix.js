@@ -263,6 +263,7 @@ $(document).on('click', '#frmAddProdVendaMostruRet #addProdVendaMostruRet', func
 				$("#frmAddProdVendaMostruRet #vmirValor").val("");
         $(".vmirHtmlVendidos").html(htmlVendidos);
         $(".vmirHtmlConferidos").html(htmlConferidos);
+        $('html,body').animate({scrollTop: $("#finalizaAcerto").offset().top},300);
 			}
     }
   });
@@ -295,6 +296,7 @@ $(document).on('keyup', '#proEanAddProdVendaMostruRet', function(event){
   			} else {
   				$(".vmirHtmlVendidos").html(htmlVendidos);
           $(".vmirHtmlConferidos").html(htmlConferidos);
+          $('html,body').animate({scrollTop: $("#finalizaAcerto").offset().top},300);
   			}
       }
     });
@@ -426,7 +428,7 @@ $(document).on('click', '#frmAddProdVendaMostru #addProdVendaMostru', function()
 				$("#frmAddProdVendaMostru #vmiDesconto").val("");
 				$("#htmlTbVendaItens").html(htmlTbItens);
         $("#htmlTbVendaTotais").html(htmlTbTotais);
-        $('html,body').animate({scrollTop: $("#htmlTbVendaItens").offset().top},300);
+        $('html,body').animate({scrollTop: $("#finalizaVenda").offset().top},300);
 			}
     }
   });
@@ -459,7 +461,7 @@ $(document).on('keyup', '#proEanAddProdVendaMostru', function(event){
   			} else {
   				$("#htmlTbVendaItens").html(htmlTbItens);
           $("#htmlTbVendaTotais").html(htmlTbTotais);
-          $('html,body').animate({scrollTop: $("#htmlTbVendaItens").offset().top},300);
+          $('html,body').animate({scrollTop: $("#finalizaVenda").offset().top},300);
   			}
       }
     });
@@ -521,6 +523,38 @@ $(document).on('click', '.TbVendaMostruario_deletar', function(){
       }
     });
 	});
+});
+
+$(document).on('click', '#finalizaAcerto', function(){
+  var vdmId    = $("#vdmId").val();
+  var dtAcerto = $("#vdmDtAcerto").val();
+
+  $.ajax({
+    type: "POST",
+    url: HOME_URL + 'Venda/jsonVerifFinalizaAcerto',
+    data: 'vdmId=' + vdmId + '&dtAcerto=' + dtAcerto,
+    dataType: 'json',
+    success: function (ret) {
+      var erro     = ret.erro;
+      var msg      = ret.msg;
+      var semItens = ret.semItens;
+
+      if(erro){
+        $.gritter.add({
+          title: 'Alerta',
+          text: msg,
+        });
+      } else {
+        if( semItens ){
+          confirmBootbox('O acerto não tem nenhum item vendido. Deseja finalizar mesmo assim?', function(){
+            document.location.href = HOME_URL + 'Venda/finalizaAcerto/' + vdmId;
+          });
+        } else {
+          document.location.href = HOME_URL + 'Venda/finalizaAcerto/' + vdmId;
+        }
+      }
+    }
+  });
 });
 // ===================
 

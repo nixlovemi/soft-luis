@@ -229,5 +229,5 @@ if($errorMsg != ""){
 </div>
 
 <center>
-  <input onClick="document.location.href='<?php echo base_url() ?>Venda/finalizaAcerto/<?php echo $vVdmId; ?>'" id="finalizaAcerto" type='button' value='FINALIZA ACERTO E LANÇA CONTAS' class='btn btn-success' />
+  <input id="finalizaAcerto" type='button' value='FINALIZA ACERTO E LANÇA CONTAS' class='btn btn-success' />
 </center>

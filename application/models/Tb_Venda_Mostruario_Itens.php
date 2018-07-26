@@ -163,6 +163,7 @@ class Tb_Venda_Mostruario_Itens extends CI_Model {
     $this->db->select("pro_id, pro_descricao, pro_codigo, pro_ean, pro_estoque, pro_prec_custo, pro_prec_venda, pro_observacao, pro_ativo");
     $this->db->from("tb_produto");
     $this->db->join('tb_venda_mostruario_itens', 'pro_id = vmi_pro_id');
+    $this->db->where('vmi_vdm_id', $vdmId);
     $this->db->order_by("pro_descricao", "asc");
     $query = $this->db->get();
 

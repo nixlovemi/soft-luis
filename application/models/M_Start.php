@@ -36,6 +36,7 @@ class M_Start extends CI_Model {
     $vSql2 = "SELECT COALESCE(SUM(ctr_valor), 0) AS tot_receber
               FROM tb_cont_receber
               WHERE ctr_dtpagamento IS NULL
+              AND ctr_deletado = 0
               AND ctr_dtvencimento BETWEEN '$dtIni' AND '$dtFim'";
     $qry2  = $this->db->query($vSql2);
     $row2  = $qry2->row();
@@ -51,6 +52,7 @@ class M_Start extends CI_Model {
     $vSql3 = "SELECT COALESCE(SUM(ctp_valor), 0) AS tot_pagar
               FROM tb_cont_pagar
               WHERE ctp_dtpagamento IS NULL
+              AND ctp_deletado = 0
               AND ctp_dtvencimento BETWEEN '$dtIni' AND '$dtFim'";
     $qry3  = $this->db->query($vSql3);
     $row3  = $qry3->row();

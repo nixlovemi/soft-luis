@@ -6,6 +6,9 @@
 if(isset($errorMsg) && $errorMsg != ""){
   echo $errorMsg;
 }
+if(isset($okMsg) && $okMsg != ""){
+  echo $okMsg;
+}
 ?>
 <div class="widget-box">
   <div class="widget-title">

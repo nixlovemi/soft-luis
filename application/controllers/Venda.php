@@ -207,17 +207,24 @@ class Venda extends MY_Controller {
     $data     = [];
     $userData = $this->session->get_userdata();
     $errorMsg = isset($userData["MostruarioIndex_error_msg"]) ? $userData["MostruarioIndex_error_msg"]: "";
+    $okMsg    = isset($userData["MostruarioIndex_success_msg"]) ? $userData["MostruarioIndex_success_msg"]: "";
 
     if($errorMsg != ""){
       $this->load->helper('alerts');
       $errorMsg = showError($errorMsg);
       $this->session->unset_userdata('MostruarioIndex_error_msg');
     }
+    if($okMsg != ""){
+      $this->load->helper('alerts');
+      $okMsg = showSuccess($okMsg);
+      $this->session->unset_userdata('MostruarioIndex_success_msg');
+    }
 
     $this->load->model('Tb_Venda_Mostruario');
     $htmlMostruarioTable         = $this->Tb_Venda_Mostruario->getHtmlList();
     $data["htmlMostruarioTable"] = $htmlMostruarioTable;
     $data["errorMsg"]            = $errorMsg;
+    $data["okMsg"]               = $okMsg;
 
     $htmlMostruarioTableFin         = $this->Tb_Venda_Mostruario->getHtmlListFinalizadas();
     $data["htmlMostruarioTableFin"] = $htmlMostruarioTableFin;
@@ -343,6 +350,36 @@ class Venda extends MY_Controller {
     $this->template->load('template', 'Venda/acertoMostruario', $data);
   }
 
+  public function jsonVerifFinalizaAcerto(){
+    $arrRet = [];
+    $arrRet["erro"]     = false;
+    $arrRet["msg"]      = "";
+    $arrRet["semItens"] = false;
+
+    $this->load->helpers("utils");
+
+    // variaveis ======
+    $vdmId = $this->input->post('vdmId');
+    // ================
+
+    if(!is_numeric($vdmId)){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Erro ao finalizar acerto: ID inválido!";
+
+      echo json_encode($arrRet);
+      return;
+    }
+
+    $this->load->model('Tb_Venda_Mostruario_Itens_Ret');
+    $retArrConfVend = $this->Tb_Venda_Mostruario_Itens_Ret->getArrItensConfVendido($vdmId);
+    $arrProdVendido = (!$retArrConfVend["erro"]) ? $retArrConfVend["arrItens"]["vendidos"]: array();
+    if(count($arrProdVendido) <= 0){
+      $arrRet["semItens"] = true;
+    }
+
+    echo json_encode($arrRet);
+  }
+
   public function finalizaAcerto($vdmId){
     $erro = false;
     $msg  = "";
@@ -351,16 +388,17 @@ class Venda extends MY_Controller {
     $retArrConfVend = $this->Tb_Venda_Mostruario_Itens_Ret->getArrItensConfVendido($vdmId);
     $arrProdVendido = (!$retArrConfVend["erro"]) ? $retArrConfVend["arrItens"]["vendidos"]: array();
 
-    if(count($arrProdVendido) <= 0){
-      $erro = true;
-      $msg  = "Acerto sem nenhum item!";
-    } else {
-      $this->load->model('Tb_Venda_Mostruario');
-      $retFinaliza = $this->Tb_Venda_Mostruario->finalizaAcerto($vdmId, $arrProdVendido);
+    $this->load->model('Tb_Venda_Mostruario');
+    $retFinaliza = $this->Tb_Venda_Mostruario->finalizaAcerto($vdmId, $arrProdVendido);
 
-      if($retFinaliza["erro"]){
-        $this->session->set_userdata('VendaMostruarioAcerto_error_msg', $retFinaliza["msg"]);
-        $redirect = base_url() . "Venda/acertoMostruario/$vdmId";
+    if($retFinaliza["erro"]){
+      $this->session->set_userdata('VendaMostruarioAcerto_error_msg', $retFinaliza["msg"]);
+      $redirect = base_url() . "Venda/acertoMostruario/$vdmId";
+      header("location:$redirect");
+    } else {
+      if(count($arrProdVendido) <= 0){
+        $this->session->set_userdata('MostruarioIndex_success_msg', "Mostruário finalizado sem itens!");
+        $redirect = base_url() . "Venda/indexMostruario";
         header("location:$redirect");
       } else {
         $vdaId = $retFinaliza["vda_id"];

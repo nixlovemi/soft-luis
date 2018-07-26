@@ -431,12 +431,7 @@ class Tb_Venda_Mostruario extends CI_Model {
       return $arrRet;
     }
 
-    if( count($arrProdVenda) <= 0 ){
-      $arrRet["erro"] = true;
-      $arrRet["msg"]  = "Mostruário sem itens vendidos!";
-
-      return $arrRet;
-    }
+    $semItem = count($arrProdVenda) <= 0;
 
     $this->load->database();
     $this->db->trans_begin();
@@ -453,51 +448,53 @@ class Tb_Venda_Mostruario extends CI_Model {
     }
     // =====================
 
-    // insere uma venda ====
-    $this->load->model('Tb_Venda');
+    if(!$semItem){
+      // insere uma venda ====
+      $this->load->model('Tb_Venda');
 
-    $arrSession   = $this->session->get_userdata('logged_in');
-    $loggedUsuId  = $arrSession["logged_in"]["usu_id"];
+      $arrSession   = $this->session->get_userdata('logged_in');
+      $loggedUsuId  = $arrSession["logged_in"]["usu_id"];
 
-    $Venda = [];
-    $Venda["vda_data"]   = date("Y-m-d H:i:s");
-    $Venda["vda_usu_id"] = $loggedUsuId;
-    $Venda["vda_ven_id"] = $VendaMostruario["vdm_ven_id"];
+      $Venda = [];
+      $Venda["vda_data"]   = date("Y-m-d H:i:s");
+      $Venda["vda_usu_id"] = $loggedUsuId;
+      $Venda["vda_ven_id"] = $VendaMostruario["vdm_ven_id"];
 
-    $retAddVenda = $this->Tb_Venda->insert($Venda);
-    if($retAddVenda["erro"]){
-      $arrRet["erro"] = true;
-      $arrRet["msg"]  = "Erro ao gerar parcelas do acordo. Msg: " . $retAddVenda["msg"];
-
-      return $arrRet;
-    } else {
-      $vdaId = $retAddVenda["vda_id"];
-    }
-    // =====================
-
-    // insere os itens da venda
-    $this->load->model('Tb_Venda_Itens');
-
-    foreach($arrProdVenda as $key => $ProdVenda){
-      $VendaItens = [];
-      $VendaItens["vdi_vda_id"]   = $vdaId;
-      $VendaItens["vdi_pro_id"]   = $ProdVenda["pro_id"];
-      $VendaItens["vdi_qtde"]     = $ProdVenda["qtde"];
-      $VendaItens["vdi_valor"]    = $ProdVenda["valor"];
-      $VendaItens["vdi_desconto"] = 0;
-
-      $retVendaItens = $this->Tb_Venda_Itens->insert($VendaItens);
-      if($retVendaItens["erro"]){
+      $retAddVenda = $this->Tb_Venda->insert($Venda);
+      if($retAddVenda["erro"]){
         $arrRet["erro"] = true;
-        $arrRet["msg"]  = "Erro ao inserir itens do acordo. Msg: " . $retVendaItens["msg"];
+        $arrRet["msg"]  = "Erro ao gerar parcelas do acordo. Msg: " . $retAddVenda["msg"];
 
         return $arrRet;
+      } else {
+        $vdaId = $retAddVenda["vda_id"];
       }
+      // =====================
+
+      // insere os itens da venda
+      $this->load->model('Tb_Venda_Itens');
+
+      foreach($arrProdVenda as $key => $ProdVenda){
+        $VendaItens = [];
+        $VendaItens["vdi_vda_id"]   = $vdaId;
+        $VendaItens["vdi_pro_id"]   = $ProdVenda["pro_id"];
+        $VendaItens["vdi_qtde"]     = $ProdVenda["qtde"];
+        $VendaItens["vdi_valor"]    = $ProdVenda["valor"];
+        $VendaItens["vdi_desconto"] = 0;
+
+        $retVendaItens = $this->Tb_Venda_Itens->insert($VendaItens);
+        if($retVendaItens["erro"]){
+          $arrRet["erro"] = true;
+          $arrRet["msg"]  = "Erro ao inserir itens do acordo. Msg: " . $retVendaItens["msg"];
+
+          return $arrRet;
+        }
+      }
+      // ========================
     }
-    // ========================
 
     // atualiza mostruario
-    $VendaMostruario["vdm_dtacerto"] = $Venda["vda_data"];
+    $VendaMostruario["vdm_dtacerto"] = (isset($Venda["vda_data"])) ? $Venda["vda_data"]: date("Y-m-d");
     $VendaMostruario["vdm_vda_id"]   = $vdaId;
 
     $retEditMostruario = $this->edit($VendaMostruario);
