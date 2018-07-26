@@ -494,7 +494,7 @@ class Tb_Venda_Mostruario extends CI_Model {
     }
 
     // atualiza mostruario
-    $VendaMostruario["vdm_dtacerto"] = (isset($Venda["vda_data"])) ? $Venda["vda_data"]: date("Y-m-d");
+    $VendaMostruario["vdm_dtacerto"] = (isset($Venda["vda_data"]) && strlen($Venda["vda_data"]) == 10) ? $Venda["vda_data"]: date("Y-m-d");
     $VendaMostruario["vdm_vda_id"]   = $vdaId;
 
     $retEditMostruario = $this->edit($VendaMostruario);

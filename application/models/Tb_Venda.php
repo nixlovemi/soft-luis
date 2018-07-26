@@ -294,10 +294,14 @@ class Tb_Venda extends CI_Model {
         $this->load->database();
         $this->db->trans_start();
 
-        $sql  = " UPDATE tb_venda SET vda_status = $statusVendaCanc WHERE vda_id = $vdaId; ";
+        $sql3 = " UPDATE tb_venda_mostruario SET vdm_deletado = 1 WHERE vdm_vda_id = $vdaId; ";
+        $ret = $this->db->query($sql3);
+
         $sql2 = " UPDATE tb_cont_receber SET ctr_deletado = 1 WHERE ctr_vda_id = $vdaId; ";
-        $ret = $this->db->query($sql);
         $ret = $this->db->query($sql2);
+
+        $sql  = " UPDATE tb_venda SET vda_status = $statusVendaCanc WHERE vda_id = $vdaId; ";
+        $ret = $this->db->query($sql);
 
         $this->db->trans_complete();
         if($this->db->trans_status() === FALSE){
