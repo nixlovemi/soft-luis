@@ -1112,6 +1112,32 @@ $(document).on('click', '.TbVendedor_deletar', function(){
 });
 // ==========
 
+// Tb_Produto
+function fncRemoveProImagem(proId){
+  confirmBootbox('Deseja remover a imagem do produto ID ' + proId + '?', function(){
+    $.ajax({
+      type: "POST",
+      url: HOME_URL + 'Produto/jsonRemoveProImagem',
+      data: 'proId=' + proId,
+      dataType: 'json',
+      success: function (ret) {
+        if(ret.erro){
+          $.gritter.add({
+            title: 'Alerta',
+            text: ret.msg,
+          });
+          var maxZindex = getHighIndex();
+          $("#gritter-notice-wrapper").css({'z-index':maxZindex + 5});
+        } else {
+          $('#dvImagemProduto').remove();
+          setTimeout("loadObjects()", 750);
+        }
+      }
+    });
+  });
+}
+// ==========
+
 function loadObjects(){
   $('.dynatable').dynatable({
 		inputs: {

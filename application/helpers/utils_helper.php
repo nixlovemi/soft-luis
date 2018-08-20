@@ -416,3 +416,42 @@ function mask($val, $mask)
 
   return $maskared;
 }
+
+function urlImageToBinary($urlPath){
+  $image      = $urlPath;
+  $data       = fopen($image, 'rb');
+  $size       = filesize($image);
+  $contents   = fread($data, $size);
+
+  return $contents;
+}
+
+function resizeImage($imagePath, $maxDimW=640, $maxDimH=480){
+  $target_filename = "";
+
+  if($imagePath != ""){
+    list($width, $height, $type, $attr) = getimagesize($imagePath);
+
+    if ( $width > $maxDimW || $height > $maxDimH ) {
+        $target_filename = $imagePath;
+        $fn              = $imagePath;
+        $size            = getimagesize( $fn );
+        $ratio           = $size[0]/$size[1]; // width/height
+
+        if( $ratio > 1) {
+            $width = $maxDimW;
+            $height = $maxDimH/$ratio;
+        } else {
+            $width = $maxDimW*$ratio;
+            $height = $maxDimH;
+        }
+        $src = imagecreatefromstring(file_get_contents($fn));
+        $dst = imagecreatetruecolor( $width, $height );
+
+        imagecopyresampled($dst, $src, 0, 0, 0, 0, $width, $height, $size[0], $size[1] );
+        imagejpeg($dst, $target_filename); // adjust format as needed
+    }
+  }
+
+  return $target_filename;
+}

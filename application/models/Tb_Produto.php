@@ -39,7 +39,7 @@ class Tb_Produto extends CI_Model {
     }
 
     $this->load->database();
-    $this->db->select("pro_id, pro_descricao, pro_codigo, pro_ean, pro_estoque, pro_prec_custo, pro_prec_venda, pro_observacao, pro_ativo");
+    $this->db->select("pro_id, pro_descricao, pro_codigo, pro_ean, pro_estoque, pro_prec_custo, pro_prec_venda, pro_observacao, pro_ativo, pro_imagem");
     $this->db->from("tb_produto");
     $this->db->where("pro_id", $proId);
     $query = $this->db->get();
@@ -58,6 +58,8 @@ class Tb_Produto extends CI_Model {
       $arrProdutoDados["pro_observacao"] = $row->pro_observacao;
       $arrProdutoDados["pro_ativo"]      = $row->pro_ativo;
       $arrProdutoDados["ean"]            = $this->geraEan($arrProdutoDados);
+      $arrProdutoDados["pro_imagem"]     = $row->pro_imagem;
+      $arrProdutoDados["imagem_url"]     = ($row->pro_imagem != "") ? "data:image/jpeg;base64," . base64_encode($row->pro_imagem): "";
 
       $arrRet["arrProdutoDados"] = $arrProdutoDados;
     }
@@ -84,7 +86,7 @@ class Tb_Produto extends CI_Model {
     $arrRet["arrProdutos"] = array();
 
     $this->load->database();
-    $this->db->select("pro_id, pro_descricao, pro_codigo, pro_ean, pro_estoque, pro_prec_custo, pro_prec_venda, pro_observacao, pro_ativo");
+    $this->db->select("pro_id, pro_descricao, pro_codigo, pro_ean, pro_estoque, pro_prec_custo, pro_prec_venda, pro_observacao, pro_ativo, pro_imagem");
     $this->db->from("tb_produto");
     $this->db->where("pro_ativo", 1);
     $this->db->order_by("pro_descricao", "asc");
@@ -103,6 +105,7 @@ class Tb_Produto extends CI_Model {
         $arrProdutosDados["pro_prec_venda"] = $rs1["pro_prec_venda"];
         $arrProdutosDados["pro_observacao"] = $rs1["pro_observacao"];
         $arrProdutosDados["pro_ativo"]      = $rs1["pro_ativo"];
+        $arrProdutosDados["pro_imagem"]     = $rs1["pro_imagem"];
 
         $arrRet["arrProdutos"][] = $arrProdutosDados;
       }
@@ -306,6 +309,10 @@ class Tb_Produto extends CI_Model {
       'pro_ativo'      => $vProAtivo,
     );
 
+    if(isset($arrProdutoDados["pro_imagem"]) && $arrProdutoDados["pro_imagem"] != ""){
+      $data["pro_imagem"] = $arrProdutoDados["pro_imagem"];
+    }
+
     $retInsert = $this->db->insert('tb_produto', $data);
     if(!$retInsert){
       $arrRet["erro"] = true;
@@ -462,6 +469,10 @@ class Tb_Produto extends CI_Model {
       'pro_ativo'      => $vProAtivo,
     );
 
+    if(isset($arrProdutoDados["pro_imagem"]) && $arrProdutoDados["pro_imagem"] != ""){
+      $data["pro_imagem"] = $arrProdutoDados["pro_imagem"];
+    }
+
     $this->db->where('pro_id', $vProId);
     $retInsert = $this->db->update('tb_produto', $data);
     if(!$retInsert){
@@ -508,5 +519,34 @@ class Tb_Produto extends CI_Model {
 
       return $arrRet;
     }
+  }
+
+  public function removeImagem($proId){
+    $arrRet         = [];
+    $arrRet["erro"] = true;
+    $arrRet["msg"]  = "";
+
+    if(!is_numeric($proId)){
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "ID inválido para buscar o produto!";
+      return $arrRet;
+    }
+
+    $this->load->database();
+
+    $sql = "UPDATE tb_produto
+            SET pro_imagem = NULL
+            WHERE pro_id = $proId";
+    $queryOk = $this->db->simple_query($sql);
+
+    if($queryOk){
+      $arrRet["erro"] = false;
+      $arrRet["msg"]  = "Imagem removida com sucesso!";
+    } else {
+      $arrRet["erro"] = true;
+      $arrRet["msg"]  = "Erro ao remover imagem. Tente novamente!";
+    }
+
+    return $arrRet;
   }
 }

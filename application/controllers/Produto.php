@@ -43,6 +43,15 @@ class Produto extends MY_Controller {
     $vProObservacao = $this->input->post('proObservacao');
     $vProAtivo      = $this->input->post('proAtivo');
 
+    $imageExists = ($_FILES["pro_imagem"]["tmp_name"] != "") ? getimagesize($_FILES["pro_imagem"]["tmp_name"]): false;
+    if($imageExists !== false){
+      $fileName   = resizeImage($_FILES['pro_imagem']['tmp_name'], 640, 480);
+      $contents   = urlImageToBinary($fileName);
+      $vProImagem = $contents;
+    } else {
+      $vProImagem = "";
+    }
+
     if($vProPrecCusto != ""){
       $vProPrecCusto = acerta_moeda($vProPrecCusto);
     }
@@ -60,6 +69,7 @@ class Produto extends MY_Controller {
     $arrProdutoDados["pro_prec_venda"] = $vProPrecVenda;
     $arrProdutoDados["pro_observacao"] = $vProObservacao;
     $arrProdutoDados["pro_ativo"]      = $vProAtivo;
+    $arrProdutoDados["pro_imagem"]     = $vProImagem;
 
     $this->load->model('Tb_Produto');
     $retInsert = $this->Tb_Produto->insert($arrProdutoDados);
@@ -93,6 +103,15 @@ class Produto extends MY_Controller {
     $vProObservacao = $this->input->post('proObservacao');
     $vProAtivo      = $this->input->post('proAtivo');
 
+    $imageExists = ($_FILES["pro_imagem"]["tmp_name"] != "") ? getimagesize($_FILES["pro_imagem"]["tmp_name"]): false;
+    if($imageExists !== false){
+      $fileName   = resizeImage($_FILES['pro_imagem']['tmp_name'], 640, 480);
+      $contents   = urlImageToBinary($fileName);
+      $vProImagem = $contents;
+    } else {
+      $vProImagem = "";
+    }
+
     if($vProPrecCusto != ""){
       $vProPrecCusto = acerta_moeda($vProPrecCusto);
     }
@@ -116,6 +135,7 @@ class Produto extends MY_Controller {
     $arrProdutoDados["pro_prec_venda"] = $vProPrecVenda;
     $arrProdutoDados["pro_observacao"] = $vProObservacao;
     $arrProdutoDados["pro_ativo"]      = $vProAtivo;
+    $arrProdutoDados["pro_imagem"]     = $vProImagem;
 
     $retEdit = $this->Tb_Produto->edit($arrProdutoDados);
     $data    = [];
@@ -127,8 +147,9 @@ class Produto extends MY_Controller {
       $data["okMsg"]           = isset($retEdit["msg"]) ? $retEdit["msg"]: "Produto editado com sucesso!";
     }
 
+    $retProduto              = $this->Tb_Produto->getProduto($vProId);
+    $data["arrProdutoDados"] = (!$retProduto["erro"]) ? $retProduto["arrProdutoDados"]: $arrProdutoDados;
     $data["editar"]          = true;
-    $data["arrProdutoDados"] = $arrProdutoDados;
     $this->template->load('template', 'Produto/novo', $data);
   }
 
@@ -285,5 +306,24 @@ class Produto extends MY_Controller {
 
     $data["Produto"] = $Produto;
     $this->load->view('Produto/etiqueta', $data);
+  }
+
+  public function jsonRemoveProImagem(){
+    $this->load->model('Tb_Produto');
+    $this->load->helper("alerts");
+
+    $data         = [];
+    $data["erro"] = false;
+    $data["msg"]  = "";
+
+    // variaveis ============
+    $proId = $this->input->post('proId');
+    // ======================
+
+    $retRemove    = $this->Tb_Produto->removeImagem($proId);
+    $data["erro"] = $retRemove["erro"];
+    $data["msg"]  = $retRemove["msg"];
+
+    echo json_encode($data);
   }
 }

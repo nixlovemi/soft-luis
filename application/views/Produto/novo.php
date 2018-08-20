@@ -19,6 +19,7 @@ $vProPrecCusto  = isset($arrProdutoDados["pro_prec_custo"]) && is_numeric($arrPr
 $vProPrecVenda  = isset($arrProdutoDados["pro_prec_venda"]) && is_numeric($arrProdutoDados["pro_prec_venda"]) ? number_format($arrProdutoDados["pro_prec_venda"], 2, ",", ""): "";
 $vProObservacao = isset($arrProdutoDados["pro_observacao"]) ? $arrProdutoDados["pro_observacao"]: "";
 $vProAtivo      = isset($arrProdutoDados["pro_ativo"]) ? $arrProdutoDados["pro_ativo"]: "true";
+$vImgUrl        = isset($arrProdutoDados["imagem_url"]) ? $arrProdutoDados["imagem_url"]: "";
 // ===============
 
 // info do form ==
@@ -72,7 +73,7 @@ if($errorMsg != ""){
         <h5>Produto</h5>
       </div>
       <div class="widget-content nopadding">
-        <form class="form-horizontal form-validation" method="post" action="<?php echo base_url() . $frmAction; ?>">
+        <form enctype="multipart/form-data" class="form-horizontal form-validation" method="post" action="<?php echo base_url() . $frmAction; ?>">
           <?php
           if($detalhes || $editar){
             ?>
@@ -137,6 +138,24 @@ if($errorMsg != ""){
             <label class="control-label">Observação</label>
             <div class="controls">
               <textarea <?php echo $strReadyonly; ?> class="span10" name="proObservacao" id="proObservacao"><?php echo $vProObservacao; ?></textarea>
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label">
+              Imagem
+              <br />
+              <small>(Dimensão 640x480)</small>
+            </label>
+            <div class="controls">
+              <input type="file" name="pro_imagem" accept=".jpg, .jpeg" />
+              <?php
+              if($vImgUrl != ""){
+                echo "<div id='dvImagemProduto'>";
+                echo "  <br /><img id='imagem_produto' src='$vImgUrl' />";
+                echo "  <br /><a onClick='fncRemoveProImagem($vProId)' href='javascript:;'>Remover imagem</a>";
+                echo "</div>";
+              }
+              ?>
             </div>
           </div>
           <div class="control-group">
