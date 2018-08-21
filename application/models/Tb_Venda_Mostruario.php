@@ -24,7 +24,7 @@ class Tb_Venda_Mostruario extends CI_Model {
     $vSql .= " FROM tb_venda_mostruario ";
     $vSql .= " INNER JOIN tb_vendedor ON ven_id = vdm_ven_id ";
     $vSql .= " LEFT JOIN tb_venda_mostruario_itens ON vmi_vdm_id = vdm_id ";
-    $vSql .= " WHERE vdm_vda_id IS NULL ";
+    $vSql .= " WHERE (vdm_vda_id IS NULL AND vdm_dtacerto IS NULL) ";
     $vSql .= " AND vdm_deletado = 0 ";
     $vSql .= " GROUP BY vdm_id ";
     $vSql .= " ORDER BY vdm_dtentrega ";
@@ -79,6 +79,7 @@ class Tb_Venda_Mostruario extends CI_Model {
     $htmlTable .= "      <th width='8%'>Qt Itens</th>";
     $htmlTable .= "      <th width='8%'>Total</th>";
     $htmlTable .= "      <th width='8%'>Ver</th>";
+	$htmlTable .= "      <th width='8%'>Editar</th>";
     $htmlTable .= "    </tr>";
     $htmlTable .= "  </thead>";
     $htmlTable .= "  <tbody>";
@@ -87,9 +88,9 @@ class Tb_Venda_Mostruario extends CI_Model {
     $vSql .= "        ,COALESCE(COUNT(vdi_id), 0) AS qt_itens, COALESCE(SUM((vdi_qtde * vdi_valor) - vdi_desconto), 0) AS total ";
     $vSql .= " FROM tb_venda_mostruario ";
     $vSql .= " INNER JOIN tb_vendedor ON ven_id = vdm_ven_id ";
-    $vSql .= " INNER JOIN tb_venda ON vda_id = vdm_vda_id ";
-    $vSql .= " INNER JOIN tb_venda_itens ON vdi_vda_id = vdm_vda_id ";
-    $vSql .= " WHERE vdm_vda_id IS NOT NULL ";
+    $vSql .= " LEFT JOIN tb_venda ON vda_id = vdm_vda_id ";
+    $vSql .= " LEFT JOIN tb_venda_itens ON vdi_vda_id = vdm_vda_id ";
+    $vSql .= " WHERE (vdm_vda_id IS NOT NULL OR vdm_dtacerto IS NOT NULL) ";
     $vSql .= " AND vdm_deletado = 0 ";
     $vSql .= " GROUP BY vdm_id ";
     $vSql .= " ORDER BY vdm_dtentrega ";
@@ -120,7 +121,13 @@ class Tb_Venda_Mostruario extends CI_Model {
         $htmlTable .= "  <td>$vVendedor</td>";
         $htmlTable .= "  <td>$vQtItens</td>";
         $htmlTable .= "  <td>$vTotal</td>";
-        $htmlTable .= "  <td><a href='javascript:;' class='' onClick='document.location.href=\"".$baseUrl."Venda/ver/$vVdaId\"'><i class='icon-eye-open icon-lista'></i></a></td>";
+		if(!is_numeric($vVdaId)){
+			$htmlTable .= "  <td> -- </td>";
+			$htmlTable .= "  <td> -- </td>";
+		} else {
+			$htmlTable .= "  <td><a href='javascript:;' class='' onClick='document.location.href=\"".$baseUrl."Venda/ver/$vVdaId\"'><i class='icon-eye-open icon-lista'></i></a></td>";
+			$htmlTable .= "  <td><a href='javascript:;' class='' onClick='document.location.href=\"".$baseUrl."Venda/editar/$vVdaId\"'><i class='icon-edit icon-lista'></i></a></td>";
+		}
         $htmlTable .= "</tr>";
       }
     }
