@@ -538,6 +538,7 @@ $(document).on('click', '#finalizaAcerto', function(){
       var erro     = ret.erro;
       var msg      = ret.msg;
       var semItens = ret.semItens;
+      var semConf  = ret.semConf;
 
       if(erro){
         $.gritter.add({
@@ -545,8 +546,13 @@ $(document).on('click', '#finalizaAcerto', function(){
           text: msg,
         });
       } else {
-        if( semItens ){
-          confirmBootbox('O acerto não tem nenhum item vendido. Deseja finalizar mesmo assim?', function(){
+        if(semConf){
+          confirmBootbox('O acerto não tem nenhum item CONFERIDO. Deseja finalizar mesmo assim?', function(){
+            document.location.href = HOME_URL + 'Venda/finalizaAcerto/' + vdmId;
+          });
+        }
+        else if( semItens ){
+          confirmBootbox('O acerto não tem nenhum item VENDIDO. Deseja finalizar mesmo assim?', function(){
             document.location.href = HOME_URL + 'Venda/finalizaAcerto/' + vdmId;
           });
         } else {

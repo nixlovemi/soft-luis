@@ -258,56 +258,50 @@ if($errorMsg != ""){
     </div>
     <div id="tab2" class="tab-pane">
       <div class="row-fluid" style="margin-top: 0;">
-        <?php
-        if($editar){
-          ?>
-          <div class="widget-box">
-            <div class="widget-title">
-              <span class="icon"> <i class="icon icon-plus"></i> </span>
-              <h5>Incluir</h5>
-            </div>
-            <div class="widget-content nopadding">
-              <form id="frmAddProdVenda" class="form-horizontal form-validation" method="post" action="">
-                <div class="control-group">
-                  <table class="table table-bordered table-striped" width="100%">
-                    <thead>
-                      <tr>
-                        <th>Vencimento</th>
-                        <th>Valor</th>
-                        <th>Incluir Paga?</th>
-                        <th>&nbsp;</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>
-                          <input value="" class="span10 mask_datepicker" type="text" id="ctrDtvencimento" name="ctrDtvencimento" />
-                        </td>
-                        <td>
-                          <div class="input-prepend">
-                            <span class="add-on">R$</span>
-                            <input class="span10 mask_moeda" type="text" name="ctrValor" id="ctrValor" value="" />
-                          </div>
-                        </td>
-                        <td>
-                          <select name="ctrContaPaga" id="ctrContaPaga">
-                            <option value="N">Não</option>
-                            <option value="S">Sim</option>
-                          </select>
-                        </td>
-                        <td>
-                          <input id="addParcelaVenda" type='button' value='Incluir Parcela' class='btn btn-success' />
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </form>
-            </div>
+        <div class="widget-box">
+          <div class="widget-title">
+            <span class="icon"> <i class="icon icon-plus"></i> </span>
+            <h5>Incluir</h5>
           </div>
-          <?php
-        }
-        ?>
+          <div class="widget-content nopadding">
+            <form id="frmAddProdVenda" class="form-horizontal form-validation" method="post" action="">
+              <div class="control-group">
+                <table class="table table-bordered table-striped" width="100%">
+                  <thead>
+                    <tr>
+                      <th>Vencimento</th>
+                      <th>Valor</th>
+                      <th>Incluir Paga?</th>
+                      <th>&nbsp;</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <input value="" class="span10 mask_datepicker" type="text" id="ctrDtvencimento" name="ctrDtvencimento" />
+                      </td>
+                      <td>
+                        <div class="input-prepend">
+                          <span class="add-on">R$</span>
+                          <input class="span10 mask_moeda" type="text" name="ctrValor" id="ctrValor" value="" />
+                        </div>
+                      </td>
+                      <td>
+                        <select name="ctrContaPaga" id="ctrContaPaga">
+                          <option value="N">Não</option>
+                          <option value="S">Sim</option>
+                        </select>
+                      </td>
+                      <td>
+                        <input id="addParcelaVenda" type='button' value='Incluir Parcela' class='btn btn-success' />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </form>
+          </div>
+        </div>
 
         <div class="widget-box">
           <div class="widget-title">

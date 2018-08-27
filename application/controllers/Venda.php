@@ -355,6 +355,7 @@ class Venda extends MY_Controller {
     $arrRet["erro"]     = false;
     $arrRet["msg"]      = "";
     $arrRet["semItens"] = false;
+    $arrRet["semConf"]  = false;
 
     $this->load->helpers("utils");
 
@@ -375,6 +376,12 @@ class Venda extends MY_Controller {
     $arrProdVendido = (!$retArrConfVend["erro"]) ? $retArrConfVend["arrItens"]["vendidos"]: array();
     if(count($arrProdVendido) <= 0){
       $arrRet["semItens"] = true;
+    }
+
+    $retArrItemConf = $this->Tb_Venda_Mostruario_Itens_Ret->getArrItensConferidos($vdmId);
+    $arrProdConf    = (!$retArrItemConf["erro"]) ? $retArrItemConf["arrItensConf"]: array();
+    if(count($arrProdConf) <= 0){
+      $arrRet["semConf"] = true;
     }
 
     echo json_encode($arrRet);

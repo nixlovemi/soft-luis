@@ -1,5 +1,45 @@
 <?php
 class Tb_Venda_Mostruario_Itens_Ret extends CI_Model {
+  public function getArrItensConferidos($vdmId){
+    $arrRet = [];
+    $arrRet["erro"]         = true;
+    $arrRet["arrItensConf"] = [];
+
+    $vSql2 = "SELECT vmir_id, vmir_pro_id, pro_descricao, pro_codigo, vmir_qtde, vmir_valor
+              FROM tb_venda_mostruario_itens_ret
+              INNER JOIN tb_produto ON pro_id = vmir_pro_id
+              WHERE vmir_vdm_id = $vdmId
+              ORDER BY pro_descricao";
+    $rsV2  = $this->db->query($vSql2);
+
+    $arrMostrItensRet = [];
+    foreach($rsV2->result() as $row2){
+      $v_vmir_id   = $row2->vmir_id;
+      $v_pro_id2   = $row2->vmir_pro_id;
+      $v_pro_desc2 = $row2->pro_descricao;
+      $v_pro_cod2  = $row2->pro_codigo;
+      $v_qtde2     = $row2->vmir_qtde;
+      $v_valor2    = $row2->vmir_valor;
+
+      $idx2 = $v_pro_id2 . "-" . $v_qtde2 . "-" . $v_valor2;
+      if( array_key_exists($idx2, $arrMostrItensRet) ){
+        $arrMostrItensRet[$idx2]["qtde"] += $v_qtde;
+      } else {
+        $arrMostrItensRet[$idx2] = [];
+        $arrMostrItensRet[$idx2]["vmir_id"] = $v_vmir_id;
+        $arrMostrItensRet[$idx2]["pro_id"] = $v_pro_id2;
+        $arrMostrItensRet[$idx2]["pro_desc"] = $v_pro_desc2;
+        $arrMostrItensRet[$idx2]["pro_cod"]  = $v_pro_cod2;
+        $arrMostrItensRet[$idx2]["qtde"]   = $v_qtde2;
+        $arrMostrItensRet[$idx2]["valor"]  = $v_valor2;
+      }
+    }
+
+    $arrRet["erro"]         = false;
+    $arrRet["arrItensConf"] = $arrMostrItensRet;
+    return $arrRet;
+  }
+
   /**
   * retorna array com itens conferência e os vendidos
   */
@@ -54,35 +94,8 @@ class Tb_Venda_Mostruario_Itens_Ret extends CI_Model {
     // ======================
 
     // array itens conferência
-    $vSql2 = "SELECT vmir_id, vmir_pro_id, pro_descricao, pro_codigo, vmir_qtde, vmir_valor
-              FROM tb_venda_mostruario_itens_ret
-              INNER JOIN tb_produto ON pro_id = vmir_pro_id
-              WHERE vmir_vdm_id = $vdmId
-              ORDER BY pro_descricao";
-    $rsV2  = $this->db->query($vSql2);
-
-    $arrMostrItensRet = [];
-    foreach($rsV2->result() as $row2){
-      $v_vmir_id   = $row2->vmir_id;
-      $v_pro_id2   = $row2->vmir_pro_id;
-      $v_pro_desc2 = $row2->pro_descricao;
-      $v_pro_cod2  = $row2->pro_codigo;
-      $v_qtde2     = $row2->vmir_qtde;
-      $v_valor2    = $row2->vmir_valor;
-
-      $idx2 = $v_pro_id2 . "-" . $v_qtde2 . "-" . $v_valor2;
-      if( array_key_exists($idx2, $arrMostrItensRet) ){
-        $arrMostrItensRet[$idx2]["qtde"] += $v_qtde;
-      } else {
-        $arrMostrItensRet[$idx2] = [];
-        $arrMostrItensRet[$idx2]["vmir_id"] = $v_vmir_id;
-        $arrMostrItensRet[$idx2]["pro_id"] = $v_pro_id2;
-        $arrMostrItensRet[$idx2]["pro_desc"] = $v_pro_desc2;
-        $arrMostrItensRet[$idx2]["pro_cod"]  = $v_pro_cod2;
-        $arrMostrItensRet[$idx2]["qtde"]   = $v_qtde2;
-        $arrMostrItensRet[$idx2]["valor"]  = $v_valor2;
-      }
-    }
+    $retArrItensConferidos = $this->getArrItensConferidos($vdmId);
+    $arrMostrItensRet      = (!$retArrItensConferidos["erro"]) ? $retArrItensConferidos["arrItensConf"]: array();
     // =======================
 
     // array itens vendidos
