@@ -288,8 +288,10 @@ class Venda extends MY_Controller {
   public function editarMostruario($vdmId){
     $data = [];
 
+    $arrFilters = [];
+    $arrFilters["orderBy"] = "pro_id";
     $this->load->model('Tb_Produto');
-    $retProdutos = $this->Tb_Produto->getProdutos();
+    $retProdutos = $this->Tb_Produto->getProdutos($arrFilters);
     $arrProdutos = (!$retProdutos["erro"]) ? $retProdutos["arrProdutos"]: array();
 
     $this->load->model('Tb_Venda_Mostruario');
