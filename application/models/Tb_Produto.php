@@ -79,17 +79,19 @@ class Tb_Produto extends CI_Model {
     );
   }
 
-  public function getProdutos(){
+  public function getProdutos($arrFilters=[]){
     $arrRet                = [];
     $arrRet["erro"]        = true;
     $arrRet["msg"]         = "";
     $arrRet["arrProdutos"] = array();
+    
+    $filtro = $arrFilters["orderBy"] ?? "pro_descricao";
 
     $this->load->database();
     $this->db->select("pro_id, pro_descricao, pro_codigo, pro_ean, pro_estoque, pro_prec_custo, pro_prec_venda, pro_observacao, pro_ativo, pro_imagem");
     $this->db->from("tb_produto");
     $this->db->where("pro_ativo", 1);
-    $this->db->order_by("pro_descricao", "asc");
+    $this->db->order_by($filtro, "asc");
     $query = $this->db->get();
 
     if($query->num_rows() > 0){
