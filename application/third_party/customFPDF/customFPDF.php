@@ -53,7 +53,7 @@ class customFPDF extends FPDF
         $this->SetFont('arial', '', 11);
 
         $this->SetY(1);
-        $this->Cell(0, 10, 'WEBAPP', 0, 1, 'C');
+        $this->Cell(0, 10, SOFTWARE_NAME ?? 'APP', 0, 1, 'C');
         $this->SetY(5);
         $this->Cell(0, 10, $this->titulo_pdf, 0, 0, 'C');
 

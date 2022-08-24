@@ -1,4 +1,9 @@
 <?php
+
+if (file_exists(APPPATH . 'config/constants.php')) {
+  require_once(APPPATH.'config/constants.php');
+}
+
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /*
@@ -23,17 +28,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$client  = @$_SERVER['HTTP_CLIENT_IP'];
-$forward = @$_SERVER['HTTP_X_FORWARDED_FOR'];
-$remote  = $_SERVER['REMOTE_ADDR'];
-if (filter_var($client, FILTER_VALIDATE_IP)) {
-  $ip = $client;
-} elseif (filter_var($forward, FILTER_VALIDATE_IP)) {
-  $ip = $forward;
-} else {
-  $ip = $remote;
-}
-$config['base_url'] = "http://$ip/webapp/";
+$config['base_url'] = "https://" . $_SERVER['HTTP_HOST'] . "/";
 
 /*
 |--------------------------------------------------------------------------

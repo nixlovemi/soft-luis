@@ -83,3 +83,16 @@ defined('EXIT_USER_INPUT')     OR define('EXIT_USER_INPUT', 7); // invalid user 
 defined('EXIT_DATABASE')       OR define('EXIT_DATABASE', 8); // database error
 defined('EXIT__AUTO_MIN')      OR define('EXIT__AUTO_MIN', 9); // lowest automatically-assigned error code
 defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest automatically-assigned error code
+
+/*
+SYSTEM CONFIGS
+*/
+defined('SOFTWARE_NAME') OR define('SOFTWARE_NAME', "App Jóias");
+defined('SOFTWARE_EMAIL') OR define('SOFTWARE_EMAIL', "nao-responda@appjoias.com.br");
+defined('DATABASE_HOST') OR define('DATABASE_HOST', "localhost");
+defined('DATABASE_USER') OR define('DATABASE_USER', ""); // host info
+defined('DATABASE_PASS') OR define('DATABASE_PASS', ""); // host info
+defined('DATABASE_NAME') OR define('DATABASE_NAME', ""); // host info
+defined('PORTAL_NAME') OR define('PORTAL_NAME', ""); // ex: Google Jóias
+defined('SUB_DOMAIN_NAME') OR define('SUB_DOMAIN_NAME', ""); // ex: google
+defined('CLIENT_EMAIL') OR define('CLIENT_EMAIL', ""); // ex: clark@google.com

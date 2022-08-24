@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Controle - Login</title>
+        <title><?= SOFTWARE_NAME ?? 'App' ?> - Login</title>
         <meta charset="UTF-8" />
         <link rel="icon" type="image/x-icon" href="<?php echo base_url(); ?>img/favicon.ico" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -18,7 +18,7 @@
             echo form_open('Login/postLogin', $attributes);
             ?>
                 <div class="control-group normal_text">
-                    <h3><img src="<?php echo base_url(); ?>img/logo.png" alt="Logo" /></h3>
+                    <h3><?= PORTAL_NAME ?? "Nome da Loja" ?></h3>
                 </div>
                 <div class="control-group">
                     <div class="controls">

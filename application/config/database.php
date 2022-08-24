@@ -1,6 +1,10 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+if (file_exists(APPPATH . 'config/constants.php')) {
+  require_once(APPPATH.'config/constants.php');
+} 
+
 /*
 | -------------------------------------------------------------------
 | DATABASE CONNECTIVITY SETTINGS
@@ -75,10 +79,10 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'localhost',
-	'username' => 'root',
-	'password' => '',
-	'database' => 'soft-luis',
+	'hostname' => DATABASE_HOST,
+	'username' => DATABASE_USER,
+	'password' => DATABASE_PASS,
+	'database' => DATABASE_NAME,
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,

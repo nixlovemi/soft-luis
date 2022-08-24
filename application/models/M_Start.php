@@ -100,11 +100,11 @@ class M_Start extends CI_Model {
       // manda email
       $this->load->library('email');
 
-      $this->email->from('luiscesartruculo@hotmail.com', 'Soft Luis');
-      $this->email->to('nixlovemi@gmail.com', 'Leandro Nix');
+      $this->email->from(SOFTWARE_EMAIL, SOFTWARE_NAME);
+      $this->email->to(CLIENT_EMAIL);
 
-      $this->email->subject('Backup Soft Luis - ' . date("d/m/Y H:i"));
-      $this->email->message('Segue anexo do backup');
+      $this->email->subject('Backup ' . PORTAL_NAME . ' - ' . date("d/m/Y H:i"));
+      $this->email->message('Segue anexo o backup');
       $this->email->attach($save);
 
       $ret = $this->email->send();
