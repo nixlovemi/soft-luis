@@ -89,6 +89,7 @@ SYSTEM CONFIGS
 */
 defined('SOFTWARE_NAME') OR define('SOFTWARE_NAME', "App Jóias");
 defined('SOFTWARE_EMAIL') OR define('SOFTWARE_EMAIL', "nao-responda@appjoias.com.br");
+defined('SESS_SAVE_PATH') OR define('SESS_SAVE_PATH', "application/cache/");
 defined('DATABASE_HOST') OR define('DATABASE_HOST', "");
 defined('DATABASE_USER') OR define('DATABASE_USER', ""); // host info
 defined('DATABASE_PASS') OR define('DATABASE_PASS', ""); // host info
