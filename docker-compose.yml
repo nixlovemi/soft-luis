@@ -1,0 +1,32 @@
+version: '3'  # version of compose format
+
+services:
+  apache:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    image: 'php:7.4.29-apache'
+    container_name: php-appjoias
+    restart: always
+    volumes:
+      - ./:/var/www/html # mount
+    ports:
+      - '8888:80' # host:container
+    depends_on:
+      - mariadb
+    links:
+      - mariadb
+
+  mariadb:
+    image: mariadb:10.4
+    restart: always
+    ports:
+      - '8889:3306'
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: qwerty
+
+volumes:
+  mariadb_data:
+    driver: local
