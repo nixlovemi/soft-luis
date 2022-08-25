@@ -2,10 +2,8 @@ FROM php:7.4.29-apache
 
 RUN apt-get update
 
-# Install PDO and PGSQL Drivers
-# RUN apt-get install -y libpq-dev \
-#   && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
-#   && docker-php-ext-install pdo pdo_pgsql pgsql
+# Install Mysql Drivers
+RUN docker-php-ext-install mysqli pdo pdo_mysql && docker-php-ext-enable pdo_mysql
 
 # install GD
 RUN apt-get install -y \
